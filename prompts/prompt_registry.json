@@ -1,0 +1,30 @@
+{
+  "active_prompts": {
+    "lower_gi": "v2.2"
+  },
+  "history": [
+    {
+      "version": "v1.0",
+      "date": "2026-03-12",
+      "author": "Prof Aneel Bhangu",
+      "notes": "Initial MVP prompt. Six tiers. Basic deflection logic.",
+      "status": "archived"
+    },
+    {
+      "version": "v2.1",
+      "date": "2026-03-12",
+      "author": "Prof Aneel Bhangu",
+      "notes": "Full rebuild per Analyst Brief v2.1. Seven tiers including 2WW_URGENT_STT. STT eligibility gate. MCD/ctDNA escalation. Revised safety netting guidance.",
+      "status": "archived"
+    },
+    {
+      "version": "v2.2",
+      "date": "2026-03-12",
+      "author": "Prof Aneel Bhangu",
+      "notes": "Prompt fix: FIT-negative deflection rule strengthened. Added explicit rule that FIT negative + no hard flags = SAFETY_NET_PASSIVE or REASSURE_DISCHARGE, not Safety Net Active. Absent prior colonoscopy/CT documentation must not upgrade a FIT-negative patient. Added tier selection guide to resolve boundary cases. Regression: cases 2 and 4 (FIT negative, under 60, single symptom) were returning Safety Net Active incorrectly.",
+      "status": "active",
+      "clinical_signoff": "PENDING — requires Prof Aneel Bhangu sign-off before live use",
+      "model_pinned": "claude-sonnet-4-6"
+    }
+  ]
+}

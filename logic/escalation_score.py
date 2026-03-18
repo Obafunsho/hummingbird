@@ -1,0 +1,153 @@
+"""
+hummingbird/logic/escalation_score.py
+Within-2WW escalation priority score.
+Derived from same inputs as referral decision — no additional data needed.
+
+Scoring table (per Analyst Brief v2.1, section 5):
+  Age <60        → +0
+  Age 60–69      → +2  (Hamilton CAPER, PMID 16136048)
+  Age 70+        → +3  (QCancer, PMID 22240376)
+  FIT not done   → +0
+  FIT negative   → +0
+  FIT positive   → +3  (Bailey BJS Open 2021, PMID 33693553)
+  FIT high ≥100  → +8  (Bailey BJS Open 2021)
+  Rectal bleeding         → +1  (Astin et al., BJGP 2011, PMID 21619747)
+  Change in bowel habit   → +1  (Hamilton CAPER, PMID 16136048)
+  Weight loss ≥3kg        → +1  (QCancer, PMID 22240376)
+  Iron deficiency anaemia → +1  (Hamilton Br J Cancer 2008, PMID 17876329)
+
+Score tiers:
+  0–3   → STANDARD 2WW     (grey)
+  4–6   → ELEVATED          (amber)
+  7–10  → HIGH — ACCELERATE (red)
+  ≥11   → HIGHEST — STT     (dark red)
+
+Hard override flags (displayed regardless of total score):
+  FIT ≥100 + IDA           → HIGHEST RISK — STT pathway
+  FIT ≥100 + weight loss   → HIGHEST RISK — STT pathway
+  Any score + age <40 (u60 band, note limitation) → Unusual age note
+"""
+
+from dataclasses import dataclass, field
+
+
+@dataclass
+class EscalationResult:
+    score: int
+    score_tier: str
+    score_tier_colour: str       # hex colour for UI
+    score_tier_class: str        # CSS class key: std/elev/high/stt
+    action: str
+    override_flags: list[str] = field(default_factory=list)
+    breakdown: dict = field(default_factory=dict)
+
+
+# ── Scoring constants ─────────────────────────────────────────────────────────
+
+AGE_SCORES = {
+    "u60":   0,
+    "60-69": 2,
+    "70+":   3,
+}
+
+FIT_SCORES = {
+    "notdone":  0,
+    "negative": 0,
+    "positive": 3,
+    "high":     8,
+}
+
+SYMPTOM_SCORES = {
+    "rectal_bleeding":          1,
+    "change_in_bowel_habit":    1,
+    "weight_loss":              1,
+    "iron_deficiency_anaemia":  1,
+}
+
+SCORE_TIERS = [
+    (11, "HIGHEST — STT",     "#7f1d1d", "sc-stt",
+     "Straight to Test if PS 0–1 and age <80. Contact consultant directly. Same-day notification."),
+    (7,  "HIGH — ACCELERATE", "#dc2626", "sc-high",
+     "Accelerate. Target colonoscopy or CTC within 72 hours. Notify receiving team directly."),
+    (4,  "ELEVATED",          "#d97706", "sc-elev",
+     "Prioritise within 2WW. Aim for investigation within 7 days. Flag to coordinator."),
+    (0,  "STANDARD 2WW",      "#64748b", "sc-std",
+     "Standard 2WW pathway. Investigate within 14 days per local protocol."),
+]
+
+
+def calculate_escalation_score(
+    age_band: str,
+    fit_result: str,
+    symptoms: list[str],
+) -> EscalationResult:
+    """
+    Calculate within-2WW escalation priority score.
+
+    age_band: "u60" | "60-69" | "70+"
+    fit_result: "notdone" | "negative" | "positive" | "high"
+    symptoms: list of symptom keys
+    """
+    s = set(symptoms)
+    breakdown = {}
+
+    age_score = AGE_SCORES.get(age_band, 0)
+    if age_score:
+        breakdown[f"Age {age_band}"] = age_score
+
+    fit_score = FIT_SCORES.get(fit_result, 0)
+    if fit_score:
+        breakdown[f"FIT {fit_result}"] = fit_score
+
+    sym_score = 0
+    sym_labels = {
+        "rectal_bleeding":         "Rectal bleeding",
+        "change_in_bowel_habit":   "Change in bowel habit",
+        "weight_loss":             "Weight loss ≥3kg",
+        "iron_deficiency_anaemia": "Iron deficiency anaemia",
+    }
+    for key, pts in SYMPTOM_SCORES.items():
+        if key in s:
+            breakdown[sym_labels[key]] = pts
+            sym_score += pts
+
+    total = age_score + fit_score + sym_score
+
+    # Determine tier
+    score_tier = SCORE_TIERS[-1]  # default: STANDARD 2WW
+    for threshold, tier_name, colour, css_class, action in SCORE_TIERS:
+        if total >= threshold:
+            score_tier = (threshold, tier_name, colour, css_class, action)
+            break
+
+    _, tier_name, colour, css_class, action = score_tier
+
+    # Override flags
+    override_flags = []
+    if fit_result == "high" and "iron_deficiency_anaemia" in s:
+        override_flags.append(
+            "HIGHEST RISK — FIT ≥100 µg/g with iron deficiency anaemia. "
+            "STT pathway if PS 0–1 and age confirmed <80."
+        )
+    elif fit_result == "high" and "weight_loss" in s:
+        override_flags.append(
+            "HIGHEST RISK — FIT ≥100 µg/g with unexplained weight loss ≥3kg. "
+            "STT pathway if PS 0–1 and age confirmed <80."
+        )
+
+    # Age <40 note (u60 band — limitation noted)
+    if age_band == "u60":
+        override_flags.append(
+            "Note: Age band 'Under 60' includes patients under 40 where CRC is unusual. "
+            "If patient is under 40, consider alternative diagnosis and discuss with specialist."
+        )
+
+    return EscalationResult(
+        score=total,
+        score_tier=tier_name,
+        score_tier_colour=colour,
+        score_tier_class=css_class,
+        action=action,
+        override_flags=override_flags,
+        breakdown=breakdown,
+    )

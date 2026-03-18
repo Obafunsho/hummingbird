@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hummingbird — Cancer referrals, made with certainty.</title>
+<meta name="description" content="Clinician-authored AI that reduces diagnostic uncertainty at the cancer referral decision — safely deflecting low-risk presentations and accelerating high-risk patients through NHS urgent suspected cancer pathways, in 45 seconds.">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:       #0B1826;
+    --navy-mid:   #101F30;
+    --navy-card:  #1A2E42;
+    --navy-tile:  #1E3347;
+    --teal:       #0E9B8A;
+    --teal-bright:#12C4AF;
+    --teal-dim:   rgba(14,155,138,0.12);
+    --teal-glow:  rgba(14,155,138,0.18);
+    --red:        #D44C3A;
+    --white:      #F0F6FA;
+    --muted:      #6B8EA8;
+    --border:     rgba(14,155,138,0.18);
+    --border-faint: rgba(255,255,255,0.05);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(14,155,138,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,155,138,0.035) 1px, transparent 1px);
+    background-size: 52px 52px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOW ORBS ── */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 600px; height: 600px;
+    background: rgba(14,155,138,0.07);
+    top: -200px; left: -150px;
+  }
+  .orb-2 {
+    width: 400px; height: 400px;
+    background: rgba(14,155,138,0.05);
+    bottom: 10%; right: -100px;
+  }
+
+  /* ── LAYOUT ── */
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 32px;
+    max-width: 880px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border-faint);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    text-decoration: none;
+  }
+
+  .nav-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-bright));
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+
+  .nav-wordmark {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--white);
+    letter-spacing: 0.01em;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .nav-link {
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    font-weight: 400;
+  }
+  .nav-link:hover { color: var(--white); }
+
+  .nav-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--teal);
+    background: rgba(14,155,138,0.1);
+    border: 1px solid rgba(14,155,138,0.25);
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 96px 0 80px;
+    text-align: center;
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.1s forwards;
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(42px, 6vw, 66px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+
+  .hero-sub {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(16px, 2vw, 20px);
+    font-style: italic;
+    color: var(--teal-bright);
+    margin-bottom: 36px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.3s forwards;
+  }
+
+  .hero-body {
+    font-size: 17px;
+    line-height: 1.75;
+    color: #9BB5C8;
+    max-width: 580px;
+    margin: 0 auto 48px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.4s forwards;
+  }
+
+  .hero-body strong {
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .hero-pdf {
+    font-size: 13px;
+    color: var(--teal);
+    margin-top: -28px;
+    margin-bottom: 36px;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.45s forwards;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 52px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--navy-card);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s forwards;
+  }
+
+  .stat {
+    flex: 1;
+    padding: 20px 24px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--teal-bright);
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  /* ── CTA BLOCK ── */
+  .cta-block {
+    opacity: 0;
+    animation: fadeUp 0.7s 0.6s forwards;
+  }
+
+  .cta-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+
+  .cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, var(--teal), var(--teal-bright));
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 24px rgba(14,155,138,0.35);
+    transition: all 0.2s;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(14,155,138,0.45);
+  }
+
+  .btn-coming {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 28px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    cursor: default;
+    letter-spacing: 0.01em;
+  }
+
+  .coming-dot {
+    width: 6px; height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 80px 0;
+  }
+
+  /* ── TRUST SECTION ── */
+  .trust-section {
+    padding-bottom: 80px;
+  }
+
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: var(--white);
+    margin-bottom: 48px;
+  }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .trust-card {
+    background: var(--navy-card);
+    border: 1px solid var(--border-faint);
+    border-radius: 14px;
+    padding: 28px;
+    transition: border-color 0.2s;
+  }
+  .trust-card:hover { border-color: var(--border); }
+
+  .trust-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-bottom: 16px;
+    background: var(--teal-dim);
+    border: 1px solid var(--border);
+  }
+
+  .trust-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+  }
+
+  .trust-card-body {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── QUOTE ── */
+  .quote-block {
+    background: var(--navy-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px 48px;
+    margin: 80px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .quote-block::before {
+    content: '\201C';
+    font-family: 'DM Serif Display', serif;
+    font-size: 120px;
+    color: var(--teal);
+    opacity: 0.12;
+    position: absolute;
+    top: -10px;
+    left: 28px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .quote-text {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(18px, 2.2vw, 22px);
+    font-style: italic;
+    color: #C8DCE8;
+    line-height: 1.6;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .quote-attr {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .quote-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal-dim), var(--teal-glow));
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--teal-bright);
+    flex-shrink: 0;
+  }
+
+  .quote-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+
+  .quote-role {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* ── SECOND CTA ── */
+  .second-cta {
+    text-align: center;
+    padding: 0 0 100px;
+  }
+
+  .second-cta-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .second-cta-sub {
+    font-size: 15px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border-faint);
+    padding: 28px 32px;
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .footer-right {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(107,142,168,0.5);
+    text-align: right;
+  }
+
+  /* ── PLATFORM GRID ── */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 20px;
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  .pillar {
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid;
+    transition: border-color 0.2s;
+  }
+
+  .pillar-live {
+    background: var(--navy-card);
+    border-color: var(--border);
+  }
+  .pillar-live:hover { border-color: var(--teal); }
+
+  .pillar-soon {
+    background: var(--navy-card);
+    border-color: var(--border);
+  }
+
+  .pillar-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .pillar-icon {
+    font-size: 20px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  .pillar-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .pillar-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .pillar-status.live {
+    background: rgba(14,155,138,0.15);
+    border: 1px solid rgba(14,155,138,0.3);
+    color: var(--teal-bright);
+  }
+
+  .pillar-status.soon {
+    background: rgba(107,142,168,0.08);
+    border: 1px solid rgba(107,142,168,0.15);
+    color: var(--muted);
+  }
+
+  .pillar-body {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    font-weight: 300;
+  }
+
+  .pillar-modules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .module-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .module-tag.active {
+    background: rgba(14,155,138,0.15);
+    border: 1px solid rgba(14,155,138,0.35);
+    color: var(--teal-bright);
+    cursor: pointer;
+  }
+  .module-tag.active:hover {
+    background: rgba(14,155,138,0.25);
+  }
+
+  .module-tag.coming {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    color: rgba(107,142,168,0.6);
+    cursor: default;
+  }
+
+  @media (max-width: 640px) {
+    .platform-grid { grid-template-columns: 1fr; }
+  }
+
+  .cta-sub-note {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  .platform-section {
+    padding-bottom: 20px;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .trust-grid { grid-template-columns: 1fr; }
+    .stats-row { flex-direction: column; }
+    .stat { border-right: none; border-bottom: 1px solid var(--border); }
+    .stat:last-child { border-bottom: none; }
+    .quote-block { padding: 28px 24px; }
+    nav { padding: 20px 24px; }
+    .wrap { padding: 0 24px; }
+    .hero { padding: 60px 0 60px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-icon">🐦</div>
+    <div>
+      <div class="nav-wordmark">Hummingbird</div>
+    </div>
+  </a>
+  <div class="nav-right">
+    <a href="#platform" class="nav-link">Platform</a>
+    <a href="#why" class="nav-link">How it works</a>
+    <a href="http://localhost:8501" target="_blank" class="nav-link">Start assessment</a>
+    <div class="nav-badge">Beta · Lower GI</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <section class="hero">
+
+    <div class="hero-eyebrow">Clinician-authored AI across the cancer pathway</div>
+    <h1 class="hero-title">Hummingbird</h1>
+    <p class="hero-sub">Cancer referrals, made with certainty.</p>
+    <p class="hero-body">
+      <strong>Fewer unnecessary referrals. Earlier cancers. Safer patients.</strong><br>
+      Clinician-authored AI that reduces diagnostic uncertainty at the cancer referral decision — safely deflecting low-risk presentations and accelerating high-risk patients through NHS urgent suspected cancer pathways, in 45 seconds.
+    </p>
+    <p class="hero-pdf">Every recommendation generates a defensible PDF for the patient record.</p>
+
+    <!-- IMMEDIATE CTA — above everything else -->
+    <div class="cta-block" id="assessment">
+      <div class="cta-label">Start an assessment — available now</div>
+      <div class="cta-buttons">
+        <a href="http://localhost:8501" target="_blank" class="btn-primary">Colorectal — Lower GI &nbsp;→</a>
+      </div>
+      <div class="cta-sub-note">Built by consultant surgeons · Validated against NHS guidelines · Enhanced by best evidence</div>
+    </div>
+
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- PLATFORM GRID -->
+  <section class="platform-section" id="platform">
+    <div class="section-eyebrow">The platform</div>
+    <h2 class="section-title">Every cancer decision.<br>Across the whole pathway.</h2>
+
+    <div class="platform-grid reveal">
+
+      <div class="pillar pillar-live">
+        <div class="pillar-header">
+          <div class="pillar-icon">🎯</div>
+          <div>
+            <div class="pillar-title">Cancer Referral</div>
+            <div class="pillar-status live">Available now</div>
+          </div>
+        </div>
+        <div class="pillar-body">Clinician-authored AI for NHS Urgent Suspected Cancer pathways. Safely deflects low-risk presentations. Accelerates those who can't wait.</div>
+        <div class="pillar-modules">
+          <a href="http://localhost:8501" target="_blank" class="module-tag active">Colorectal — Lower GI →</a>
+          <div class="module-tag coming">Lung</div>
+          <div class="module-tag coming">Gynaecology</div>
+          <div class="module-tag coming">Haematology</div>
+          <div class="module-tag coming">Skin</div>
+          <div class="module-tag coming">Upper GI</div>
+          <div class="module-tag coming">Urology</div>
+          <div class="module-tag coming">Head &amp; Neck</div>
+        </div>
+      </div>
+
+      <div class="pillar pillar-soon">
+        <div class="pillar-header">
+          <div class="pillar-icon">🔬</div>
+          <div>
+            <div class="pillar-title">Screening &amp; Surveillance</div>
+            <div class="pillar-status soon">Coming soon</div>
+          </div>
+        </div>
+        <div class="pillar-body">Personalised screening interval decisions. High-risk family assessment. Post-polyp and post-treatment surveillance. Lynch syndrome and hereditary cancer pathways.</div>
+        <div class="pillar-modules">
+          <div class="module-tag coming">Colorectal screening</div>
+          <div class="module-tag coming">Post-polyp surveillance</div>
+          <div class="module-tag coming">Lynch syndrome</div>
+          <div class="module-tag coming">High-risk families</div>
+        </div>
+      </div>
+
+      <div class="pillar pillar-soon">
+        <div class="pillar-header">
+          <div class="pillar-icon">⚕️</div>
+          <div>
+            <div class="pillar-title">Surgical Decisions</div>
+            <div class="pillar-status soon">Coming soon</div>
+          </div>
+        </div>
+        <div class="pillar-body">Decision support at the point of surgery. Fitness for procedure, frailty risk scoring, operative planning, and acute surgical triage at the moment it matters most.</div>
+        <div class="pillar-modules">
+          <div class="module-tag coming">Frailty &amp; fitness for surgery</div>
+          <div class="module-tag coming">Colorectal operative workup</div>
+          <div class="module-tag coming">Acute appendicitis</div>
+          <div class="module-tag coming">Anastomotic risk</div>
+        </div>
+      </div>
+
+      <div class="pillar pillar-soon">
+        <div class="pillar-header">
+          <div class="pillar-icon">📈</div>
+          <div>
+            <div class="pillar-title">Cancer Follow-up</div>
+            <div class="pillar-status soon">Coming soon</div>
+          </div>
+        </div>
+        <div class="pillar-body">Post-treatment surveillance decisions. Recurrence risk stratification. When to re-investigate. Structured follow-up pathways replacing inconsistent outpatient review.</div>
+        <div class="pillar-modules">
+          <div class="module-tag coming">Colorectal follow-up</div>
+          <div class="module-tag coming">Recurrence risk</div>
+          <div class="module-tag coming">Surveillance intervals</div>
+          <div class="module-tag coming">Discharge planning</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- TRUST -->
+  <section class="trust-section" id="why">
+    <div class="section-eyebrow">Why clinicians trust it</div>
+    <h2 class="section-title">Applied AI in a high-stakes domain.<br>Built with the rigour to match.</h2>
+
+    <!-- STATS inline with trust -->
+    <div class="stats-row reveal">
+      <div class="stat">
+        <div class="stat-num">45s</div>
+        <div class="stat-label">From presentation<br>to recommendation</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Auditable, logged,<br>and versioned</div>
+      </div>
+    </div>
+
+    <div class="trust-grid">
+
+      <div class="trust-card reveal">
+        <div class="trust-icon">🧠</div>
+        <div class="trust-card-title">Clinician-authored AI</div>
+        <div class="trust-card-body">The AI reasoning layer is authored and signed off by named consultant surgeons. Expert clinical logic, formalised, versioned, and traceable. Not prompted by engineers — built by the clinicians who own the decision.</div>
+      </div>
+
+      <div class="trust-card reveal">
+        <div class="trust-icon">⚡</div>
+        <div class="trust-card-title">Two clinical layers, not one</div>
+        <div class="trust-card-body">Deterministic hard rules handle the obvious cases — the AI cannot override them. AI reasoning handles the uncertain middle: the vague, chronic, low-risk patient where a decision tree fails and a clinician needs genuine support.</div>
+      </div>
+
+      <div class="trust-card reveal">
+        <div class="trust-icon">📋</div>
+        <div class="trust-card-title">Guideline-based, evidence-layered</div>
+        <div class="trust-card-body">Grounded in NICE NG12. Weighted by the best available FIT, colonoscopy, and symptom combination evidence. Deflecting logic for vague presentations — safely reducing referrals without missing cancers.</div>
+      </div>
+
+      <div class="trust-card reveal">
+        <div class="trust-icon">📁</div>
+        <div class="trust-card-title">Regulatory-grade from day one</div>
+        <div class="trust-card-body">Every decision logged, versioned, and traceable. Validated against a clinical vignette set. Built for MHRA registration and NHS clinical governance from the start. The audit trail is the research dataset.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote-block reveal">
+    <p class="quote-text">
+      The hardest referral decisions in primary care aren't the obvious ones — they're the uncertain ones. Hummingbird is built specifically for those moments.
+    </p>
+    <div class="quote-attr">
+      <div class="quote-avatar">AB</div>
+      <div>
+        <div class="quote-name">Professor Aneel Bhangu</div>
+        <div class="quote-role">Consultant Colorectal Surgeon · Clinical Lead &amp; Product Owner</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECOND CTA -->
+  <div class="second-cta reveal">
+    <h2 class="second-cta-title">Start your first assessment.</h2>
+    <p class="second-cta-sub">Colorectal lower GI is live today. The full platform is coming.</p>
+    <div class="cta-buttons">
+      <a href="http://localhost:8501" target="_blank" class="btn-primary">Colorectal — Lower GI &nbsp;→</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    Hummingbird · Clinician-authored AI across the cancer pathway<br>
+    Supports but does not replace clinical judgement. For use in education and audit mode. MHRA registration in progress.<br>Running locally · App at <a href="http://localhost:8501" style="color:inherit;opacity:0.6;">localhost:8501</a>
+  </div>
+  <div class="footer-right">
+    Cancer Referral · Screening · Surgical Decisions · Follow-up<br>
+    Configured by Prof Aneel Bhangu
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

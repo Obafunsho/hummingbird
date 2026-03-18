@@ -1,0 +1,11 @@
+{
+  "urls": {
+    "2WW_URGENT": "https://www.nhs.uk/conditions/bowel-cancer/",
+    "ROUTINE_REFERRAL": "https://www.nhs.uk/conditions/bowel-cancer/",
+    "INVESTIGATE_FIRST": "https://www.nhs.uk/conditions/bowel-cancer/symptoms/",
+    "SAFETY_NET_ACTIVE": "https://www.macmillan.org.uk/cancer-information-and-support/bowel-cancer",
+    "SAFETY_NET_PASSIVE": "https://www.macmillan.org.uk/cancer-information-and-support/bowel-cancer",
+    "REASSURE_DISCHARGE": "https://www.nhs.uk/conditions/irritable-bowel-syndrome-ibs/"
+  },
+  "note": "Placeholder URLs — to be confirmed by clinical lead (Prof Aneel Bhangu) before live deployment."
+}

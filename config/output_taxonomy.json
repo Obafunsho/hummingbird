@@ -1,0 +1,58 @@
+{
+  "tiers": {
+    "2WW_URGENT": {
+      "label": "2WW Urgent Referral",
+      "short_label": "2WW URGENT",
+      "colour": "#D44C3A",
+      "colour_bg": "rgba(212,76,58,0.15)",
+      "colour_border": "rgba(212,76,58,0.6)",
+      "gp_action": "Refer via USC pathway immediately.",
+      "qr_key": "2WW_URGENT"
+    },
+    "ROUTINE_REFERRAL": {
+      "label": "Routine Referral",
+      "short_label": "ROUTINE REFERRAL",
+      "colour": "#E8A020",
+      "colour_bg": "rgba(232,160,32,0.15)",
+      "colour_border": "rgba(232,160,32,0.6)",
+      "gp_action": "Refer non-urgently to colorectal outpatients.",
+      "qr_key": "ROUTINE_REFERRAL"
+    },
+    "INVESTIGATE_FIRST": {
+      "label": "Investigate First",
+      "short_label": "INVESTIGATE FIRST",
+      "colour": "#E8A020",
+      "colour_bg": "rgba(232,160,32,0.12)",
+      "colour_border": "rgba(232,160,32,0.5)",
+      "gp_action": "Order defined investigation (e.g. FIT). Review result before referring.",
+      "qr_key": "INVESTIGATE_FIRST"
+    },
+    "SAFETY_NET_ACTIVE": {
+      "label": "Safety Net — Active Review",
+      "short_label": "SAFETY NET ACTIVE",
+      "colour": "#0E9B8A",
+      "colour_bg": "rgba(14,155,138,0.12)",
+      "colour_border": "rgba(14,155,138,0.5)",
+      "gp_action": "Book specific review appointment. Document trigger symptoms for escalation.",
+      "qr_key": "SAFETY_NET_ACTIVE"
+    },
+    "SAFETY_NET_PASSIVE": {
+      "label": "Safety Net — Passive",
+      "short_label": "SAFETY NET PASSIVE",
+      "colour": "#0E9B8A",
+      "colour_bg": "rgba(14,155,138,0.10)",
+      "colour_border": "rgba(14,155,138,0.35)",
+      "gp_action": "Advise patient to return if symptoms persist, worsen, or new red flags develop.",
+      "qr_key": "SAFETY_NET_PASSIVE"
+    },
+    "REASSURE_DISCHARGE": {
+      "label": "Reassure and Discharge",
+      "short_label": "REASSURE & DISCHARGE",
+      "colour": "#6B8EA8",
+      "colour_bg": "rgba(107,142,168,0.12)",
+      "colour_border": "rgba(107,142,168,0.4)",
+      "gp_action": "Document reasoning. Discharge with safety netting advice.",
+      "qr_key": "REASSURE_DISCHARGE"
+    }
+  }
+}

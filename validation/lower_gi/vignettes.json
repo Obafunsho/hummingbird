@@ -1,0 +1,32 @@
+[
+  {
+    "id": "LGI_001",
+    "description": "67F, rectal bleeding x3 weeks, no weight loss, FIT not done",
+    "inputs": {
+      "age_band": "60-69",
+      "sex": "Female",
+      "smoking": "Never",
+      "symptoms": ["rectal_bleeding"],
+      "modifiers": [],
+      "free_text": "Bleeding on paper only. Patient anxious."
+    },
+    "expected_tier": "2WW_URGENT",
+    "clinical_rationale": "Age 60-69 female + rectal bleeding triggers Layer 1 hard rule (RECTAL_BLEEDING_50_PLUS)",
+    "approved_by": "Prof A Bhangu",
+    "date_approved": "2026-03-12",
+    "category": "layer1_hard_rule"
+  },
+  {
+    "_note": "49 additional vignettes to be populated by Prof Bhangu before live clinical use.",
+    "_coverage_required": {
+      "layer1_hard_rule": "10 cases — expected: 2WW_URGENT",
+      "obvious_2ww_ai": "8 cases — expected: 2WW_URGENT",
+      "fit_negative_deflection": "6 cases — expected: SAFETY_NET or ROUTINE",
+      "clear_investigation_deflection": "6 cases — expected: SAFETY_NET or REASSURE",
+      "routine_referral": "6 cases — expected: ROUTINE_REFERRAL",
+      "investigate_first": "6 cases — expected: INVESTIGATE_FIRST",
+      "safety_net_active": "5 cases — expected: SAFETY_NET_ACTIVE",
+      "reassure_discharge": "3 cases — expected: REASSURE_DISCHARGE"
+    }
+  }
+]

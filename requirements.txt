@@ -1,0 +1,9 @@
+anthropic
+streamlit
+qrcode[pil]
+weasyprint
+python-dotenv
+reportlab
+pillow
+streamlit-authenticator>=0.4.2
+PyYAML
