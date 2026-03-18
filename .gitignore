@@ -1,5 +1,6 @@
 # Environment & secrets
 .env
+credentials.yaml
 
 # Python
 __pycache__/
