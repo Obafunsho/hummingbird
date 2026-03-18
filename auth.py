@@ -207,7 +207,6 @@ def _footer():
       color:rgba(107,142,168,0.5);line-height:1.8;">
       Hummingbird v2.1 · Clinician-authored decision support<br>
       NICE NG12 compliant · Not prospectively validated<br>
-      Configured by Prof Aneel Bhangu, Consultant Colorectal Surgeon
     </div>""", unsafe_allow_html=True)
 
 

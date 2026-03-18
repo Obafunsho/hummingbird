@@ -577,8 +577,7 @@ with right_col:
         <div style="font-size:11px;color:rgba(240,244,248,0.2);line-height:1.7;
           border-top:1px solid rgba(240,244,248,0.06);padding-top:12px;margin-top:10px;">
           Hummingbird v2.1 · Clinician-authored · NICE NG12 compliant · Not prospectively validated ·
-          Does not replace clinical judgement · MHRA registration in progress ·
-          Configured by Prof Aneel Bhangu, Consultant Colorectal Surgeon<br>
+          Does not replace clinical judgement · MHRA registration in progress ·<br>
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;">
           prompt:{prompt_version} · model:{model_version} · layer:{layer} · {now_str}
           </span>
