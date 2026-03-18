@@ -142,3 +142,4 @@ Every recommendation is logged to `audit/audit_log.csv`. This file is:
 ---
 
 *This tool supports but does not replace clinical judgement.*
+"# hummingbird" 
