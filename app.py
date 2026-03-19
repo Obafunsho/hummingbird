@@ -280,34 +280,6 @@ left_col, right_col = st.columns([3, 2], gap="small")
 with left_col:
     st.markdown('<div style="padding:8px 32px 80px;">', unsafe_allow_html=True)
 
-    # SUBMIT — at top so result is always visible
-    if not bool(os.environ.get("ANTHROPIC_API_KEY")):
-        st.warning("⚠️ ANTHROPIC_API_KEY not set in .env")
-    hard_triggered = bool(st.session_state.selected_exam)
-    submit_enabled = (st.session_state.age_band is not None) or hard_triggered
-
-    st.markdown('<div class="hb-submit">', unsafe_allow_html=True)
-    submit_clicked = st.button("Get recommendation →", disabled=not submit_enabled,
-                               use_container_width=True, key="submit_btn")
-    st.markdown('</div>', unsafe_allow_html=True)
-    if not submit_enabled:
-        st.markdown("""<p style="text-align:center;font-size:12px;
-          color:rgba(240,244,248,0.25);margin-top:4px;margin-bottom:8px;
-          font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
-          unsafe_allow_html=True)
-
-    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
-    if st.button("Reset all", key="reset_btn", use_container_width=True):
-        st.session_state.update({
-            "age_band":None,"result":None,"escalation":None,"hbid":None,
-            "last_inputs":{},"fit_result":"notdone","performance_status":"fit",
-            "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
-        })
-        st.session_state.free_text_key += 1
-        st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("<br>", unsafe_allow_html=True)
-
     # AGE
     section_label("Age", "1 CLICK · REQUIRED")
     cols = st.columns(3)
@@ -415,7 +387,34 @@ with left_col:
     free_text = st.text_area("", placeholder="Anything else relevant? (optional · max 300 chars)",
         max_chars=300, height=72, label_visibility="collapsed",
         key=f"ft_{st.session_state.free_text_key}")
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # SUBMIT
+    if not bool(os.environ.get("ANTHROPIC_API_KEY")):
+        st.warning("⚠️ ANTHROPIC_API_KEY not set in .env")
+    hard_triggered = bool(st.session_state.selected_exam)
+    submit_enabled = (st.session_state.age_band is not None) or hard_triggered
+
+    st.markdown('<div class="hb-submit">', unsafe_allow_html=True)
+    submit_clicked = st.button("Get recommendation →", disabled=not submit_enabled,
+                               use_container_width=True, key="submit_btn")
     st.markdown('</div>', unsafe_allow_html=True)
+    if not submit_enabled:
+        st.markdown("""<p style="text-align:center;font-size:12px;
+          color:rgba(240,244,248,0.25);margin-top:6px;
+          font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
+          unsafe_allow_html=True)
+
+    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
+    if st.button("Reset all", key="reset_btn", use_container_width=True):
+        st.session_state.update({
+            "age_band":None,"result":None,"escalation":None,"hbid":None,
+            "last_inputs":{},"fit_result":"notdone","performance_status":"fit",
+            "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
+        })
+        st.session_state.free_text_key += 1
+        st.rerun()
+    st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════ PROCESSING ══════════════════
 if submit_clicked and submit_enabled:
