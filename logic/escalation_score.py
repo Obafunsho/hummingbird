@@ -16,15 +16,14 @@ Scoring table (per Analyst Brief v2.1, section 5):
   Weight loss ≥3kg        → +1  (QCancer, PMID 22240376)
   Iron deficiency anaemia → +1  (Hamilton Br J Cancer 2008, PMID 17876329)
 
-Score tiers:
-  0–3   → STANDARD 2WW     (grey)
-  4–6   → ELEVATED          (amber)
-  7–10  → HIGH — ACCELERATE (red)
-  ≥11   → HIGHEST — STT     (dark red)
+Score tiers (per Prof Aneel Bhangu, updated v2.2):
+  0–3   → STANDARD          (grey)   — safety net / refer routinely / 2WW if ongoing concern
+  4–8   → ELEVATED          (amber)  — prioritised 2WW, aim 7 days, consider STT if eligible
+  9+    → HIGH              (red)    — accelerated 2WW, target 72 hours, consider STT if eligible
 
 Hard override flags (displayed regardless of total score):
-  FIT ≥100 + IDA           → HIGHEST RISK — STT pathway
-  FIT ≥100 + weight loss   → HIGHEST RISK — STT pathway
+  FIT ≥100 + IDA           → HIGH RISK — consider STT if PS 0–1 and age <80
+  FIT ≥100 + weight loss   → HIGH RISK — consider STT if PS 0–1 and age <80
   Any score + age <40 (u60 band, note limitation) → Unusual age note
 """
 
@@ -65,14 +64,12 @@ SYMPTOM_SCORES = {
 }
 
 SCORE_TIERS = [
-    (11, "HIGHEST — STT",     "#7f1d1d", "sc-stt",
-     "Straight to Test if PS 0–1 and age <80. Contact consultant directly. Same-day notification."),
-    (7,  "HIGH — ACCELERATE", "#dc2626", "sc-high",
-     "Accelerate. Target colonoscopy or CTC within 72 hours. Notify receiving team directly."),
-    (4,  "ELEVATED",          "#d97706", "sc-elev",
-     "Prioritise within 2WW. Aim for investigation within 7 days. Flag to coordinator."),
-    (0,  "STANDARD 2WW",      "#64748b", "sc-std",
-     "Standard 2WW pathway. Investigate within 14 days per local protocol."),
+    (9,  "HIGH — ACCELERATED 2WW", "#dc2626", "sc-high",
+     "Accelerated 2WW. Target investigation within 72 hours. Consider STT if PS 0–1 and age <80."),
+    (4,  "ELEVATED — PRIORITISED 2WW", "#d97706", "sc-elev",
+     "Prioritised 2WW. Aim for investigation within 7 days. Consider STT if high-risk features present."),
+    (0,  "STANDARD",          "#64748b", "sc-std",
+     "Safety net and refer routinely if needed. 2WW if ongoing or escalating concern."),
 ]
 
 
@@ -126,13 +123,13 @@ def calculate_escalation_score(
     override_flags = []
     if fit_result == "high" and "iron_deficiency_anaemia" in s:
         override_flags.append(
-            "HIGHEST RISK — FIT ≥100 µg/g with iron deficiency anaemia. "
-            "STT pathway if PS 0–1 and age confirmed <80."
+            "HIGH RISK — FIT ≥100 µg/g with iron deficiency anaemia. "
+            "Consider STT pathway if PS 0–1 and age <80."
         )
     elif fit_result == "high" and "weight_loss" in s:
         override_flags.append(
-            "HIGHEST RISK — FIT ≥100 µg/g with unexplained weight loss ≥3kg. "
-            "STT pathway if PS 0–1 and age confirmed <80."
+            "HIGH RISK — FIT ≥100 µg/g with unexplained weight loss ≥3kg. "
+            "Consider STT pathway if PS 0–1 and age <80."
         )
 
     # Age <40 note (u60 band — limitation noted)

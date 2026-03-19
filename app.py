@@ -11,6 +11,15 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent / ".env", override=False)
 sys.path.insert(0, str(Path(__file__).parent))
 
+# Inject Streamlit secrets into environment (for Community Cloud deployment)
+try:
+    import streamlit as _st
+    for _k, _v in _st.secrets.items():
+        if isinstance(_v, str) and _k not in os.environ:
+            os.environ[_k] = _v
+except Exception:
+    pass
+
 from logic.hard_rules import check_hard_rules
 from logic.claude_layer import call_claude, build_hard_rule_response
 from logic.escalation_score import calculate_escalation_score
@@ -101,10 +110,11 @@ div[data-testid="column"] .stButton > button[kind="secondary"]:hover {
   color:#12C4AF !important; background:none !important; border:none !important;
 }
 
-/* Tile select buttons — compact, sits tight under tile */
+/* Tile select buttons — flush under tile, no gap */
 .hb-tile-btn .stButton > button {
   font-size:12px !important; padding:7px 12px !important;
-  border-radius:6px !important; margin-top:2px !important;
+  border-radius:0 0 10px 10px !important; margin-top:0 !important;
+  border-top:none !important;
   border-color:rgba(240,244,248,0.06) !important;
 }
 
@@ -128,6 +138,16 @@ div[data-testid="column"] .stButton > button[kind="secondary"]:hover {
 }
 .stDownloadButton > button:hover { background:rgba(14,155,138,0.2) !important; }
 .stSpinner > div { border-top-color:#12C4AF !important; }
+
+/* Collapse Streamlit's internal column top gap */
+div[data-testid="stVerticalBlockBorderWrapper"] > div:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+div[data-testid="column"] > div[data-testid="stVerticalBlock"] {
+  gap: 0 !important;
+  padding-top: 0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -170,8 +190,9 @@ def tile_indicator(label: str, sublabel: str, selected: bool, kind: str = "sym")
     icon = "✓  " if selected else ""
     sub  = f'<span style="font-size:12px;color:rgba(240,244,248,0.5);display:block;margin-top:3px;">{sublabel}</span>' if sublabel else ""
     st.markdown(
-        f'<div style="{bg}border-radius:10px;padding:12px 14px;color:{col};'
-        f'font-size:14px;font-weight:500;line-height:1.35;margin-bottom:2px;pointer-events:none;">'
+        f'<div style="{bg}border-radius:10px 10px 0 0;padding:12px 14px;color:{col};'
+        f'font-size:14px;font-weight:500;line-height:1.35;margin-bottom:0;'
+        f'min-height:62px;pointer-events:none;">'
         f'{icon}{label}{sub}</div>',
         unsafe_allow_html=True)
 
@@ -239,32 +260,53 @@ st.markdown(f"""
       background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;border:1px solid rgba(14,155,138,0.18);">
       v2.1 · NICE NG12</span>
     <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
+    <a href="/?signout=1" target="_self" onclick="window.location.href='/?signout=1'"
+      style="font-family:'JetBrains Mono',monospace;font-size:10px;
+      color:rgba(240,244,248,0.25);text-decoration:underline;text-underline-offset:3px;
+      cursor:pointer;letter-spacing:.05em;"
+      onmouseover="this.style.color='rgba(192,57,43,0.7)'"
+      onmouseout="this.style.color='rgba(240,244,248,0.25)'">sign out</a>
   </div>
 </div>""", unsafe_allow_html=True)
 
-# Sign-out CSS — styled as a subtle link, no column wrapper
-st.markdown("""<style>
-.hb-signout .stButton > button {
-  background:none !important; border:none !important;
-  color:rgba(240,244,248,0.22) !important; font-size:11px !important;
-  font-weight:400 !important; text-decoration:underline !important;
-  padding:1px 0 !important; width:auto !important;
-  text-underline-offset:3px !important; margin-left:32px !important;
-}
-.hb-signout .stButton > button:hover {
-  color:rgba(192,57,43,0.7) !important; background:none !important;
-}
-</style>""", unsafe_allow_html=True)
-st.markdown('<div class="hb-signout">', unsafe_allow_html=True)
-if st.button("Sign out", key="signout_btn"):
+# Handle signout via query param
+if st.query_params.get("signout") == "1":
+    st.query_params.clear()
     do_logout()
-st.markdown('</div>', unsafe_allow_html=True)
 
 left_col, right_col = st.columns([3, 2], gap="small")
 
 # ════════════════════════════════════════════════ LEFT PANEL ══════════════════
 with left_col:
-    st.markdown('<div style="padding:24px 32px 80px;">', unsafe_allow_html=True)
+    st.markdown('<div style="padding:8px 32px 80px;">', unsafe_allow_html=True)
+
+    # SUBMIT — at top so result is always visible
+    if not bool(os.environ.get("ANTHROPIC_API_KEY")):
+        st.warning("⚠️ ANTHROPIC_API_KEY not set in .env")
+    hard_triggered = bool(st.session_state.selected_exam)
+    submit_enabled = (st.session_state.age_band is not None) or hard_triggered
+
+    st.markdown('<div class="hb-submit">', unsafe_allow_html=True)
+    submit_clicked = st.button("Get recommendation →", disabled=not submit_enabled,
+                               use_container_width=True, key="submit_btn")
+    st.markdown('</div>', unsafe_allow_html=True)
+    if not submit_enabled:
+        st.markdown("""<p style="text-align:center;font-size:12px;
+          color:rgba(240,244,248,0.25);margin-top:4px;margin-bottom:8px;
+          font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
+          unsafe_allow_html=True)
+
+    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
+    if st.button("Reset all", key="reset_btn", use_container_width=True):
+        st.session_state.update({
+            "age_band":None,"result":None,"escalation":None,"hbid":None,
+            "last_inputs":{},"fit_result":"notdone","performance_status":"fit",
+            "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
+        })
+        st.session_state.free_text_key += 1
+        st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
     # AGE
     section_label("Age", "1 CLICK · REQUIRED")
@@ -272,9 +314,11 @@ with left_col:
     for i,(val,label) in enumerate(AGE_BANDS):
         with cols[i]:
             sel = st.session_state.age_band == val
-            pill_indicator(label, sel)
-            if st.button(label, key=f"age_{val}", use_container_width=True):
+            tile_indicator(label, "", sel, "sym")
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("✓ Selected" if sel else "+ Select", key=f"age_{val}", use_container_width=True):
                 st.session_state.age_band=val; st.session_state.result=None; st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
     # FIT
@@ -283,9 +327,12 @@ with left_col:
     for i,(val,label,colour) in enumerate(FIT_OPTIONS):
         with cols[i]:
             sel = st.session_state.fit_result == val
-            pill_indicator(label, sel, colour if colour else "teal")
-            if st.button(label, key=f"fit_{val}", use_container_width=True):
+            kind = "hard" if colour == "red" or colour == "darkred" else "sym"
+            tile_indicator(label, "", sel, kind)
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("✓ Selected" if sel else "+ Select", key=f"fit_{val}", use_container_width=True):
                 st.session_state.fit_result=val; st.session_state.result=None; st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
     # SYMPTOMS
@@ -334,9 +381,11 @@ with left_col:
     for i,(val,label) in enumerate(PS_OPTIONS):
         with cols[i]:
             sel = st.session_state.performance_status == val
-            pill_indicator(label, sel)
-            if st.button(label, key=f"ps_{val}", use_container_width=True):
+            tile_indicator(label, "", sel, "sym")
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("✓ Selected" if sel else "+ Select", key=f"ps_{val}", use_container_width=True):
                 st.session_state.performance_status=val; st.session_state.result=None; st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("""<p style="font-size:12px;color:rgba(240,244,248,0.35);margin-top:8px;
       line-height:1.6;padding-left:2px;">
       <strong style="color:rgba(240,244,248,0.6);">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
@@ -366,34 +415,7 @@ with left_col:
     free_text = st.text_area("", placeholder="Anything else relevant? (optional · max 300 chars)",
         max_chars=300, height=72, label_visibility="collapsed",
         key=f"ft_{st.session_state.free_text_key}")
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # SUBMIT
-    if not bool(os.environ.get("ANTHROPIC_API_KEY")):
-        st.warning("⚠️ ANTHROPIC_API_KEY not set in .env")
-    hard_triggered = bool(st.session_state.selected_exam)
-    submit_enabled = (st.session_state.age_band is not None) or hard_triggered
-
-    st.markdown('<div class="hb-submit">', unsafe_allow_html=True)
-    submit_clicked = st.button("Get recommendation →", disabled=not submit_enabled,
-                               use_container_width=True, key="submit_btn")
     st.markdown('</div>', unsafe_allow_html=True)
-    if not submit_enabled:
-        st.markdown("""<p style="text-align:center;font-size:12px;
-          color:rgba(240,244,248,0.25);margin-top:6px;
-          font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
-          unsafe_allow_html=True)
-
-    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
-    if st.button("Reset all", key="reset_btn", use_container_width=True):
-        st.session_state.update({
-            "age_band":None,"result":None,"escalation":None,"hbid":None,
-            "last_inputs":{},"fit_result":"notdone","performance_status":"fit",
-            "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
-        })
-        st.session_state.free_text_key += 1
-        st.rerun()
-    st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════ PROCESSING ══════════════════
 if submit_clicked and submit_enabled:
@@ -406,7 +428,7 @@ if submit_clicked and submit_enabled:
     mods       = sorted(st.session_state.selected_modifiers)
 
     with right_col:
-        st.markdown('<div style="background:#0D2137;padding:28px 24px 60px;border-left:1px solid rgba(14,155,138,0.18);min-height:calc(100vh - 57px);">', unsafe_allow_html=True)
+        st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
         with st.spinner("Applying NICE NG12 rules and AI reasoning…"):
             hard_result = check_hard_rules(age_band=age_band,performance_status=perf,
                 symptoms=syms,examination_findings=exams,fit_result=fit_result,modifiers=mods)
@@ -438,16 +460,18 @@ if submit_clicked and submit_enabled:
 
 # ════════════════════════════════════════════════ RIGHT PANEL ═════════════════
 with right_col:
-    st.markdown('<div style="background:#0D2137;padding:28px 24px 60px;border-left:1px solid rgba(14,155,138,0.18);min-height:calc(100vh - 57px);">', unsafe_allow_html=True)
+    st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
 
     if not st.session_state.result:
         st.markdown("""
-        <div style="display:flex;flex-direction:column;align-items:center;
-          justify-content:center;min-height:60vh;text-align:center;padding:40px 20px;">
-          <div style="font-size:48px;margin-bottom:20px;opacity:0.1;color:#12C4AF;">◎</div>
-          <div style="font-family:'DM Serif Display',serif;font-size:22px;
-            color:rgba(240,244,248,0.15);margin-bottom:10px;">Awaiting inputs</div>
-          <div style="font-size:13px;color:rgba(240,244,248,0.2);line-height:1.7;max-width:220px;">
+        <div style="position:fixed;bottom:0;right:0;width:40%;
+          display:flex;flex-direction:column;align-items:center;justify-content:center;
+          height:100vh;pointer-events:none;z-index:0;">
+          <div style="font-size:56px;margin-bottom:18px;opacity:0.12;color:#12C4AF;">◎</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:24px;
+            color:rgba(240,244,248,0.15);margin-bottom:10px;text-align:center;">Awaiting inputs</div>
+          <div style="font-size:14px;color:rgba(240,244,248,0.18);line-height:1.8;
+            max-width:240px;text-align:center;">
             Select age and symptoms on the left,<br>then tap <em>Get recommendation</em>
           </div>
         </div>""", unsafe_allow_html=True)

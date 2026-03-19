@@ -167,6 +167,13 @@ _CSS = """
   background:rgba(14,155,138,0.06) !important;
 }
 .stAlert { border-radius:10px !important; font-size:13px !important; }
+/* Hide password field helper text */
+div[data-testid="stTextInput"] div[data-testid="InputInstructions"] {
+  display: none !important;
+}
+div[data-testid="stTextInput"] > div > div > div > small {
+  display: none !important;
+}
 </style>
 """
 
