@@ -253,6 +253,16 @@ st.markdown(f"""
   </div>
 </div>""", unsafe_allow_html=True)
 
+# Module switcher using st.switch_page
+_sw_col1, _sw_col2, _sw_col3 = st.columns([8, 1, 1])
+with _sw_col2:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    st.markdown('''<div style="font-family:JetBrains Mono,monospace;font-size:10px;padding:4px 0;color:#12C4AF;text-align:center;font-weight:600;">Colorectal</div>''', unsafe_allow_html=True)
+with _sw_col3:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Upper GI", key="sw_ugi", use_container_width=True):
+        st.switch_page("pages/upper_gi.py")
+
 # Handle signout via query param
 if st.query_params.get("signout") == "1":
     st.query_params.clear()

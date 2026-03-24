@@ -21,7 +21,7 @@ except Exception:
 from auth import init_auth, render_login_page
 
 st.set_page_config(page_title="Hummingbird", page_icon="🐦",
-                   layout="wide", initial_sidebar_state="auto")
+                   layout="wide", initial_sidebar_state="collapsed")
 
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
 _, auth_status, username, name = init_auth()
@@ -33,5 +33,5 @@ if not auth_status:
 pg = st.navigation([
     st.Page("pages/colorectal.py", title="Colorectal — Lower GI",  icon="🎯"),
     st.Page("pages/upper_gi.py",   title="Upper GI — Oesophagogastric", icon="🔬"),
-], position="sidebar")
+], position="hidden")
 pg.run()
