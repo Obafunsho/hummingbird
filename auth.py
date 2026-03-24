@@ -196,7 +196,7 @@ def _wordmark():
         color:#F0F6FA;letter-spacing:0.01em;margin-bottom:6px;">Hummingbird</div>
       <div style="font-size:12px;font-weight:400;color:#6B8EA8;
         letter-spacing:0.12em;text-transform:uppercase;">
-        Colorectal Cancer · Lower GI · Decision Support</div>
+        Cancer Referral Decision Support</div>
     </div>""", unsafe_allow_html=True)
 
 def _divider(text="or"):
