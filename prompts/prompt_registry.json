@@ -1,6 +1,7 @@
 {
   "active_prompts": {
-    "lower_gi": "v2.2"
+    "lower_gi": "v2.2",
+    "upper_gi": "v1.0"
   },
   "history": [
     {
@@ -22,6 +23,15 @@
       "date": "2026-03-12",
       "author": "Prof Aneel Bhangu",
       "notes": "Prompt fix: FIT-negative deflection rule strengthened. Added explicit rule that FIT negative + no hard flags = SAFETY_NET_PASSIVE or REASSURE_DISCHARGE, not Safety Net Active. Absent prior colonoscopy/CT documentation must not upgrade a FIT-negative patient. Added tier selection guide to resolve boundary cases. Regression: cases 2 and 4 (FIT negative, under 60, single symptom) were returning Safety Net Active incorrectly.",
+      "status": "active",
+      "clinical_signoff": "PENDING — requires Prof Aneel Bhangu sign-off before live use",
+      "model_pinned": "claude-sonnet-4-6"
+    },
+    {
+      "version": "upper_gi_v1.0",
+      "date": "2026-03-24",
+      "author": "Prof Aneel Bhangu",
+      "notes": "Initial Upper GI module prompt. No FIT. H. pylori gating. OGD deflection. Barrett's oesophagus pathway. Two age bands: under 55 / 55 or over.",
       "status": "active",
       "clinical_signoff": "PENDING — requires Prof Aneel Bhangu sign-off before live use",
       "model_pinned": "claude-sonnet-4-6"
