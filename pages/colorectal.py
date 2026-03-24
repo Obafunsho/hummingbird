@@ -243,14 +243,6 @@ st.markdown(f"""
     <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(240,244,248,0.35);
       background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;border:1px solid rgba(14,155,138,0.18);">
       v2.1 · NICE NG12</span>
-    <a href="/" target="_self" style="font-family:'JetBrains Mono',monospace;font-size:10px;
-      color:#12C4AF;background:rgba(14,155,138,0.12);padding:4px 10px;border-radius:4px;
-      border:1px solid rgba(14,155,138,0.35);text-decoration:none;letter-spacing:.05em;">
-      Colorectal</a>
-    <a href="/upper_gi" target="_self" style="font-family:'JetBrains Mono',monospace;font-size:10px;
-      color:rgba(240,244,248,0.35);background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;
-      border:1px solid rgba(240,244,248,0.1);text-decoration:none;letter-spacing:.05em;">
-      Upper GI</a>
     <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
     <a href="/?signout=1" target="_self" onclick="window.location.href='/?signout=1'"
       style="font-family:'JetBrains Mono',monospace;font-size:10px;

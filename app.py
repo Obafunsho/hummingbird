@@ -21,7 +21,7 @@ except Exception:
 from auth import init_auth, render_login_page
 
 st.set_page_config(page_title="Hummingbird", page_icon="🐦",
-                   layout="wide", initial_sidebar_state="collapsed")
+                   layout="wide", initial_sidebar_state="auto")
 
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
 _, auth_status, username, name = init_auth()
