@@ -32,13 +32,10 @@ from logic.claude_layer_upper_gi import (
 )
 from logic.escalation_score_upper_gi import calculate_escalation_score_upper_gi
 from logic.audit_logger import log_recommendation, generate_session_id, generate_hbid
-from auth import init_auth, render_login_page, do_logout
+from auth import do_logout
 
-# ── AUTH GATE ─────────────────────────────────────────────────────────────────
-_, auth_status, username, name = init_auth()
-if not auth_status:
-    render_login_page()
-    st.stop()
+# name is available from session state set by app.py auth gate
+name = st.session_state.get("name", "")
 
 # ── CSS (shared with colorectal) ──────────────────────────────────────────────
 st.markdown("""
