@@ -1,9 +1,9 @@
 anthropic
-streamlit>=1.28.0,<1.36.0
-qrcode[pil]
-weasyprint
+streamlit
 python-dotenv
-reportlab
-pillow
-streamlit-authenticator>=0.4.2
+bcrypt
 PyYAML
+qrcode[pil]
+pillow
+weasyprint
+reportlab

@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 import re
 import streamlit as st
-from streamlit_authenticator.utilities import Hasher
+import bcrypt
 import yaml
 from yaml.loader import SafeLoader
 
@@ -21,8 +21,12 @@ def _load_config() -> dict:
 
 
 def _save_config(config: dict) -> None:
-    with open(CREDENTIALS_FILE, "w") as f:
-        yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+    """Save config — fails silently on read-only filesystems (e.g. Streamlit Cloud)."""
+    try:
+        with open(CREDENTIALS_FILE, "w") as f:
+            yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+    except Exception:
+        pass
 
 
 def init_auth() -> Tuple[None, Optional[bool], Optional[str], Optional[str]]:
@@ -48,25 +52,34 @@ def _attempt_login(username: str, password: str) -> bool:
     if attempts >= 5:
         st.session_state["login_error"] = "Too many failed attempts. Please contact the study team."
         return False
-    if not Hasher.check_pw(password, user["password"]):
+    hashed = user["password"]
+    if isinstance(hashed, str): hashed = hashed.encode()
+    if not bcrypt.checkpw(password.encode(), hashed):
         config["credentials"]["usernames"][username]["failed_login_attempts"] = attempts + 1
         _save_config(config)
         return False
 
-    config["credentials"]["usernames"][username]["failed_login_attempts"] = 0
-    config["credentials"]["usernames"][username]["logged_in"] = True
-    _save_config(config)
-
+    # ── Set session state FIRST — before any file writes ──────────────────────
     st.session_state["authentication_status"] = True
     st.session_state["username"] = username
     st.session_state["name"]     = f"{user.get('first_name','')} {user.get('last_name','')}".strip()
     st.session_state["email"]    = user.get("email", "")
+
+    # Update file — fails silently on read-only Cloud filesystem
+    config["credentials"]["usernames"][username]["failed_login_attempts"] = 0
+    config["credentials"]["usernames"][username]["logged_in"] = True
+    _save_config(config)
+
     return True
 
 
 def _attempt_register(first: str, last: str, email: str,
                       username: str, password: str) -> Optional[str]:
-    config   = _load_config()
+    try:
+        config = _load_config()
+    except Exception:
+        return "Registration is unavailable in this deployment. Please contact the study team."
+
     creds    = config["credentials"]["usernames"]
     username = username.lower().strip()
     email    = email.strip()
@@ -85,7 +98,7 @@ def _attempt_register(first: str, last: str, email: str,
 
     config["credentials"]["usernames"][username] = {
         "email": email, "first_name": first.strip(), "last_name": last.strip(),
-        "password": Hasher.hash(password), "logged_in": False,
+        "password": bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode(), "logged_in": False,
         "roles": ["clinician"], "failed_login_attempts": 0,
     }
     _save_config(config)
@@ -121,7 +134,6 @@ _CSS = """
 #MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
-/* Grid texture */
 .stApp::before {
   content:''; position:fixed; inset:0;
   background-image:
@@ -129,7 +141,6 @@ _CSS = """
     linear-gradient(90deg,rgba(14,155,138,0.03) 1px,transparent 1px);
   background-size:52px 52px; pointer-events:none; z-index:0;
 }
-/* Inputs */
 .stTextInput input {
   background:var(--navy-tile) !important;
   border:1.5px solid rgba(240,244,248,0.1) !important;
@@ -143,7 +154,6 @@ _CSS = """
   color:var(--muted) !important; font-size:13px !important;
   font-weight:500 !important; font-family:'DM Sans',sans-serif !important;
 }
-/* Primary button */
 .hb-primary .stButton > button {
   background:linear-gradient(135deg,#0E9B8A,#12C4AF) !important;
   border:none !important; border-radius:10px !important; color:white !important;
@@ -155,7 +165,6 @@ _CSS = """
   transform:translateY(-1px) !important;
   box-shadow:0 6px 28px rgba(14,155,138,0.5) !important;
 }
-/* Secondary button */
 .hb-secondary .stButton > button {
   background:transparent !important; border:1px solid var(--border) !important;
   border-radius:10px !important; color:var(--muted) !important;
@@ -167,13 +176,8 @@ _CSS = """
   background:rgba(14,155,138,0.06) !important;
 }
 .stAlert { border-radius:10px !important; font-size:13px !important; }
-/* Hide password field helper text */
-div[data-testid="stTextInput"] div[data-testid="InputInstructions"] {
-  display: none !important;
-}
-div[data-testid="stTextInput"] > div > div > div > small {
-  display: none !important;
-}
+div[data-testid="stTextInput"] div[data-testid="InputInstructions"] { display: none !important; }
+div[data-testid="stTextInput"] > div > div > div > small { display: none !important; }
 </style>
 """
 
@@ -212,7 +216,7 @@ def _footer():
     st.markdown("""
     <div style="text-align:center;margin-top:32px;font-size:11px;
       color:rgba(107,142,168,0.5);line-height:1.8;">
-      Hummingbird v2.1 · Clinician-authored decision support<br>
+      Hummingbird · Clinician-authored decision support<br>
       NICE NG12 compliant · Not prospectively validated<br>
     </div>""", unsafe_allow_html=True)
 
@@ -234,7 +238,6 @@ def render_login_page(_=None) -> None:
 
 
 def _page_login():
-    # Card
     st.markdown("""<div style="background:#1A2E42;border:1px solid rgba(14,155,138,0.18);
       border-radius:16px;padding:36px 32px;margin-bottom:14px;">""", unsafe_allow_html=True)
     st.markdown("""
@@ -260,7 +263,7 @@ def _page_login():
                 st.session_state["login_error"] = "Incorrect username or password."
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)  # close card
+    st.markdown('</div>', unsafe_allow_html=True)
 
     _divider("new to hummingbird")
     st.markdown('<div class="hb-secondary">', unsafe_allow_html=True)
@@ -304,7 +307,7 @@ def _page_register():
                 st.session_state.hb_page = "login"
         st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)  # close card
+    st.markdown('</div>', unsafe_allow_html=True)
 
     if st.session_state.pop("reg_success", False):
         st.success("Account created. Please sign in.")
