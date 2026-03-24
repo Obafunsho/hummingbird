@@ -8,12 +8,19 @@ from pathlib import Path
 import streamlit as st
 from dotenv import load_dotenv
 
-load_dotenv(Path(__file__).parent.parent / ".env", override=False)
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Robust path resolution for Streamlit Cloud
+_HERE = Path(__file__).resolve().parent          # pages/
+_ROOT = _HERE.parent                              # hummingbird/
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))
 
 try:
-    import streamlit as _st
-    for _k, _v in _st.secrets.items():
+    load_dotenv(_ROOT / ".env", override=False)
+except Exception:
+    pass
+
+try:
+    for _k, _v in st.secrets.items():
         if isinstance(_v, str) and _k not in os.environ:
             os.environ[_k] = _v
 except Exception:
