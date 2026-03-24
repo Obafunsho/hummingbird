@@ -25,12 +25,7 @@ from logic.claude_layer_upper_gi import (
 )
 from logic.escalation_score_upper_gi import calculate_escalation_score_upper_gi
 from logic.audit_logger import log_recommendation, generate_session_id, generate_hbid
-from logic.qr_generator import generate_qr_bytes
-from logic.pdf_generator import generate_pdf, WEASYPRINT_AVAILABLE
 from auth import init_auth, render_login_page, do_logout
-
-st.set_page_config(page_title="Hummingbird — Upper GI", page_icon="🐦",
-                   layout="wide", initial_sidebar_state="collapsed")
 
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
 _, auth_status, username, name = init_auth()
