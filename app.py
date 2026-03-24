@@ -31,11 +31,19 @@ from auth import init_auth, render_login_page, do_logout
 st.set_page_config(page_title="Hummingbird", page_icon="🐦",
                    layout="wide", initial_sidebar_state="collapsed")
 
+# ── MULTIPAGE NAVIGATION ──────────────────────────────────────────────────────
+pg = st.navigation([
+    st.Page("app.py",           title="Colorectal — Lower GI", icon="🎯"),
+    st.Page("pages/upper_gi.py",title="Upper GI — Oesophagogastric", icon="🔬"),
+], position="sidebar")
+
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
 _, auth_status, username, name = init_auth()
 if not auth_status:
     render_login_page()
     st.stop()
+
+pg.run()
 
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
