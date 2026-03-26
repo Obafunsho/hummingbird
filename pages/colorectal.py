@@ -236,7 +236,7 @@ st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;
   padding:12px 32px;border-bottom:1px solid rgba(14,155,138,0.18);background:#0B1826;">
   <div style="display:flex;align-items:baseline;gap:12px;">
-    <span style="font-family:'DM Serif Display',serif;font-size:22px;color:#12C4AF;letter-spacing:.01em;">Hummingbird</span>
+    <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank" style="font-family:'DM Serif Display',serif;font-size:22px;color:#12C4AF;letter-spacing:.01em;text-decoration:none;cursor:pointer;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Hummingbird</a>
     <span style="font-size:12px;font-weight:400;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;">Colorectal Cancer · Lower GI</span>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
