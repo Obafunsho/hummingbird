@@ -459,6 +459,26 @@ with left_col:
             "ugi_modifiers": set(),
         })
         st.session_state.ugi_free_text_key += 1
+        components.html("""<script>
+    (function() {
+        function doScroll() {
+            var p = window.parent;
+            var anchor = p.document.getElementById('hb-results-anchor');
+            if (anchor) {
+                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
+            } else {
+                [
+                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
+                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
+                    p.document.querySelector('.main .block-container'),
+                    p.document.body
+                ].forEach(function(el) { if (el) el.scrollTop = 0; });
+            }
+        }
+        setTimeout(doScroll, 150);
+        setTimeout(doScroll, 400);
+    })();
+    </script>""", height=0)
         st.rerun()
     st.markdown('</div></div>', unsafe_allow_html=True)
 
