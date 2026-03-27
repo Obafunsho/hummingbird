@@ -506,10 +506,10 @@ with right_col:
                 <div style="font-family:'DM Serif Display',serif;font-size:56px;line-height:1;color:{escalation.score_tier_colour};">{escalation.score}</div>
                 <div style="padding-bottom:6px;">
                   <div style="font-size:14px;font-weight:600;color:{escalation.score_tier_colour};">{escalation.score_tier}</div>
-                  <div style="font-size:13px;color:rgba(240,244,248,0.5);margin-top:3px;">{escalation.action}</div>
+                  <div style="font-size:13px;color:#666;margin-top:3px;">{escalation.action}</div>
                 </div>
               </div>
-              <div style="height:5px;border-radius:100px;background:rgba(240,244,248,0.06);overflow:hidden;">
+              <div style="height:5px;border-radius:100px;background:#f0ede8;overflow:hidden;">
                 <div style="height:100%;border-radius:100px;width:{pct:.0f}%;background:{escalation.score_tier_colour};"></div>
               </div>
               <div style="font-size:11px;color:#bbb;margin-top:5px;">Score {escalation.score} / 14</div>
