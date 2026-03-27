@@ -127,7 +127,7 @@ _CSS = """
 :root {
   --bg:#f5f4f1; --card:#ffffff; --border:#e2dfd8; --border2:#d4d2cc;
   --text:#1a1a1a; --muted:#666; --dim:#999; --accent:#1a1a1a;
-  --border:rgba(14,155,138,0.18);
+  --border2:#d4d2cc;
 }
 *,*::before,*::after { box-sizing:border-box; }
 .stApp { background:var(--bg) !important; font-family:'DM Sans',sans-serif !important; }
@@ -137,19 +137,19 @@ _CSS = """
 .stApp::before {
   content:''; position:fixed; inset:0;
   background-image:
-    linear-gradient(rgba(14,155,138,0.03) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(14,155,138,0.03) 1px,transparent 1px);
+    linear-gradient(rgba(0,0,0,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,0.025) 1px,transparent 1px);
   background-size:52px 52px; pointer-events:none; z-index:0;
 }
 .stTextInput input {
   background:#fff !important; border:0.5px solid #e2dfd8 !important;
-  border:1.5px solid rgba(240,244,248,0.1) !important;
+  border:0.5px solid #e2dfd8 !important;
   border-radius:8px !important; color:var(--text) !important;
   font-size:14px !important; padding:11px 14px !important;
   font-family:'DM Sans',sans-serif !important; transition:border-color 0.15s !important;
 }
 .stTextInput input:focus { border-color:#1a1a1a !important; outline:none !important; }
-.stTextInput input::placeholder { color:rgba(240,244,248,0.25) !important; }
+.stTextInput input::placeholder { color:#bbb !important; }
 .stTextInput label {
   color:var(--muted) !important; font-size:13px !important;
   font-weight:500 !important; font-family:'DM Sans',sans-serif !important;
@@ -159,11 +159,11 @@ _CSS = """
   border:none !important; border-radius:10px !important; color:white !important;
   font-size:15px !important; font-weight:600 !important;
   padding:14px 24px !important; width:100% !important;
-  box-shadow:0 4px 24px rgba(14,155,138,0.4) !important; transition:all 0.2s !important;
+  box-shadow:none !important; transition:all 0.2s !important;
 }
 .hb-primary .stButton > button:hover {
   transform:translateY(-1px) !important;
-  box-shadow:0 6px 28px rgba(14,155,138,0.5) !important;
+  box-shadow:none !important;
 }
 .hb-secondary .stButton > button {
   background:transparent !important; border:1px solid var(--border) !important;
@@ -173,7 +173,7 @@ _CSS = """
 }
 .hb-secondary .stButton > button:hover {
   border-color:#1a1a1a !important; color:var(--text) !important;
-  background:rgba(14,155,138,0.06) !important;
+  background:#f5f4f1 !important;
 }
 .stAlert { border-radius:10px !important; font-size:13px !important; }
 div[data-testid="stTextInput"] div[data-testid="InputInstructions"] { display: none !important; }
@@ -184,10 +184,10 @@ div[data-testid="stTextInput"] > div > div > div > small { display: none !import
 def _orbs():
     st.markdown("""
     <div style="position:fixed;border-radius:50%;pointer-events:none;z-index:0;
-      width:500px;height:500px;background:rgba(14,155,138,0.07);
+      width:500px;height:500px;background:rgba(0,0,0,0.02);
       filter:blur(120px);top:-180px;left:-120px;"></div>
     <div style="position:fixed;border-radius:50%;pointer-events:none;z-index:0;
-      width:350px;height:350px;background:rgba(14,155,138,0.05);
+      width:350px;height:350px;background:rgba(0,0,0,0.015);
       filter:blur(120px);bottom:5%;right:-80px;"></div>""", unsafe_allow_html=True)
 
 def _wordmark():
@@ -197,8 +197,8 @@ def _wordmark():
         width:48px;height:48px;background:#1a1a1a;
         border-radius:14px;font-size:22px;margin-bottom:16px;">🐦</div>
       <div style="font-family:'DM Serif Display',serif;font-size:32px;
-        color:#F0F6FA;letter-spacing:0.01em;margin-bottom:6px;">Hummingbird</div>
-      <div style="font-size:12px;font-weight:400;color:#6B8EA8;
+        color:#1a1a1a;letter-spacing:0.01em;margin-bottom:6px;">Hummingbird</div>
+      <div style="font-size:12px;font-weight:400;color:#666;
         letter-spacing:0.12em;text-transform:uppercase;">
         Cancer Referral Decision Support</div>
     </div>""", unsafe_allow_html=True)
@@ -206,16 +206,16 @@ def _wordmark():
 def _divider(text="or"):
     st.markdown(f"""
     <div style="display:flex;align-items:center;gap:14px;margin:18px 0;">
-      <span style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></span>
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
       <span style="font-family:'JetBrains Mono',monospace;font-size:10px;
-        color:rgba(107,142,168,0.6);letter-spacing:0.1em;text-transform:uppercase;">{text}</span>
-      <span style="flex:1;height:1px;background:rgba(255,255,255,0.06);"></span>
+        color:#bbb;letter-spacing:0.1em;text-transform:uppercase;">{text}</span>
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
     </div>""", unsafe_allow_html=True)
 
 def _footer():
     st.markdown("""
     <div style="text-align:center;margin-top:32px;font-size:11px;
-      color:rgba(107,142,168,0.5);line-height:1.8;">
+      color:#bbb;line-height:1.8;">
       Hummingbird · Clinician-authored decision support<br>
       NICE NG12 compliant · Not prospectively validated<br>
     </div>""", unsafe_allow_html=True)
@@ -238,13 +238,13 @@ def render_login_page(_=None) -> None:
 
 
 def _page_login():
-    st.markdown("""<div style="background:#1A2E42;border:1px solid rgba(14,155,138,0.18);
-      border-radius:16px;padding:36px 32px;margin-bottom:14px;">""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#fff;border:0.5px solid #e2dfd8;
+      border-radius:14px;padding:36px 32px;margin-bottom:14px;">""", unsafe_allow_html=True)
     st.markdown("""
     <div style="margin-bottom:24px;">
       <div style="font-family:'DM Serif Display',serif;font-size:24px;
-        color:#F0F6FA;margin-bottom:6px;">Sign in</div>
-      <div style="font-size:13px;color:#6B8EA8;">Welcome back. Enter your credentials to continue.</div>
+        color:#1a1a1a;margin-bottom:6px;">Sign in</div>
+      <div style="font-size:13px;color:#666;">Welcome back. Enter your credentials to continue.</div>
     </div>""", unsafe_allow_html=True)
 
     username = st.text_input("Username", key="li_user", placeholder="your_username")
@@ -273,13 +273,13 @@ def _page_login():
 
 
 def _page_register():
-    st.markdown("""<div style="background:#1A2E42;border:1px solid rgba(14,155,138,0.18);
-      border-radius:16px;padding:36px 32px;margin-bottom:14px;">""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#fff;border:0.5px solid #e2dfd8;
+      border-radius:14px;padding:36px 32px;margin-bottom:14px;">""", unsafe_allow_html=True)
     st.markdown("""
     <div style="margin-bottom:24px;">
       <div style="font-family:'DM Serif Display',serif;font-size:24px;
-        color:#F0F6FA;margin-bottom:6px;">Create account</div>
-      <div style="font-size:13px;color:#6B8EA8;">Sign in immediately after registration.</div>
+        color:#1a1a1a;margin-bottom:6px;">Create account</div>
+      <div style="font-size:13px;color:#666;">Sign in immediately after registration.</div>
     </div>""", unsafe_allow_html=True)
 
     c1, c2 = st.columns(2)

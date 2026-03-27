@@ -29,29 +29,48 @@ import streamlit.components.v1 as components
 
 st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;
-  padding:10px 32px;border-bottom:1px solid rgba(14,155,138,0.18);background:#0B1826;
+  padding:10px 32px;border-bottom:0.5px solid #e2dfd8;background:#fff;
   position:sticky;top:0;z-index:999;">
   <div style="display:flex;align-items:baseline;gap:12px;">
     <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank"
-      style="font-family:'DM Serif Display',serif;font-size:20px;color:#12C4AF;
+      style="font-family:'DM Serif Display',serif;font-size:20px;color:#1a1a1a;
       letter-spacing:.01em;text-decoration:none;"
-      onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Hummingbird</a>
-    <span style="font-size:11px;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;">
+      onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Hummingbird</a>
+    <span style="font-size:11px;color:#999;letter-spacing:.1em;text-transform:uppercase;">
       Surgical Decisions · Appendicitis Risk</span>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
+    <span style="font-size:12px;color:#555;">{name}</span>
     <a href="/?signout=1" target="_self"
-      style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(240,244,248,0.25);
+      style="font-size:10px;color:#bbb;
       text-decoration:underline;cursor:pointer;"
-      onmouseover="this.style.color='rgba(192,57,43,0.7)'"
-      onmouseout="this.style.color='rgba(240,244,248,0.25)'">sign out</a>
+      onmouseover="this.style.color='#c0392b'"
+      onmouseout="this.style.color='#bbb'">sign out</a>
   </div>
 </div>""", unsafe_allow_html=True)
 
 if st.query_params.get("signout") == "1":
     st.query_params.clear()
     do_logout()
+
+# ── Module switcher ──────────────────────────────────────────────────────────
+_sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
+with _sw_col2:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    st.markdown('''<div style="font-size:10px;font-weight:600;padding:4px 0;color:#1a1a1a;text-align:center;">Appendicitis</div>''', unsafe_allow_html=True)
+with _sw_col3:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Colorectal", key="sw_col_a", use_container_width=True):
+        st.switch_page("pages/colorectal.py")
+with _sw_col4:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Upper GI", key="sw_ugi_a", use_container_width=True):
+        st.switch_page("pages/upper_gi.py")
+with _sw_col5:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Surgical Risk", key="sw_surg_a", use_container_width=True):
+        st.switch_page("pages/surgical_risk.py")
+
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────
 HTML = r"""<!DOCTYPE html>
