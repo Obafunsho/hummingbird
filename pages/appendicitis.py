@@ -57,7 +57,7 @@ if st.query_params.get("signout") == "1":
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    st.markdown('''<div style="font-size:10px;font-weight:600;padding:4px 0;color:#1a1a1a;text-align:center;">Appendicitis</div>''', unsafe_allow_html=True)
+    st.markdown('''<div style="padding:9px 14px;border-radius:8px;border:0.5px solid #1a1a1a;background:#1a1a1a;color:#fff;font-size:12px;font-weight:500;text-align:center;cursor:default;">Appendicitis Risk</div>''', unsafe_allow_html=True)
 with _sw_col3:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Colorectal", key="sw_col_a", use_container_width=True):
