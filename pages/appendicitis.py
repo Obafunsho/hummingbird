@@ -21,6 +21,21 @@ st.markdown("""
 #MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
+
+/* Module switcher active state */
+div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
+  font-size:12px !important;
+}
+.sw-active > div > button {
+  background:#1a1a1a !important;
+  border:0.5px solid #1a1a1a !important;
+  color:#fff !important;
+  font-weight:500 !important;
+}
+.sw-active > div > button:hover {
+  background:#1a1a1a !important;
+  color:#fff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -56,16 +71,18 @@ if st.query_params.get("signout") == "1":
 # ── Module switcher ──────────────────────────────────────────────────────────
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    st.markdown('''<div style="padding:9px 14px;border-radius:8px;border:0.5px solid #1a1a1a;background:#1a1a1a;color:#fff;font-size:12px;font-weight:500;text-align:center;cursor:default;">Appendicitis Risk</div>''', unsafe_allow_html=True)
-with _sw_col3:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Colorectal", key="sw_col_a", use_container_width=True):
         st.switch_page("pages/colorectal.py")
-with _sw_col4:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+with _sw_col3:
     if st.button("Upper GI", key="sw_ugi_a", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
+with _sw_col4:
+    st.markdown('<div class="sw-active">', unsafe_allow_html=True)
+    st.button("Appendicitis Risk", key="sw_app_cur", use_container_width=True, disabled=False)
+    st.markdown('</div>', unsafe_allow_html=True)
+with _sw_col5:
+    if st.button("Surgical Risk", key="sw_surg_a", use_container_width=True):
+        st.switch_page("pages/surgical_risk.py")
 with _sw_col5:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Surgical Risk", key="sw_surg_a", use_container_width=True):
