@@ -295,6 +295,24 @@ st.markdown(f"""
 </div>""", unsafe_allow_html=True)
 
 # Module switcher using st.switch_page
+
+# ── Top anchor for scroll-to-top ─────────────────────────────────────────────
+st.markdown('<div id="page-top"></div>', unsafe_allow_html=True)
+
+if st.session_state.get("_do_scroll"):
+    st.session_state["_do_scroll"] = False
+    st.markdown("""
+    <a id="auto-scroll-link" href="#page-top"></a>
+    <script>
+        // Use parent window location hash for native browser scroll
+        try {
+            window.parent.location.hash = '';
+            window.parent.location.hash = 'page-top';
+        } catch(e) {}
+        document.getElementById('auto-scroll-link').click();
+    </script>
+    """, unsafe_allow_html=True)
+
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.button("Colorectal", key="sw_col2", use_container_width=True, disabled=True)
@@ -318,7 +336,7 @@ with _rt_btn:
             "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
         })
         st.session_state.free_text_key += 1
-        st.session_state.scroll_to_top = True
+        st.session_state["_do_scroll"] = True
         st.rerun()
 
 # Handle signout via query param
@@ -326,25 +344,6 @@ if st.query_params.get("signout") == "1":
     st.query_params.clear()
     do_logout()
 
-
-# ── Scroll to top if flagged ──────────────────────────────────────────────────
-if st.session_state.get("scroll_to_top"):
-    st.session_state["scroll_to_top"] = False
-    components.html("""<script>
-    (function() {
-        function doScroll() {
-            var p = window.parent;
-            [
-                p.document.querySelector('[data-testid="stAppViewContainer"]'),
-                p.document.querySelector('[data-testid="stMainBlockContainer"]'),
-                p.document.body
-            ].forEach(function(el) { if (el) el.scrollTop = 0; });
-            p.scrollTo(0, 0);
-        }
-        setTimeout(doScroll, 100);
-        setTimeout(doScroll, 350);
-    })();
-    </script>""", height=0)
 
 left_col, right_col = st.columns([3, 2], gap="small")
 
@@ -487,17 +486,7 @@ with left_col:
           color:#bbb;margin-top:6px;">Select age to begin</p>""",
           unsafe_allow_html=True)
 
-    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
-    if st.button("Reset all", key="reset_btn", use_container_width=True):
-        st.session_state.update({
-            "age_band":None,"result":None,"escalation":None,"hbid":None,
-            "last_inputs":{},"fit_result":"notdone","performance_status":"fit",
-            "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
-        })
-        st.session_state.free_text_key += 1
-        st.session_state.scroll_to_top = True
-        st.rerun()
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════ PROCESSING ══════════════════
 if submit_clicked and submit_enabled:
@@ -563,27 +552,6 @@ with right_col:
         hbid       = st.session_state.hbid
         inputs     = st.session_state.last_inputs
 
-        components.html("""<script>
-    (function() {
-        function doScroll() {
-            var p = window.parent;
-            var anchor = p.document.getElementById('hb-results-anchor');
-            if (anchor) {
-                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
-            } else {
-                // fallback: scroll all containers to top
-                [
-                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
-                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
-                    p.document.querySelector('.main .block-container'),
-                    p.document.body
-                ].forEach(function(el) { if (el) el.scrollTop = 0; });
-            }
-        }
-        setTimeout(doScroll, 150);
-        setTimeout(doScroll, 400);
-    })();
-    </script>""", height=0)
         tier                  = result.get("tier","SAFETY_NET")
         tier_label            = result.get("tier_label",tier)
         rationale             = result.get("rationale","")
@@ -596,6 +564,25 @@ with right_col:
         model_version         = result.get("model_version","")
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET"])
 
+        components.html("""<script>
+        (function() {
+            function doScroll() {
+                var p = window.parent;
+                var anchor = p.document.getElementById('hb-results-anchor');
+                if (anchor) {
+                    anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
+                } else {
+                    [
+                        p.document.querySelector('[data-testid="stAppViewContainer"]'),
+                        p.document.querySelector('[data-testid="stMainBlockContainer"]'),
+                        p.document.body
+                    ].forEach(function(el) { if (el) el.scrollTop = 0; });
+                }
+            }
+            setTimeout(doScroll, 150);
+            setTimeout(doScroll, 400);
+        })();
+        </script>""", height=0)
         st.markdown('<div id="hb-results-anchor"></div>', unsafe_allow_html=True)
         st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
