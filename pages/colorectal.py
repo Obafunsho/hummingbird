@@ -24,129 +24,76 @@ name = st.session_state.get("name", "")
 # ── CSS ───────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+*, *::before, *::after { box-sizing: border-box; }
 :root {
-  --navy:#0B1826; --navy-mid:#0D2137; --navy-card:#112233; --navy-tile:#1B3A52;
-  --teal:#0E9B8A; --teal-b:#12C4AF; --red:#C0392B; --red-d:#7f1d1d;
-  --white:#F0F4F8; --muted:rgba(240,244,248,0.55); --border:rgba(14,155,138,0.18);
+  --bg:#f5f4f1; --card:#ffffff; --border:#e2dfd8; --border2:#d4d2cc;
+  --text:#1a1a1a; --muted:#666; --dim:#999; --accent:#1a1a1a; --danger:#c0392b;
 }
-.stApp { background:var(--navy) !important; font-family:'DM Sans',sans-serif !important; }
+.stApp { background:var(--bg) !important; font-family:'DM Sans',sans-serif !important; color:var(--text) !important; }
 #MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
-
-/* ── All buttons base ── */
 .stButton > button {
-  background:#1B3A52 !important;
-  border:1.5px solid rgba(240,244,248,0.1) !important;
-  border-radius:8px !important;
-  color:rgba(240,244,248,0.6) !important;
-  font-family:'DM Sans',sans-serif !important;
-  font-size:13px !important; font-weight:500 !important;
-  padding:9px 14px !important; width:100% !important;
-  transition:background 0.15s,border-color 0.15s !important;
-  cursor:pointer !important; line-height:1.3 !important;
+  background:#fff !important; border:0.5px solid var(--border2) !important;
+  border-radius:8px !important; color:var(--muted) !important;
+  font-family:'DM Sans',sans-serif !important; font-size:13px !important;
+  font-weight:400 !important; padding:9px 14px !important; width:100% !important;
+  transition:all 0.12s !important; cursor:pointer !important; line-height:1.3 !important;
 }
-.stButton > button:hover {
-  border-color:#0E9B8A !important; color:#F0F4F8 !important;
-  background:rgba(14,155,138,0.1) !important;
-}
+.stButton > button:hover { border-color:var(--accent) !important; color:var(--accent) !important; background:#fafaf8 !important; }
 .stButton > button:focus { outline:none !important; box-shadow:none !important; }
-
-/* Sign out */
-div[data-testid="column"] .stButton > button[kind="secondary"] {
-  background:none !important; border:1px solid rgba(240,244,248,0.12) !important;
-  border-radius:6px !important; color:rgba(240,244,248,0.35) !important;
-  font-size:11px !important; font-weight:400 !important;
-  padding:5px 12px !important; width:auto !important;
-}
-div[data-testid="column"] .stButton > button[kind="secondary"]:hover {
-  border-color:rgba(192,57,43,0.5) !important; color:#f87171 !important;
-  background:rgba(192,57,43,0.08) !important;
-}
-
-/* Submit */
 .hb-submit .stButton > button {
-  background:linear-gradient(135deg,#0E9B8A,#12C4AF) !important;
-  border:none !important; border-radius:10px !important;
-  color:white !important; font-size:15px !important;
-  font-weight:600 !important; padding:15px 24px !important;
-  letter-spacing:0.01em !important;
-  box-shadow:0 4px 24px rgba(14,155,138,0.4) !important;
+  background:var(--accent) !important; border:none !important; border-radius:8px !important;
+  color:#fff !important; font-size:14px !important; font-weight:500 !important;
+  padding:13px 24px !important; box-shadow:none !important;
 }
-.hb-submit .stButton > button:hover {
-  box-shadow:0 6px 28px rgba(14,155,138,0.5) !important;
-  transform:translateY(-1px) !important;
-}
-.hb-submit .stButton > button:disabled {
-  background:rgba(14,155,138,0.15) !important;
-  color:rgba(255,255,255,0.25) !important; box-shadow:none !important;
-}
-
-/* Reset */
+.hb-submit .stButton > button:hover { background:#333 !important; }
+.hb-submit .stButton > button:disabled { background:#ccc !important; color:rgba(255,255,255,0.6) !important; }
 .hb-reset .stButton > button {
-  background:none !important; border:none !important;
-  color:rgba(240,244,248,0.2) !important; font-size:12px !important;
-  text-decoration:underline !important; padding:4px !important;
+  background:none !important; border:none !important; color:var(--dim) !important;
+  font-size:12px !important; text-decoration:underline !important; padding:4px !important;
 }
-.hb-reset .stButton > button:hover {
-  color:#12C4AF !important; background:none !important; border:none !important;
-}
-
-/* Tile select buttons — flush under tile, no gap */
+.hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
 .hb-tile-btn .stButton > button {
   font-size:12px !important; padding:7px 12px !important;
-  border-radius:0 0 10px 10px !important; margin-top:0 !important;
-  border-top:none !important;
-  border-color:rgba(240,244,248,0.06) !important;
+  border-radius:0 0 8px 8px !important; margin-top:0 !important;
+  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
 }
-
-/* Inputs */
 .stTextInput input {
-  background:#1B3A52 !important; border:1.5px solid rgba(240,244,248,0.08) !important;
-  border-radius:8px !important; color:#F0F4F8 !important;
-  font-family:'JetBrains Mono',monospace !important; font-size:13px !important;
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
 }
 .stTextArea textarea {
-  background:#1B3A52 !important; border:1.5px solid rgba(240,244,248,0.08) !important;
-  border-radius:8px !important; color:#F0F4F8 !important; font-size:13px !important;
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
 }
-.stTextArea textarea::placeholder { color:rgba(240,244,248,0.3) !important; }
+.stTextArea textarea::placeholder { color:var(--dim) !important; }
 .stDownloadButton > button {
-  background:rgba(14,155,138,0.1) !important;
-  border:1.5px solid rgba(14,155,138,0.35) !important;
-  border-radius:8px !important; color:#12C4AF !important;
-  font-size:13px !important; font-weight:600 !important;
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important;
+  font-size:13px !important; font-weight:500 !important;
   padding:9px 16px !important; width:100% !important;
 }
-.stDownloadButton > button:hover { background:rgba(14,155,138,0.2) !important; }
-.stSpinner > div { border-top-color:#12C4AF !important; }
-
-/* Collapse Streamlit's internal column top gap */
-div[data-testid="stVerticalBlockBorderWrapper"] > div:first-child {
-  padding-top: 0 !important;
-  margin-top: 0 !important;
-}
-div[data-testid="column"] > div[data-testid="stVerticalBlock"] {
-  gap: 0 !important;
-  padding-top: 0 !important;
-}
+.stDownloadButton > button:hover { background:#fff !important; border-color:var(--accent) !important; }
+.stSpinner > div { border-top-color:var(--accent) !important; }
+div[data-testid="stVerticalBlockBorderWrapper"] > div:first-child { padding-top:0 !important; margin-top:0 !important; }
+div[data-testid="column"] > div[data-testid="stVerticalBlock"] { gap:0 !important; padding-top:0 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Style constants ────────────────────────────────────────────────────────────
-TEAL_SEL    = "background:#0E9B8A;border:1.5px solid #0E9B8A;color:#fff;font-weight:600;box-shadow:0 0 0 3px rgba(14,155,138,0.25);"
-RED_SEL     = "background:#C0392B;border:1.5px solid #C0392B;color:#fff;font-weight:600;box-shadow:0 0 0 3px rgba(192,57,43,0.25);"
-DARKRED_SEL = "background:#7f1d1d;border:1.5px solid #7f1d1d;color:#fff;font-weight:600;box-shadow:0 0 0 3px rgba(127,29,29,0.3);"
-BASE_BTN    = "background:#1B3A52;border:1.5px solid rgba(240,244,248,0.1);color:rgba(240,244,248,0.6);font-weight:500;"
+# ── Style constants (light theme) ─────────────────────────────────────────────
+TEAL_SEL    = "background:#1a1a1a;border:0.5px solid #1a1a1a;color:#fff;font-weight:500;"
+RED_SEL     = "background:#c0392b;border:0.5px solid #c0392b;color:#fff;font-weight:500;"
+DARKRED_SEL = "background:#7f1d1d;border:0.5px solid #7f1d1d;color:#fff;font-weight:500;"
+BASE_BTN    = "background:#fff;border:0.5px solid #d4d2cc;color:#666;font-weight:400;"
 
-TILE_SEL_SYM  = "background:rgba(14,155,138,0.18);border:1.5px solid #0E9B8A;box-shadow:0 0 0 3px rgba(14,155,138,0.15);"
-TILE_SEL_HARD = "background:rgba(192,57,43,0.2);border:1.5px solid #C0392B;box-shadow:0 0 0 3px rgba(192,57,43,0.15);"
-TILE_SEL_MOD  = "background:rgba(14,155,138,0.15);border:1.5px solid #0E9B8A;"
-TILE_BASE     = "background:#1B3A52;border:1.5px solid rgba(240,244,248,0.07);"
-TILE_BASE_HARD= "background:#1B3A52;border:1.5px solid rgba(192,57,43,0.28);"
-TILE_BASE_MOD = "background:#1B3A52;border:1.5px solid rgba(240,244,248,0.05);opacity:0.65;"
+TILE_SEL_SYM  = "background:#1a1a1a;border:0.5px solid #1a1a1a;"
+TILE_SEL_HARD = "background:#c0392b;border:0.5px solid #c0392b;"
+TILE_SEL_MOD  = "background:#f0ede8;border:0.5px solid #a8a49e;"
+TILE_BASE     = "background:#fff;border:0.5px solid #e2dfd8;"
+TILE_BASE_HARD= "background:#fff;border:0.5px solid #e8c8c4;"
+TILE_BASE_MOD = "background:#fafaf8;border:0.5px solid #e2dfd8;opacity:0.8;"
 
 
 def pill_indicator(label: str, selected: bool, colour: str = "teal") -> None:
@@ -155,9 +102,10 @@ def pill_indicator(label: str, selected: bool, colour: str = "teal") -> None:
     elif colour == "darkred": bg = DARKRED_SEL
     else:                     bg = TEAL_SEL if selected else BASE_BTN
     icon = "✓  " if selected else ""
+    col = "#fff" if selected else "#666"
     st.markdown(
         f'<div style="{bg}border-radius:8px;padding:11px 14px;'
-        f'font-family:DM Sans,sans-serif;font-size:14px;line-height:1.3;'
+        f'font-family:DM Sans,sans-serif;font-size:14px;line-height:1.3;color:{col};'
         f'margin-bottom:3px;pointer-events:none;">{icon}{label}</div>',
         unsafe_allow_html=True)
 
@@ -170,11 +118,12 @@ def tile_indicator(label: str, sublabel: str, selected: bool, kind: str = "sym")
         bg = TILE_SEL_MOD if selected else TILE_BASE_MOD
     else:
         bg = TILE_SEL_SYM if selected else TILE_BASE
-    col  = "#F0F4F8" if selected else "rgba(240,244,248,0.65)"
+    col  = "#fff" if selected else "#1a1a1a"
     icon = "✓  " if selected else ""
-    sub  = f'<span style="font-size:12px;color:rgba(240,244,248,0.5);display:block;margin-top:3px;">{sublabel}</span>' if sublabel else ""
+    sub_col = "rgba(255,255,255,0.7)" if selected else "#999"
+    sub  = f'<span style="font-size:12px;color:{sub_col};display:block;margin-top:3px;">{sublabel}</span>' if sublabel else ""
     st.markdown(
-        f'<div style="{bg}border-radius:10px 10px 0 0;padding:12px 14px;color:{col};'
+        f'<div style="{bg}border-radius:8px 8px 0 0;padding:12px 14px;color:{col};'
         f'font-size:14px;font-weight:500;line-height:1.35;margin-bottom:0;'
         f'min-height:62px;pointer-events:none;">'
         f'{icon}{label}{sub}</div>',
@@ -184,14 +133,14 @@ def tile_indicator(label: str, sublabel: str, selected: bool, kind: str = "sym")
 def section_label(text: str, anno: str = "") -> None:
     if anno:
         st.markdown(
-            f'<div style="font-family:JetBrains Mono,monospace;font-size:11px;'
-            f'letter-spacing:.1em;color:rgba(14,155,138,0.5);margin-bottom:5px;">{anno}</div>',
+            f'<div style="font-size:10px;font-weight:600;letter-spacing:.12em;'
+            f'color:#aaa;margin-bottom:5px;text-transform:uppercase;">{anno}</div>',
             unsafe_allow_html=True)
     st.markdown(
-        f'<div style="font-family:JetBrains Mono,monospace;font-size:11px;'
-        f'letter-spacing:.15em;text-transform:uppercase;color:#0E9B8A;margin-bottom:10px;'
+        f'<div style="font-size:11px;font-weight:600;letter-spacing:.12em;'
+        f'text-transform:uppercase;color:#999;margin-bottom:10px;'
         f'display:flex;align-items:center;gap:8px;">'
-        f'{text}<span style="flex:1;height:1px;background:rgba(14,155,138,0.18);display:block;"></span></div>',
+        f'{text}<span style="flex:1;height:0.5px;background:#e2dfd8;display:block;"></span></div>',
         unsafe_allow_html=True)
 
 
@@ -211,13 +160,13 @@ MODIFIERS    = [("colonoscopy_clear","Colonoscopy clear","Within 3 years"),
                 ("ct_clear","CT abdomen clear","Within 3 years"),
                 ("mcd_ctdna","Positive MCD / ctDNA","e.g. Galleri")]
 TIER_STYLES  = {
-    "2WW_URGENT_STT":    {"border":"#7f1d1d","badge_bg":"rgba(127,29,29,.4)","badge_col":"#fca5a5","badge":"Straight to Test"},
-    "2WW_URGENT":        {"border":"#C0392B","badge_bg":"rgba(192,57,43,.3)","badge_col":"#f87171","badge":"Urgent 2WW"},
-    "ROUTINE_REFERRAL":  {"border":"#d97706","badge_bg":"rgba(217,119,6,.25)","badge_col":"#fbbf24","badge":"Routine"},
-    "INVESTIGATE_FIRST": {"border":"#3b82f6","badge_bg":"rgba(59,130,246,.25)","badge_col":"#93c5fd","badge":"Order FIT"},
-    "SAFETY_NET":        {"border":"#64748b","badge_bg":"rgba(100,116,139,.25)","badge_col":"#94a3b8","badge":"Safety Net"},
-    "WEIGHT_LOSS_CUP":   {"border":"#7c3aed","badge_bg":"rgba(124,58,237,.2)","badge_col":"#c4b5fd","badge":"Clinical Judgement"},
-    "FALLBACK_ALERT":    {"border":"#dc2626","badge_bg":"rgba(220,38,38,.2)","badge_col":"#fca5a5","badge":"Review Required"},
+    "2WW_URGENT_STT":    {"border":"#c0392b","badge_bg":"#fdf2f1","badge_col":"#c0392b","badge":"Straight to Test"},
+    "2WW_URGENT":        {"border":"#e8c8c4","badge_bg":"#fdf2f1","badge_col":"#c0392b","badge":"Urgent 2WW"},
+    "ROUTINE_REFERRAL":  {"border":"#f0d8a8","badge_bg":"#fffbeb","badge_col":"#92400e","badge":"Routine"},
+    "INVESTIGATE_FIRST": {"border":"#bfdbfe","badge_bg":"#eff6ff","badge_col":"#1d4ed8","badge":"Order FIT"},
+    "SAFETY_NET":        {"border":"#e2dfd8","badge_bg":"#f5f4f1","badge_col":"#666","badge":"Safety Net"},
+    "WEIGHT_LOSS_CUP":   {"border":"#c4b5fd","badge_bg":"#f5f3ff","badge_col":"#7c3aed","badge":"Clinical Judgement"},
+    "FALLBACK_ALERT":    {"border":"#e8c8c4","badge_bg":"#fdf2f1","badge_col":"#c0392b","badge":"Review Required"},
 }
 
 # ── Session state ──────────────────────────────────────────────────────────────
@@ -234,22 +183,22 @@ _init()
 # ── Topbar ────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;
-  padding:12px 32px;border-bottom:1px solid rgba(14,155,138,0.18);background:#0B1826;">
+  padding:12px 32px;border-bottom:0.5px solid #e2dfd8;background:#fff;">
   <div style="display:flex;align-items:baseline;gap:12px;">
-    <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank" style="font-family:'DM Serif Display',serif;font-size:22px;color:#12C4AF;letter-spacing:.01em;text-decoration:none;cursor:pointer;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Hummingbird</a>
-    <span style="font-size:12px;font-weight:400;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;">Colorectal Cancer · Lower GI</span>
+    <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank" style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;letter-spacing:.01em;text-decoration:none;cursor:pointer;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Hummingbird</a>
+    <span style="font-size:11px;font-weight:400;color:#999;letter-spacing:.1em;text-transform:uppercase;">Colorectal Cancer · Lower GI</span>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(240,244,248,0.35);
-      background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;border:1px solid rgba(14,155,138,0.18);">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#999;
+      background:#f5f4f1;padding:4px 10px;border-radius:4px;border:0.5px solid #e2dfd8;">
       v3.0 · NICE NG12</span>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
+    <span style="font-size:12px;color:#555;">{name}</span>
     <a href="/?signout=1" target="_self" onclick="window.location.href='/?signout=1'"
       style="font-family:'JetBrains Mono',monospace;font-size:10px;
-      color:rgba(240,244,248,0.25);text-decoration:underline;text-underline-offset:3px;
-      cursor:pointer;letter-spacing:.05em;"
-      onmouseover="this.style.color='rgba(192,57,43,0.7)'"
-      onmouseout="this.style.color='rgba(240,244,248,0.25)'">sign out</a>
+      color:#bbb;text-decoration:underline;text-underline-offset:3px;
+      cursor:pointer;"
+      onmouseover="this.style.color='#c0392b'"
+      onmouseout="this.style.color='#bbb'">sign out</a>
   </div>
 </div>""", unsafe_allow_html=True)
 
@@ -257,7 +206,7 @@ st.markdown(f"""
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    st.markdown('''<div style="font-family:JetBrains Mono,monospace;font-size:10px;padding:4px 0;color:#12C4AF;text-align:center;font-weight:600;">Colorectal</div>''', unsafe_allow_html=True)
+    st.markdown('''<div style="font-size:10px;font-weight:600;padding:4px 0;color:#1a1a1a;text-align:center;">Colorectal</div>''', unsafe_allow_html=True)
 with _sw_col3:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Upper GI", key="sw_ugi", use_container_width=True):
@@ -280,7 +229,7 @@ left_col, right_col = st.columns([3, 2], gap="small")
 
 # ════════════════════════════════════════════════ LEFT PANEL ══════════════════
 with left_col:
-    st.markdown('<div style="padding:8px 32px 80px;">', unsafe_allow_html=True)
+    st.markdown('<div style="padding:8px 32px 80px;background:#f5f4f1;">', unsafe_allow_html=True)
 
     # AGE
     section_label("Age", "1 CLICK · REQUIRED")
@@ -326,9 +275,9 @@ with left_col:
     # EXAM FINDINGS
     section_label("Examination Findings", "NICE NG12 HARD RULE · DIRECT 2WW")
     st.markdown("""<div style="display:inline-flex;align-items:center;gap:5px;
-      background:rgba(14,155,138,.08);border:1px solid rgba(14,155,138,.22);
-      border-radius:4px;padding:4px 10px;font-family:JetBrains Mono,monospace;
-      font-size:11px;color:#0E9B8A;letter-spacing:.05em;margin-bottom:10px;">
+      background:#f5f4f1;border:0.5px solid #d4d2cc;
+      border-radius:4px;padding:4px 10px;
+      font-size:11px;color:#666;letter-spacing:.05em;margin-bottom:10px;">
       ⚑ NICE NG12 · Direct pathway triggers — no FIT required before referral</div>""",
       unsafe_allow_html=True)
     cols = st.columns(3)
@@ -343,8 +292,8 @@ with left_col:
             st.markdown('</div>', unsafe_allow_html=True)
     if st.session_state.selected_exam:
         st.markdown("""<div style="padding:12px 14px;border-radius:8px;margin-top:8px;
-          background:rgba(192,57,43,.12);border:1.5px solid rgba(192,57,43,.35);
-          font-size:13px;color:#f87171;line-height:1.5;">
+          background:#fdf2f1;border:0.5px solid #e8c8c4;
+          font-size:13px;color:#c0392b;line-height:1.5;">
           ⚑ Hard rule triggered — direct suspected cancer pathway. FIT not required before referral.</div>""",
           unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -360,19 +309,19 @@ with left_col:
             if st.button("✓ Selected" if sel else "+ Select", key=f"ps_{val}", use_container_width=True):
                 st.session_state.performance_status=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("""<p style="font-size:12px;color:rgba(240,244,248,0.35);margin-top:8px;
+    st.markdown("""<p style="font-size:12px;color:#999;margin-top:8px;
       line-height:1.6;padding-left:2px;">
-      <strong style="color:rgba(240,244,248,0.6);">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
-      <strong style="color:rgba(240,244,248,0.6);">PS 2–4:</strong> Significant limitations — standard 2WW only.</p>""",
+      <strong style="color:#555;">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
+      <strong style="color:#555;">PS 2–4:</strong> Significant limitations — standard 2WW only.</p>""",
       unsafe_allow_html=True)
 
     # OPTIONAL
     st.markdown("""<div style="display:flex;align-items:center;gap:10px;margin:24px 0 16px;">
-      <span style="flex:1;height:1px;background:rgba(240,244,248,0.06);"></span>
-      <span style="font-family:JetBrains Mono,monospace;font-size:10px;
-        color:rgba(240,244,248,0.2);letter-spacing:.12em;text-transform:uppercase;
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
+      <span style="font-size:10px;font-weight:600;
+        color:#bbb;letter-spacing:.12em;text-transform:uppercase;
         white-space:nowrap;">additional detail — optional</span>
-      <span style="flex:1;height:1px;background:rgba(240,244,248,0.06);"></span>
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
     </div>""", unsafe_allow_html=True)
     section_label("Recent Investigations & Other", "SELECT IF PRESENT")
     cols = st.columns(3)
@@ -403,8 +352,7 @@ with left_col:
     st.markdown('</div>', unsafe_allow_html=True)
     if not submit_enabled:
         st.markdown("""<p style="text-align:center;font-size:12px;
-          color:rgba(240,244,248,0.25);margin-top:6px;
-          font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
+          color:#bbb;margin-top:6px;">Select age to begin</p>""",
           unsafe_allow_html=True)
 
     st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
@@ -429,7 +377,7 @@ if submit_clicked and submit_enabled:
     mods       = sorted(st.session_state.selected_modifiers)
 
     with right_col:
-        st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
+        st.markdown('<div style="background:#f5f4f1;padding:0 24px 60px;border-left:0.5px solid #e2dfd8;">', unsafe_allow_html=True)
         with st.spinner("Applying NICE NG12 rules and AI reasoning…"):
             hard_result = check_hard_rules(age_band=age_band,performance_status=perf,
                 symptoms=syms,examination_findings=exams,fit_result=fit_result,modifiers=mods)
@@ -461,17 +409,17 @@ if submit_clicked and submit_enabled:
 
 # ════════════════════════════════════════════════ RIGHT PANEL ═════════════════
 with right_col:
-    st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
+    st.markdown('<div style="background:#f5f4f1;padding:0 24px 60px;border-left:0.5px solid #e2dfd8;">', unsafe_allow_html=True)
 
     if not st.session_state.result:
         st.markdown("""
         <div style="position:fixed;bottom:0;right:0;width:40%;
           display:flex;flex-direction:column;align-items:center;justify-content:center;
           height:100vh;pointer-events:none;z-index:0;">
-          <div style="font-size:56px;margin-bottom:18px;opacity:0.12;color:#12C4AF;">◎</div>
+          <div style="font-size:56px;margin-bottom:18px;opacity:0.1;color:#1a1a1a;">◎</div>
           <div style="font-family:'DM Serif Display',serif;font-size:24px;
-            color:rgba(240,244,248,0.15);margin-bottom:10px;text-align:center;">Awaiting inputs</div>
-          <div style="font-size:14px;color:rgba(240,244,248,0.18);line-height:1.8;
+            color:#ccc;margin-bottom:10px;text-align:center;">Awaiting inputs</div>
+          <div style="font-size:14px;color:#ccc;line-height:1.8;
             max-width:240px;text-align:center;">
             Select age and symptoms on the left,<br>then tap <em>Get recommendation</em>
           </div>
@@ -494,52 +442,52 @@ with right_col:
         model_version         = result.get("model_version","")
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET"])
 
-        st.markdown(f'<div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(14,155,138,.4);letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
         if escalation and escalation.override_flags:
             for flag in escalation.override_flags:
                 if "HIGHEST RISK" in flag:
-                    st.markdown(f'<div style="padding:12px 15px;border-radius:8px;background:rgba(127,29,29,.22);border:1.5px solid rgba(192,57,43,.45);font-size:13px;font-weight:600;color:#fca5a5;line-height:1.5;margin-bottom:14px;">⚠ {flag}</div>', unsafe_allow_html=True)
+                    st.markdown(f'<div style="padding:12px 15px;border-radius:8px;background:#fdf2f1;border:0.5px solid #e8c8c4;border-left:3px solid #c0392b;font-size:13px;font-weight:600;color:#c0392b;line-height:1.5;margin-bottom:14px;">⚠ {flag}</div>', unsafe_allow_html=True)
 
-        lc = "rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.28);color:#f87171" if layer=="1" else "rgba(14,155,138,.08);border:1px solid rgba(14,155,138,.22);color:#12C4AF"
+        lc = "background:#fdf2f1;border:0.5px solid #e8c8c4;color:#c0392b" if layer=="1" else "background:#f5f4f1;border:0.5px solid #d4d2cc;color:#555"
         lt = f"Layer {layer} — {'NICE NG12 hard rule' if layer=='1' else 'AI reasoning'}"
-        dts = "".join(f'<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(14,155,138,0.12);border:1px solid rgba(14,155,138,.2);color:#12C4AF;display:inline-block;margin:2px;">{d}</span>' for d in drivers)
+        dts = "".join(f'<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:#f5f4f1;border:0.5px solid #d4d2cc;color:#555;display:inline-block;margin:2px;">{d}</span>' for d in drivers)
 
         # Special tiers — Rule 1.4 and Fallback
         if tier == "WEIGHT_LOSS_CUP":
             sn = safety_netting or ""
             st.markdown(f"""
-            <div style="border-radius:14px;border:1.5px solid #7c3aed;background:#112233;overflow:hidden;margin-bottom:14px;">
-              <div style="padding:16px 18px;border-bottom:1px solid rgba(124,58,237,0.3);">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Rule 1.4 · Weight loss sole feature</div>
-                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">Clinical Judgement Required</div>
+            <div style="border-radius:10px;border:0.5px solid #c4b5fd;background:#fff;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;border-bottom:0.5px solid #e9e4fc;">
+                <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999;margin-bottom:5px;">Rule 1.4 · Weight loss sole feature</div>
+                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;">Clinical Judgement Required</div>
               </div>
               <div style="padding:16px 18px;">
-                <p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-bottom:14px;">{rationale}</p>
-                <div style="padding:12px 14px;border-radius:8px;background:rgba(124,58,237,0.1);border:1.5px solid rgba(124,58,237,0.3);font-size:13px;color:#c4b5fd;line-height:1.6;">⚑ {sn}</div>
+                <p style="font-size:14px;color:#444;line-height:1.7;margin-bottom:14px;">{rationale}</p>
+                <div style="padding:12px 14px;border-radius:8px;background:#f5f4f1;border:0.5px solid #d4d2cc;font-size:13px;color:#555;line-height:1.6;border-left:3px solid #a78bfa;">⚑ {sn}</div>
               </div>
             </div>""", unsafe_allow_html=True)
 
         elif tier == "FALLBACK_ALERT":
             st.markdown(f"""
-            <div style="border-radius:14px;border:1.5px solid #dc2626;background:#112233;overflow:hidden;margin-bottom:14px;">
-              <div style="padding:16px 18px;border-bottom:1px solid rgba(220,38,38,0.3);">
-                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">System alert · AI output invalid</div>
-                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#fca5a5;">Clinical Review Required</div>
+            <div style="border-radius:10px;border:0.5px solid #e8c8c4;background:#fff;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;border-bottom:0.5px solid #fde8e8;">
+                <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999;margin-bottom:5px;">System alert · AI output invalid</div>
+                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#c0392b;">Clinical Review Required</div>
               </div>
               <div style="padding:16px 18px;">
-                <p style="font-size:14px;color:#fca5a5;line-height:1.7;">{rationale}</p>
+                <p style="font-size:14px;color:#c0392b;line-height:1.7;">{rationale}</p>
               </div>
             </div>""", unsafe_allow_html=True)
 
         else:
             # Standard tier card
             st.markdown(f"""
-            <div style="border-radius:14px;border:1.5px solid {style['border']};background:#112233;overflow:hidden;margin-bottom:14px;">
-              <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid {style['border']};">
+            <div style="border-radius:10px;border:0.5px solid {style['border']};background:#fff;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid {style['border']};">
                 <div>
-                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Referral decision</div>
-                  <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">{tier_label}</div>
+                  <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999;margin-bottom:5px;">Referral decision</div>
+                  <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;">{tier_label}</div>
                 </div>
                 <span style="padding:5px 14px;border-radius:100px;background:{style['badge_bg']};color:{style['badge_col']};font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">{style['badge']}</span>
               </div>
@@ -548,15 +496,15 @@ with right_col:
             """, unsafe_allow_html=True)
 
             if stt_ineligible_reason:
-                st.markdown(f'<div style="font-size:13px;color:#fbbf24;margin-top:6px;padding:8px 12px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.22);">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="font-size:13px;color:#92400e;margin-top:6px;padding:8px 12px;border-radius:6px;background:#fffbeb;border:0.5px solid #fde68a;border-left:3px solid #f59e0b;">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
 
-            st.markdown(f'<p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="font-size:14px;color:#444;line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
 
             if safety_netting:
-                st.markdown(f'<p style="font-size:13px;color:#12C4AF;margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid rgba(14,155,138,.15);">⚑ {safety_netting}</p>', unsafe_allow_html=True)
+                st.markdown(f'<p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6;padding-top:10px;border-top:0.5px solid #e2dfd8;">⚑ {safety_netting}</p>', unsafe_allow_html=True)
 
             if dts:
-                st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(240,244,248,0.06);"><div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2dfd8;"><div style="font-size:10px;font-weight:600;color:#bbb;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
 
             if confidence:
                 cc = {"high":"rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac",
@@ -572,8 +520,8 @@ with right_col:
         if escalation and show_escalation:
             pct = min((escalation.score/15)*100,100)
             st.markdown(f"""
-            <div style="border-radius:14px;border:1.5px solid rgba(14,155,138,0.18);background:#112233;padding:18px;margin-bottom:14px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.3);margin-bottom:12px;">If referred — escalation priority</div>
+            <div style="border-radius:10px;border:0.5px solid #e2dfd8;background:#fff;padding:18px;margin-bottom:14px;">
+              <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#bbb;margin-bottom:12px;">If referred — escalation priority</div>
               <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:10px;">
                 <div style="font-family:'DM Serif Display',serif;font-size:56px;line-height:1;color:{escalation.score_tier_colour};">{escalation.score}</div>
                 <div style="padding-bottom:6px;">
@@ -584,9 +532,9 @@ with right_col:
               <div style="height:5px;border-radius:100px;background:rgba(240,244,248,0.06);overflow:hidden;">
                 <div style="height:100%;border-radius:100px;width:{pct:.0f}%;background:{escalation.score_tier_colour};"></div>
               </div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(240,244,248,0.25);margin-top:5px;">Score {escalation.score} / 15</div>
-              <div style="font-size:12px;color:rgba(240,244,248,0.25);margin-top:10px;line-height:1.6;">Literature-derived escalation support. Not a prospectively validated risk model. Score determines speed of referral, not whether to refer.</div>
-              {'<div style="font-size:12px;color:#94a3b8;margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);">ℹ FIT negative — escalation constrained to STANDARD regardless of other factors.</div>' if escalation.fit_negative_override else ''}
+              <div style="font-size:11px;color:#bbb;margin-top:5px;">Score {escalation.score} / 15</div>
+              <div style="font-size:12px;color:#aaa;margin-top:10px;line-height:1.6;">Literature-derived escalation support. Not a prospectively validated risk model. Score determines speed of referral, not whether to refer.</div>
+              {'<div style="font-size:12px;color:#666;margin-top:6px;padding:6px 10px;border-radius:6px;background:#f5f4f1;border:0.5px solid #d4d2cc;">ℹ FIT negative — escalation constrained to STANDARD regardless of other factors.</div>' if escalation.fit_negative_override else ''}
             </div>""", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -617,23 +565,23 @@ with right_col:
             if escalation: body += f"\n\nEscalation score: {escalation.score}/15 — {escalation.score_tier}"
             body += f"\n\nPrompt: {prompt_version} | Model: {model_version}"
             mailto = f"mailto:?subject={subject}&body={body}".replace(" ","%20").replace("\n","%0A")
-            st.markdown(f'<a href="{mailto}" style="text-decoration:none;display:block;margin-top:4px;"><button style="width:100%;padding:9px;border-radius:8px;border:1.5px solid rgba(14,155,138,0.2);background:transparent;color:rgba(240,244,248,0.4);font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;cursor:pointer;">✉ Email summary</button></a>', unsafe_allow_html=True)
+            st.markdown(f'<a href="{mailto}" style="text-decoration:none;display:block;margin-top:4px;"><button style="width:100%;padding:9px;border-radius:6px;border:0.5px solid #d4d2cc;background:#fafaf8;color:#666;font-family:DM Sans,sans-serif;font-size:13px;font-weight:400;cursor:pointer;">✉ Email summary</button></a>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
         try:
             qr_bytes = generate_qr_bytes(tier)
             qc,ql = st.columns([1,2])
             with qc: st.image(qr_bytes,width=90)
-            with ql: st.markdown('<p style="font-size:12px;color:rgba(240,244,248,0.3);line-height:1.6;padding-top:6px;">Patient information QR<br>Scan with phone</p>', unsafe_allow_html=True)
+            with ql: st.markdown('<p style="font-size:12px;color:#bbb;line-height:1.6;padding-top:6px;">Patient information QR<br>Scan with phone</p>', unsafe_allow_html=True)
         except Exception: pass
 
         now_str = datetime.now(timezone.utc).strftime("%H:%M UTC")
         st.markdown(f"""
-        <div style="font-size:11px;color:rgba(240,244,248,0.2);line-height:1.7;
-          border-top:1px solid rgba(240,244,248,0.06);padding-top:12px;margin-top:10px;">
+        <div style="font-size:11px;color:#bbb;line-height:1.7;
+          border-top:0.5px solid #e2dfd8;padding-top:12px;margin-top:10px;">
           Hummingbird v3.0 · Clinician-authored · NICE NG12 compliant · Not prospectively validated ·
           Does not replace clinical judgement · MHRA registration in progress ·<br>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;">
+          <span style="font-size:10px;color:#bbb;">
           prompt:{prompt_version} · model:{model_version} · layer:{layer} · {now_str}
           </span>
         </div>""", unsafe_allow_html=True)

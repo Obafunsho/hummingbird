@@ -40,85 +40,61 @@ name = st.session_state.get("name", "")
 # ── CSS (shared with colorectal) ──────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap');
-:root {
-  --navy:#0B1826; --navy-mid:#0D2137; --navy-card:#112233; --navy-tile:#1B3A52;
-  --teal:#0E9B8A; --teal-b:#12C4AF; --red:#C0392B; --red-d:#7f1d1d;
-  --white:#F0F4F8; --muted:rgba(240,244,248,0.55); --border:rgba(14,155,138,0.18);
-}
-.stApp { background:var(--navy) !important; font-family:'DM Sans',sans-serif !important; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+*, *::before, *::after { box-sizing: border-box; }
+:root { --bg:#f5f4f1; --card:#fff; --border:#e2dfd8; --border2:#d4d2cc; --text:#1a1a1a; --muted:#666; --dim:#999; --accent:#1a1a1a; }
+.stApp { background:var(--bg) !important; font-family:'DM Sans',sans-serif !important; color:var(--text) !important; }
 #MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
 .stButton > button {
-  background:#1B3A52 !important; border:1.5px solid rgba(240,244,248,0.1) !important;
-  border-radius:8px !important; color:rgba(240,244,248,0.6) !important;
+  background:#fff !important; border:0.5px solid var(--border2) !important;
+  border-radius:8px !important; color:var(--muted) !important;
   font-family:'DM Sans',sans-serif !important; font-size:13px !important;
-  font-weight:500 !important; padding:9px 14px !important; width:100% !important;
-  transition:background 0.15s,border-color 0.15s !important; cursor:pointer !important;
+  font-weight:400 !important; padding:9px 14px !important; width:100% !important;
+  transition:all 0.12s !important; cursor:pointer !important;
 }
-.stButton > button:hover {
-  border-color:#0E9B8A !important; color:#F0F4F8 !important;
-  background:rgba(14,155,138,0.1) !important;
-}
+.stButton > button:hover { border-color:var(--accent) !important; color:var(--accent) !important; background:#fafaf8 !important; }
 .stButton > button:focus { outline:none !important; box-shadow:none !important; }
 .hb-submit .stButton > button {
-  background:linear-gradient(135deg,#0E9B8A,#12C4AF) !important;
-  border:none !important; border-radius:10px !important; color:white !important;
-  font-size:15px !important; font-weight:600 !important; padding:15px 24px !important;
-  box-shadow:0 4px 24px rgba(14,155,138,0.4) !important;
+  background:var(--accent) !important; border:none !important; border-radius:8px !important;
+  color:#fff !important; font-size:14px !important; font-weight:500 !important; padding:13px 24px !important;
 }
-.hb-submit .stButton > button:hover {
-  box-shadow:0 6px 28px rgba(14,155,138,0.5) !important;
-  transform:translateY(-1px) !important;
-}
-.hb-submit .stButton > button:disabled {
-  background:rgba(14,155,138,0.15) !important;
-  color:rgba(255,255,255,0.25) !important; box-shadow:none !important;
-}
+.hb-submit .stButton > button:hover { background:#333 !important; }
+.hb-submit .stButton > button:disabled { background:#ccc !important; color:rgba(255,255,255,0.6) !important; }
 .hb-reset .stButton > button {
-  background:none !important; border:none !important;
-  color:rgba(240,244,248,0.2) !important; font-size:12px !important;
-  text-decoration:underline !important; padding:4px !important;
+  background:none !important; border:none !important; color:var(--dim) !important;
+  font-size:12px !important; text-decoration:underline !important; padding:4px !important;
 }
-.hb-reset .stButton > button:hover { color:#12C4AF !important; background:none !important; }
+.hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
 .hb-tile-btn .stButton > button {
   font-size:12px !important; padding:7px 12px !important;
-  border-radius:0 0 10px 10px !important; margin-top:0 !important;
-  border-top:none !important; border-color:rgba(240,244,248,0.06) !important;
+  border-radius:0 0 8px 8px !important; margin-top:0 !important;
+  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
 }
-.stTextArea textarea {
-  background:#1B3A52 !important; border:1.5px solid rgba(240,244,248,0.08) !important;
-  border-radius:8px !important; color:#F0F4F8 !important; font-size:13px !important;
-}
-.stTextArea textarea::placeholder { color:rgba(240,244,248,0.3) !important; }
-.stDownloadButton > button {
-  background:rgba(14,155,138,0.1) !important;
-  border:1.5px solid rgba(14,155,138,0.35) !important;
-  border-radius:8px !important; color:#12C4AF !important;
-  font-size:13px !important; font-weight:600 !important;
-  padding:9px 16px !important; width:100% !important;
-}
-.stSpinner > div { border-top-color:#12C4AF !important; }
+.stTextArea textarea { background:#fafaf8 !important; border:0.5px solid var(--border2) !important; border-radius:6px !important; color:var(--text) !important; font-size:13px !important; }
+.stTextArea textarea::placeholder { color:var(--dim) !important; }
+.stDownloadButton > button { background:#fafaf8 !important; border:0.5px solid var(--border2) !important; border-radius:6px !important; color:var(--text) !important; font-size:13px !important; font-weight:500 !important; padding:9px 16px !important; width:100% !important; }
+.stSpinner > div { border-top-color:var(--accent) !important; }
 </style>
 """, unsafe_allow_html=True)
 
 # ── Style constants ────────────────────────────────────────────────────────────
-TILE_SEL_SYM  = "background:rgba(14,155,138,0.18);border:1.5px solid #0E9B8A;box-shadow:0 0 0 3px rgba(14,155,138,0.15);"
-TILE_SEL_HARD = "background:rgba(192,57,43,0.2);border:1.5px solid #C0392B;box-shadow:0 0 0 3px rgba(192,57,43,0.15);"
-TILE_SEL_MOD  = "background:rgba(14,155,138,0.15);border:1.5px solid #0E9B8A;"
-TILE_BASE     = "background:#1B3A52;border:1.5px solid rgba(240,244,248,0.07);"
-TILE_BASE_HARD= "background:#1B3A52;border:1.5px solid rgba(192,57,43,0.28);"
-TILE_BASE_MOD = "background:#1B3A52;border:1.5px solid rgba(240,244,248,0.05);opacity:0.65;"
+TILE_SEL_SYM  = "background:#1a1a1a;border:0.5px solid #1a1a1a;"
+TILE_SEL_HARD = "background:#c0392b;border:0.5px solid #c0392b;"
+TILE_SEL_MOD  = "background:#f0ede8;border:0.5px solid #a8a49e;"
+TILE_BASE     = "background:#fff;border:0.5px solid #e2dfd8;"
+TILE_BASE_HARD= "background:#fff;border:0.5px solid #e8c8c4;"
+TILE_BASE_MOD = "background:#fafaf8;border:0.5px solid #e2dfd8;opacity:0.8;"
 
 TIER_STYLES = {
-    "2WW_URGENT_STT":    {"border":"#7f1d1d","badge_bg":"rgba(127,29,29,.4)","badge_col":"#fca5a5","badge":"Straight to Test"},
-    "2WW_URGENT":        {"border":"#C0392B","badge_bg":"rgba(192,57,43,.3)","badge_col":"#f87171","badge":"Urgent 2WW"},
-    "ROUTINE_REFERRAL":  {"border":"#d97706","badge_bg":"rgba(217,119,6,.25)","badge_col":"#fbbf24","badge":"Routine"},
-    "INVESTIGATE_FIRST": {"border":"#3b82f6","badge_bg":"rgba(59,130,246,.25)","badge_col":"#93c5fd","badge":"Investigate First"},
-    "SAFETY_NET_ACTIVE": {"border":"#0E9B8A","badge_bg":"rgba(14,155,138,.2)","badge_col":"#12C4AF","badge":"Active Review"},
-    "SAFETY_NET_PASSIVE":{"border":"#64748b","badge_bg":"rgba(100,116,139,.25)","badge_col":"#94a3b8","badge":"Safety Net"},
-    "REASSURE_DISCHARGE":{"border":"#22c55e","badge_bg":"rgba(34,197,94,.2)","badge_col":"#86efac","badge":"Discharge"},
+    "2WW_URGENT_STT":    {"border":"#c0392b","badge_bg":"#fdf2f1","badge_col":"#c0392b","badge":"Straight to Test"},
+    "2WW_URGENT":        {"border":"#e8c8c4","badge_bg":"#fdf2f1","badge_col":"#c0392b","badge":"Urgent 2WW"},
+    "ROUTINE_REFERRAL":  {"border":"#f0d8a8","badge_bg":"#fffbeb","badge_col":"#92400e","badge":"Routine"},
+    "INVESTIGATE_FIRST": {"border":"#bfdbfe","badge_bg":"#eff6ff","badge_col":"#1d4ed8","badge":"Investigate First"},
+    "SAFETY_NET_ACTIVE": {"border":"#d4d2cc","badge_bg":"#f5f4f1","badge_col":"#555","badge":"Active Review"},
+    "SAFETY_NET_PASSIVE":{"border":"#e2dfd8","badge_bg":"#f5f4f1","badge_col":"#666","badge":"Safety Net"},
+    "REASSURE_DISCHARGE":{"border":"#bbf7d0","badge_bg":"#f0fdf4","badge_col":"#15803d","badge":"Discharge"},
 }
 
 
@@ -126,11 +102,12 @@ def tile_indicator(label, sublabel, selected, kind="sym"):
     if kind == "hard":  bg = TILE_SEL_HARD if selected else TILE_BASE_HARD
     elif kind == "mod": bg = TILE_SEL_MOD  if selected else TILE_BASE_MOD
     else:               bg = TILE_SEL_SYM  if selected else TILE_BASE
-    col  = "#F0F4F8" if selected else "rgba(240,244,248,0.65)"
+    col  = "#fff" if selected else "#1a1a1a"
     icon = "✓  " if selected else ""
-    sub  = f'<span style="font-size:12px;color:rgba(240,244,248,0.5);display:block;margin-top:3px;">{sublabel}</span>' if sublabel else ""
+    sub_col = "rgba(255,255,255,0.7)" if selected else "#999"
+    sub  = f'<span style="font-size:12px;color:{sub_col};display:block;margin-top:3px;">{sublabel}</span>' if sublabel else ""
     st.markdown(
-        f'<div style="{bg}border-radius:10px 10px 0 0;padding:12px 14px;color:{col};'
+        f'<div style="{bg}border-radius:8px 8px 0 0;padding:12px 14px;color:{col};'
         f'font-size:14px;font-weight:500;line-height:1.35;margin-bottom:0;min-height:62px;pointer-events:none;">'
         f'{icon}{label}{sub}</div>', unsafe_allow_html=True)
 
@@ -138,14 +115,14 @@ def tile_indicator(label, sublabel, selected, kind="sym"):
 def section_label(text, anno=""):
     if anno:
         st.markdown(
-            f'<div style="font-family:JetBrains Mono,monospace;font-size:11px;'
-            f'letter-spacing:.1em;color:rgba(14,155,138,0.5);margin-bottom:5px;">{anno}</div>',
+            f'<div style="font-size:10px;font-weight:600;letter-spacing:.12em;'
+            f'color:#aaa;margin-bottom:5px;text-transform:uppercase;">{anno}</div>',
             unsafe_allow_html=True)
     st.markdown(
-        f'<div style="font-family:JetBrains Mono,monospace;font-size:11px;'
-        f'letter-spacing:.15em;text-transform:uppercase;color:#0E9B8A;margin-bottom:10px;'
+        f'<div style="font-size:11px;font-weight:600;letter-spacing:.12em;'
+        f'text-transform:uppercase;color:#999;margin-bottom:10px;'
         f'display:flex;align-items:center;gap:8px;">'
-        f'{text}<span style="flex:1;height:1px;background:rgba(14,155,138,0.18);display:block;"></span></div>',
+        f'{text}<span style="flex:1;height:0.5px;background:#e2dfd8;display:block;"></span></div>',
         unsafe_allow_html=True)
 
 
@@ -203,21 +180,21 @@ _init()
 # ── Topbar ─────────────────────────────────────────────────────────────────────
 st.markdown(f"""
 <div style="display:flex;align-items:center;justify-content:space-between;
-  padding:12px 32px;border-bottom:1px solid rgba(14,155,138,0.18);background:#0B1826;">
+  padding:12px 32px;border-bottom:0.5px solid #e2dfd8;background:#fff;">
   <div style="display:flex;align-items:baseline;gap:12px;">
-    <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank" style="font-family:'DM Serif Display',serif;font-size:22px;color:#12C4AF;letter-spacing:.01em;text-decoration:none;cursor:pointer;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">Hummingbird</a>
-    <span style="font-size:12px;font-weight:400;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;">Upper GI · Oesophagogastric</span>
+    <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank" style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;letter-spacing:.01em;text-decoration:none;cursor:pointer;" onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Hummingbird</a>
+    <span style="font-size:11px;font-weight:400;color:#999;letter-spacing:.1em;text-transform:uppercase;">Upper GI · Oesophagogastric</span>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
-    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(240,244,248,0.35);
-      background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;border:1px solid rgba(14,155,138,0.18);">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#999;
+      background:#f5f4f1;padding:4px 10px;border-radius:4px;border:0.5px solid #e2dfd8;">
       v1.0 · NICE NG12</span>
-    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
+    <span style="font-size:12px;color:#555;">{name}</span>
     <a href="/?signout=1" target="_self"
       style="font-family:'JetBrains Mono',monospace;font-size:10px;
-      color:rgba(240,244,248,0.25);text-decoration:underline;text-underline-offset:3px;cursor:pointer;letter-spacing:.05em;"
-      onmouseover="this.style.color='rgba(192,57,43,0.7)'"
-      onmouseout="this.style.color='rgba(240,244,248,0.25)'">sign out</a>
+      color:#bbb;text-decoration:underline;text-underline-offset:3px;cursor:pointer;"
+      onmouseover="this.style.color='#c0392b'"
+      onmouseout="this.style.color='#bbb'">sign out</a>
   </div>
 </div>""", unsafe_allow_html=True)
 
@@ -229,7 +206,7 @@ with _sw_col2:
         st.switch_page("pages/colorectal.py")
 with _sw_col3:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    st.markdown('''<div style="font-family:JetBrains Mono,monospace;font-size:10px;padding:4px 0;color:#12C4AF;text-align:center;font-weight:600;">Upper GI</div>''', unsafe_allow_html=True)
+    st.markdown('''<div style="font-size:10px;font-weight:600;padding:4px 0;color:#1a1a1a;text-align:center;">Upper GI</div>''', unsafe_allow_html=True)
 with _sw_col4:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Appendicitis", key="sw_app2", use_container_width=True):
@@ -247,7 +224,7 @@ left_col, right_col = st.columns([3, 2], gap="small")
 
 # ════════════════════════════ LEFT PANEL ══════════════════════════════════════
 with left_col:
-    st.markdown('<div style="padding:8px 32px 80px;">', unsafe_allow_html=True)
+    st.markdown('<div style="padding:8px 32px 80px;background:#f5f4f1;">', unsafe_allow_html=True)
 
     # AGE
     section_label("Age", "1 CLICK · REQUIRED")
@@ -282,9 +259,9 @@ with left_col:
     # EXAMINATION FINDINGS
     section_label("Examination Findings", "NICE NG12 HARD RULE · DIRECT 2WW")
     st.markdown("""<div style="display:inline-flex;align-items:center;gap:5px;
-      background:rgba(14,155,138,.08);border:1px solid rgba(14,155,138,.22);
-      border-radius:4px;padding:4px 10px;font-family:JetBrains Mono,monospace;
-      font-size:11px;color:#0E9B8A;letter-spacing:.05em;margin-bottom:10px;">
+      background:#f5f4f1;border:0.5px solid #d4d2cc;
+      border-radius:4px;padding:4px 10px;
+      font-size:11px;color:#666;letter-spacing:.05em;margin-bottom:10px;">
       ⚑ NICE NG12 · Direct pathway triggers — no prior investigation required</div>""",
       unsafe_allow_html=True)
     cols = st.columns(2)
@@ -300,8 +277,8 @@ with left_col:
             st.markdown('</div>', unsafe_allow_html=True)
     if st.session_state.ugi_exam:
         st.markdown("""<div style="padding:12px 14px;border-radius:8px;margin-top:8px;
-          background:rgba(192,57,43,.12);border:1.5px solid rgba(192,57,43,.35);
-          font-size:13px;color:#f87171;line-height:1.5;">
+          background:#fdf2f1;border:0.5px solid #e8c8c4;
+          font-size:13px;color:#c0392b;line-height:1.5;border-left:3px solid #c0392b;">
           ⚑ Hard rule triggered — direct suspected cancer pathway.</div>""",
           unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -334,17 +311,17 @@ with left_col:
                 st.session_state.ugi_result = None
                 st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("""<p style="font-size:12px;color:rgba(240,244,248,0.35);margin-top:8px;line-height:1.6;padding-left:2px;">
-      <strong style="color:rgba(240,244,248,0.6);">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
-      <strong style="color:rgba(240,244,248,0.6);">PS 2–4:</strong> Significant limitations — standard 2WW only.</p>""",
+    st.markdown("""<p style="font-size:12px;color:#999;margin-top:8px;line-height:1.6;padding-left:2px;">
+      <strong style="color:#555;">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
+      <strong style="color:#555;">PS 2–4:</strong> Significant limitations — standard 2WW only.</p>""",
       unsafe_allow_html=True)
 
     # ADDITIONAL DETAIL
     st.markdown("""<div style="display:flex;align-items:center;gap:10px;margin:24px 0 16px;">
-      <span style="flex:1;height:1px;background:rgba(240,244,248,0.06);"></span>
-      <span style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(240,244,248,0.2);
-        letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;">additional detail — optional</span>
-      <span style="flex:1;height:1px;background:rgba(240,244,248,0.06);"></span>
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
+      <span style="font-size:10px;font-weight:600;
+        color:#bbb;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;">additional detail — optional</span>
+      <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
     </div>""", unsafe_allow_html=True)
     section_label("Recent Investigations & Other", "SELECT IF PRESENT")
     cols = st.columns(2)
@@ -375,8 +352,8 @@ with left_col:
                                use_container_width=True, key="ugi_submit_btn")
     st.markdown('</div>', unsafe_allow_html=True)
     if not submit_enabled:
-        st.markdown("""<p style="text-align:center;font-size:12px;color:rgba(240,244,248,0.25);
-          margin-top:6px;font-family:'JetBrains Mono',monospace;">Select age to begin</p>""",
+        st.markdown("""<p style="text-align:center;font-size:12px;color:#bbb;
+          margin-top:6px;">Select age to begin</p>""",
           unsafe_allow_html=True)
 
     st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
@@ -402,7 +379,7 @@ if submit_clicked and submit_enabled:
     mods    = sorted(st.session_state.ugi_modifiers)
 
     with right_col:
-        st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
+        st.markdown('<div style="background:#f5f4f1;padding:0 24px 60px;border-left:0.5px solid #e2dfd8;">', unsafe_allow_html=True)
         with st.spinner("Applying NICE NG12 rules and AI reasoning…"):
             hard_result = check_hard_rules_upper_gi(
                 age_band=age, performance_status=ps,
@@ -446,17 +423,17 @@ if submit_clicked and submit_enabled:
 
 # ════════════════════════════ RIGHT PANEL ═════════════════════════════════════
 with right_col:
-    st.markdown('<div style="background:#0B1826;padding:0 24px 60px;border-left:1px solid rgba(14,155,138,0.18);">', unsafe_allow_html=True)
+    st.markdown('<div style="background:#f5f4f1;padding:0 24px 60px;border-left:0.5px solid #e2dfd8;">', unsafe_allow_html=True)
 
     if not st.session_state.ugi_result:
         st.markdown("""
         <div style="position:fixed;bottom:0;right:0;width:40%;
           display:flex;flex-direction:column;align-items:center;justify-content:center;
           height:100vh;pointer-events:none;z-index:0;">
-          <div style="font-size:56px;margin-bottom:18px;opacity:0.12;color:#12C4AF;">◎</div>
+          <div style="font-size:56px;margin-bottom:18px;opacity:0.1;color:#1a1a1a;">◎</div>
           <div style="font-family:'DM Serif Display',serif;font-size:24px;
-            color:rgba(240,244,248,0.15);margin-bottom:10px;text-align:center;">Awaiting inputs</div>
-          <div style="font-size:14px;color:rgba(240,244,248,0.18);line-height:1.8;
+            color:#ccc;margin-bottom:10px;text-align:center;">Awaiting inputs</div>
+          <div style="font-size:14px;color:#ccc;line-height:1.8;
             max-width:240px;text-align:center;">
             Select age and symptoms on the left,<br>then tap <em>Get recommendation</em>
           </div>
@@ -478,22 +455,22 @@ with right_col:
         model_version         = result.get("model_version", "")
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET_ACTIVE"])
 
-        st.markdown(f'<div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(14,155,138,.4);letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
         if escalation and escalation.override_flags:
             for flag in escalation.override_flags:
-                st.markdown(f'<div style="padding:12px 15px;border-radius:8px;background:rgba(127,29,29,.22);border:1.5px solid rgba(192,57,43,.45);font-size:13px;font-weight:600;color:#fca5a5;line-height:1.5;margin-bottom:14px;">⚠ {flag}</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="padding:12px 15px;border-radius:8px;background:#fdf2f1;border:0.5px solid #e8c8c4;border-left:3px solid #c0392b;font-size:13px;font-weight:600;color:#c0392b;line-height:1.5;margin-bottom:14px;">⚠ {flag}</div>', unsafe_allow_html=True)
 
-        lc = "rgba(192,57,43,.12);border:1px solid rgba(192,57,43,.28);color:#f87171" if layer=="1" else "rgba(14,155,138,.08);border:1px solid rgba(14,155,138,.22);color:#12C4AF"
+        lc = "background:#fdf2f1;border:0.5px solid #e8c8c4;color:#c0392b" if layer=="1" else "background:#f5f4f1;border:0.5px solid #d4d2cc;color:#555"
         lt = f"Layer {layer} — {'NICE NG12 hard rule' if layer=='1' else 'AI reasoning'}"
-        dts = "".join(f'<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(14,155,138,0.12);border:1px solid rgba(14,155,138,.2);color:#12C4AF;display:inline-block;margin:2px;">{d}</span>' for d in drivers)
+        dts = "".join(f'<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:#f5f4f1;border:0.5px solid #d4d2cc;color:#555;display:inline-block;margin:2px;">{d}</span>' for d in drivers)
 
         st.markdown(f"""
-        <div style="border-radius:14px;border:1.5px solid {style['border']};background:#112233;overflow:hidden;margin-bottom:14px;">
-          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid {style['border']};">
+        <div style="border-radius:10px;border:0.5px solid {style['border']};background:#fff;overflow:hidden;margin-bottom:14px;">
+          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid {style['border']};">
             <div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Referral decision</div>
-              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">{tier_label}</div>
+              <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#999;margin-bottom:5px;">Referral decision</div>
+              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;">{tier_label}</div>
             </div>
             <span style="padding:5px 14px;border-radius:100px;background:{style['badge_bg']};color:{style['badge_col']};font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">{style['badge']}</span>
           </div>
@@ -502,18 +479,18 @@ with right_col:
         """, unsafe_allow_html=True)
 
         if stt_ineligible_reason:
-            st.markdown(f'<div style="font-size:13px;color:#fbbf24;margin-top:6px;padding:8px 12px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.22);">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="font-size:13px;color:#92400e;margin-top:6px;padding:8px 12px;border-radius:6px;background:#fffbeb;border:0.5px solid #fde68a;border-left:3px solid #f59e0b;">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
 
-        st.markdown(f'<p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
+        st.markdown(f'<p style="font-size:14px;color:#444;line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
 
         if safety_netting:
-            st.markdown(f'<p style="font-size:13px;color:#12C4AF;margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid rgba(14,155,138,.15);">⚑ {safety_netting}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="font-size:13px;color:#555;margin-top:10px;line-height:1.6;padding-top:10px;border-top:0.5px solid #e2dfd8;">⚑ {safety_netting}</p>', unsafe_allow_html=True)
 
         if dts:
-            st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(240,244,248,0.06);"><div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2dfd8;"><div style="font-size:10px;font-weight:600;color:#bbb;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
 
         if confidence:
-            cc = {"high":"rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac","moderate":"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24","uncertain":"rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.25);color:#f87171"}.get(confidence,"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24")
+            cc = {"high":"background:#f0fdf4;border:0.5px solid #bbf7d0;color:#15803d","moderate":"background:#fffbeb;border:0.5px solid #fde68a;color:#92400e","uncertain":"background:#fdf2f1;border:0.5px solid #e8c8c4;color:#c0392b"}.get(confidence,"background:#fffbeb;border:0.5px solid #fde68a;color:#92400e")
             ci = {"high":"●","moderate":"◑","uncertain":"○"}.get(confidence,"◑")
             st.markdown(f'<span style="font-family:JetBrains Mono,monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:{cc};">{ci} Confidence: {confidence}</span>', unsafe_allow_html=True)
 
@@ -523,8 +500,8 @@ with right_col:
         if escalation:
             pct = min((escalation.score / 14) * 100, 100)
             st.markdown(f"""
-            <div style="border-radius:14px;border:1.5px solid rgba(14,155,138,0.18);background:#112233;padding:18px;margin-bottom:14px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.3);margin-bottom:12px;">If referred — escalation priority</div>
+            <div style="border-radius:10px;border:0.5px solid #e2dfd8;background:#fff;padding:18px;margin-bottom:14px;">
+              <div style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#bbb;margin-bottom:12px;">If referred — escalation priority</div>
               <div style="display:flex;align-items:flex-end;gap:14px;margin-bottom:10px;">
                 <div style="font-family:'DM Serif Display',serif;font-size:56px;line-height:1;color:{escalation.score_tier_colour};">{escalation.score}</div>
                 <div style="padding-bottom:6px;">
@@ -535,8 +512,8 @@ with right_col:
               <div style="height:5px;border-radius:100px;background:rgba(240,244,248,0.06);overflow:hidden;">
                 <div style="height:100%;border-radius:100px;width:{pct:.0f}%;background:{escalation.score_tier_colour};"></div>
               </div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(240,244,248,0.25);margin-top:5px;">Score {escalation.score} / 14</div>
-              <div style="font-size:12px;color:rgba(240,244,248,0.25);margin-top:10px;line-height:1.6;">Literature-derived escalation support. Not a prospectively validated risk model.</div>
+              <div style="font-size:11px;color:#bbb;margin-top:5px;">Score {escalation.score} / 14</div>
+              <div style="font-size:12px;color:#aaa;margin-top:10px;line-height:1.6;">Literature-derived escalation support. Not a prospectively validated risk model.</div>
             </div>""", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -544,8 +521,8 @@ with right_col:
 
         now_str = datetime.now(timezone.utc).strftime("%H:%M UTC")
         st.markdown(f"""
-        <div style="font-size:11px;color:rgba(240,244,248,0.2);line-height:1.7;
-          border-top:1px solid rgba(240,244,248,0.06);padding-top:12px;margin-top:10px;">
+        <div style="font-size:11px;color:#bbb;line-height:1.7;
+          border-top:0.5px solid #e2dfd8;padding-top:12px;margin-top:10px;">
           Hummingbird v1.0 · Upper GI · Clinician-authored · NICE NG12 compliant · Not prospectively validated ·
           Does not replace clinical judgement · MHRA registration in progress ·<br>
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;">
