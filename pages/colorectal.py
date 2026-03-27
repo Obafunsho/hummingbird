@@ -215,9 +215,9 @@ TIER_STYLES  = {
     "2WW_URGENT":        {"border":"#C0392B","badge_bg":"rgba(192,57,43,.3)","badge_col":"#f87171","badge":"Urgent 2WW"},
     "ROUTINE_REFERRAL":  {"border":"#d97706","badge_bg":"rgba(217,119,6,.25)","badge_col":"#fbbf24","badge":"Routine"},
     "INVESTIGATE_FIRST": {"border":"#3b82f6","badge_bg":"rgba(59,130,246,.25)","badge_col":"#93c5fd","badge":"Order FIT"},
-    "SAFETY_NET_ACTIVE": {"border":"#0E9B8A","badge_bg":"rgba(14,155,138,.2)","badge_col":"#12C4AF","badge":"Active Review"},
-    "SAFETY_NET_PASSIVE":{"border":"#64748b","badge_bg":"rgba(100,116,139,.25)","badge_col":"#94a3b8","badge":"Safety Net"},
-    "REASSURE_DISCHARGE":{"border":"#22c55e","badge_bg":"rgba(34,197,94,.2)","badge_col":"#86efac","badge":"Discharge"},
+    "SAFETY_NET":        {"border":"#64748b","badge_bg":"rgba(100,116,139,.25)","badge_col":"#94a3b8","badge":"Safety Net"},
+    "WEIGHT_LOSS_CUP":   {"border":"#7c3aed","badge_bg":"rgba(124,58,237,.2)","badge_col":"#c4b5fd","badge":"Clinical Judgement"},
+    "FALLBACK_ALERT":    {"border":"#dc2626","badge_bg":"rgba(220,38,38,.2)","badge_col":"#fca5a5","badge":"Review Required"},
 }
 
 # ── Session state ──────────────────────────────────────────────────────────────
@@ -242,7 +242,7 @@ st.markdown(f"""
   <div style="display:flex;align-items:center;gap:14px;">
     <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:rgba(240,244,248,0.35);
       background:rgba(240,244,248,0.05);padding:4px 10px;border-radius:4px;border:1px solid rgba(14,155,138,0.18);">
-      v2.1 · NICE NG12</span>
+      v3.0 · NICE NG12</span>
     <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(14,155,138,0.6);">{name}</span>
     <a href="/?signout=1" target="_self" onclick="window.location.href='/?signout=1'"
       style="font-family:'JetBrains Mono',monospace;font-size:10px;
@@ -474,7 +474,7 @@ with right_col:
         hbid       = st.session_state.hbid
         inputs     = st.session_state.last_inputs
 
-        tier                  = result.get("tier","SAFETY_NET_ACTIVE")
+        tier                  = result.get("tier","SAFETY_NET")
         tier_label            = result.get("tier_label",tier)
         rationale             = result.get("rationale","")
         safety_netting        = result.get("safety_netting") or ""
@@ -484,7 +484,7 @@ with right_col:
         drivers               = result.get("inputs_driving_decision",[])
         prompt_version        = result.get("prompt_version","")
         model_version         = result.get("model_version","")
-        style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET_ACTIVE"])
+        style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET"])
 
         st.markdown(f'<div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(14,155,138,.4);letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
@@ -497,8 +497,37 @@ with right_col:
         lt = f"Layer {layer} — {'NICE NG12 hard rule' if layer=='1' else 'AI reasoning'}"
         dts = "".join(f'<span style="font-size:11px;padding:3px 9px;border-radius:5px;background:rgba(14,155,138,0.12);border:1px solid rgba(14,155,138,.2);color:#12C4AF;display:inline-block;margin:2px;">{d}</span>' for d in drivers)
 
+        # Special tiers — Rule 1.4 and Fallback
+        if tier == "WEIGHT_LOSS_CUP":
+            sn = safety_netting or ""
+            st.markdown(f"""
+            <div style="border-radius:14px;border:1.5px solid #7c3aed;background:#112233;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;border-bottom:1px solid rgba(124,58,237,0.3);">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Rule 1.4 · Weight loss sole feature</div>
+                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">Clinical Judgement Required</div>
+              </div>
+              <div style="padding:16px 18px;">
+                <p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-bottom:14px;">{rationale}</p>
+                <div style="padding:12px 14px;border-radius:8px;background:rgba(124,58,237,0.1);border:1.5px solid rgba(124,58,237,0.3);font-size:13px;color:#c4b5fd;line-height:1.6;">⚑ {sn}</div>
+              </div>
+            </div>""", unsafe_allow_html=True)
+
+        elif tier == "FALLBACK_ALERT":
+            st.markdown(f"""
+            <div style="border-radius:14px;border:1.5px solid #dc2626;background:#112233;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;border-bottom:1px solid rgba(220,38,38,0.3);">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">System alert · AI output invalid</div>
+                <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#fca5a5;">Clinical Review Required</div>
+              </div>
+              <div style="padding:16px 18px;">
+                <p style="font-size:14px;color:#fca5a5;line-height:1.7;">{rationale}</p>
+              </div>
+            </div>""", unsafe_allow_html=True)
+
+        else:
         # Tier card
-        st.markdown(f"""
+        # noinspection PyUnboundLocalVariable
+            st.markdown(f"""
         <div style="border-radius:14px;border:1.5px solid {style['border']};background:#112233;overflow:hidden;margin-bottom:14px;">
           <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid {style['border']};">
             <div>
@@ -531,8 +560,9 @@ with right_col:
 
         st.markdown('</div></div>', unsafe_allow_html=True)
 
-        # Escalation score
-        if escalation:
+        # Escalation score — only shown for 2WW referral tiers
+        show_escalation = tier in ("2WW_URGENT_STT", "2WW_URGENT")
+        if escalation and show_escalation:
             pct = min((escalation.score/15)*100,100)
             st.markdown(f"""
             <div style="border-radius:14px;border:1.5px solid rgba(14,155,138,0.18);background:#112233;padding:18px;margin-bottom:14px;">
@@ -549,6 +579,7 @@ with right_col:
               </div>
               <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(240,244,248,0.25);margin-top:5px;">Score {escalation.score} / 15</div>
               <div style="font-size:12px;color:rgba(240,244,248,0.25);margin-top:10px;line-height:1.6;">Literature-derived escalation support. Not a prospectively validated risk model. Score determines speed of referral, not whether to refer.</div>
+              {'<div style="font-size:12px;color:#94a3b8;margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(100,116,139,0.1);border:1px solid rgba(100,116,139,0.2);">ℹ FIT negative — escalation constrained to STANDARD regardless of other factors.</div>' if escalation.fit_negative_override else ''}
             </div>""", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -593,7 +624,7 @@ with right_col:
         st.markdown(f"""
         <div style="font-size:11px;color:rgba(240,244,248,0.2);line-height:1.7;
           border-top:1px solid rgba(240,244,248,0.06);padding-top:12px;margin-top:10px;">
-          Hummingbird v2.1 · Clinician-authored · NICE NG12 compliant · Not prospectively validated ·
+          Hummingbird v3.0 · Clinician-authored · NICE NG12 compliant · Not prospectively validated ·
           Does not replace clinical judgement · MHRA registration in progress ·<br>
           <span style="font-family:'JetBrains Mono',monospace;font-size:10px;">
           prompt:{prompt_version} · model:{model_version} · layer:{layer} · {now_str}

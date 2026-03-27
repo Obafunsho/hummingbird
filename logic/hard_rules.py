@@ -1,13 +1,15 @@
 """
 hummingbird/logic/hard_rules.py
 Layer 1 — Deterministic hard rules. No AI. No exceptions.
-Implements NICE NG12 + STT sub-rules per Analyst Brief v2.1.
+Implements NICE NG12 + STT sub-rules per Analyst Brief v3.0.
 
 Rule evaluation order:
   1. Examination findings (mass/ulceration) — direct 2WW, no FIT required
   2. STT sub-rules (FIT ≥100, MCD/ctDNA, 3+ flag symptoms)
   3. Standard NICE NG12 hard rules
-  4. No hard rule → return triggered=False → Layer 2
+  4. Rule 1.4 — Weight loss sole feature, no colorectal symptoms, FIT negative/not done
+     → CUP pathway or primary care investigation (does NOT proceed to Layer 2)
+  5. No hard rule → return triggered=False → Layer 2
 
 IMPORTANT: This module never touches the Claude API.
 All logic is transparent, auditable Python.
@@ -21,7 +23,7 @@ class HardRuleResult:
     triggered: bool
     rule_name: str = ""
     rule_description: str = ""
-    tier: str = ""                   # 2WW_URGENT or 2WW_URGENT_STT
+    tier: str = ""                   # 2WW_URGENT, 2WW_URGENT_STT, or WEIGHT_LOSS_CUP
     stt_eligible: bool = False
     stt_driver: str = ""
     stt_ineligible_reason: str = ""  # logged if STT indicated but patient ineligible
@@ -85,7 +87,7 @@ def check_hard_rules(
     e = set(examination_findings)
     m = set(modifiers)
 
-    # ── 1. Examination findings — direct 2WW, no FIT required ─────────────────
+    # ── Rule 1.1: Examination findings — direct 2WW, no FIT required ──────────
 
     if "anal_mass" in e:
         return HardRuleResult(
@@ -114,7 +116,7 @@ def check_hard_rules(
             drivers=["Unexplained abdominal mass"],
         )
 
-    # ── 2. STT sub-rules ──────────────────────────────────────────────────────
+    # ── Rule 1.2: STT sub-rules ───────────────────────────────────────────────
 
     # FIT ≥100 µg/g
     if fit_result == "high":
@@ -200,7 +202,7 @@ def check_hard_rules(
                 drivers=drivers,
             )
 
-    # ── 3. Standard NICE NG12 hard rules ──────────────────────────────────────
+    # ── Rule 1.3: Standard NICE NG12 hard rules ───────────────────────────────
 
     # FIT positive 10–99 µg/g
     if fit_result == "positive":
@@ -222,14 +224,14 @@ def check_hard_rules(
             drivers=["Iron deficiency anaemia"],
         )
 
-    # Rectal bleeding + age ≥50 (60-69 and 70+ bands both qualify)
+    # Rectal bleeding + age ≥60
     if "rectal_bleeding" in s and _age_gte_60(age_band):
         return HardRuleResult(
             triggered=True,
-            rule_name="RECTAL_BLEEDING_AGE_50_PLUS",
-            rule_description="Rectal bleeding in patient aged ≥50 (NICE NG12 1.3.1)",
+            rule_name="RECTAL_BLEEDING_AGE_60_PLUS",
+            rule_description="Rectal bleeding in patient aged ≥60 (NICE NG12 1.3.1)",
             tier="2WW_URGENT",
-            drivers=["Rectal bleeding", "Age ≥50"],
+            drivers=["Rectal bleeding", "Age ≥60"],
         )
 
     # Rectal bleeding + change in bowel habit — any age
@@ -261,6 +263,29 @@ def check_hard_rules(
             rule_description="Unexplained weight loss ≥3kg with age ≥60 and co-present GI symptom (NICE NG12)",
             tier="2WW_URGENT",
             drivers=["Weight loss ≥3kg", "Age ≥60"] + co_present,
+        )
+
+    # ── Rule 1.4: Weight loss sole feature, no colorectal symptoms ────────────
+    # FIT negative or not done + weight loss only + no other colorectal symptoms
+    # → Does NOT proceed to Layer 2. Output: CUP pathway / primary care.
+
+    colorectal_symptoms = {"rectal_bleeding", "change_in_bowel_habit", "iron_deficiency_anaemia"}
+    if (
+        "weight_loss" in s
+        and not (s & colorectal_symptoms)
+        and fit_result in ("negative", "notdone")
+        and not e  # no examination findings (those fire earlier)
+    ):
+        return HardRuleResult(
+            triggered=True,
+            rule_name="WEIGHT_LOSS_CUP",
+            rule_description=(
+                "Unexplained weight loss ≥3kg as sole feature with no colorectal symptoms "
+                "and FIT negative or not done (Rule 1.4)"
+            ),
+            tier="WEIGHT_LOSS_CUP",
+            drivers=["Weight loss ≥3kg", "No colorectal symptoms",
+                     f"FIT {fit_result}"],
         )
 
     # ── No hard rule fired ────────────────────────────────────────────────────

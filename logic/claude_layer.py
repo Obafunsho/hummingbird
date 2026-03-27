@@ -1,8 +1,15 @@
 """
 hummingbird/logic/claude_layer.py
 Layer 2 — Claude API call and response parsing.
-Input serialisation per Analyst Brief v2.1 spec.
+Input serialisation per Analyst Brief v3.0 spec.
 Model pinned: claude-sonnet-4-6
+
+v3.0 changes:
+- Output validated against five permitted tiers only
+- Invalid tier returns FALLBACK_ALERT result (never displays bad data)
+- Prompt version bumped to v3.0
+- SAFETY_NET replaces SAFETY_NET_ACTIVE / SAFETY_NET_PASSIVE / REASSURE_DISCHARGE
+- INVESTIGATE_FIRST replaces the old INVESTIGATE_FIRST label
 """
 
 import json
@@ -14,6 +21,23 @@ import anthropic
 
 MODEL = "claude-sonnet-4-6"
 PROMPTS_DIR = Path(__file__).parent.parent / "prompts"
+
+# Permitted output tiers — any other value triggers fallback (v3.0)
+PERMITTED_TIERS = {
+    "2WW_URGENT_STT",
+    "2WW_URGENT",
+    "ROUTINE_REFERRAL",
+    "INVESTIGATE_FIRST",
+    "SAFETY_NET",
+}
+
+TIER_LABELS = {
+    "2WW_URGENT_STT":    "2WW Urgent — Straight to Test",
+    "2WW_URGENT":        "2WW Urgent Referral",
+    "ROUTINE_REFERRAL":  "Routine Referral",
+    "INVESTIGATE_FIRST": "Order FIT Before Referral",
+    "SAFETY_NET":        "Safety Net",
+}
 
 
 def get_active_prompt_version(cancer_site: str = "lower_gi") -> str:
@@ -35,13 +59,11 @@ def build_user_message(
     symptoms: list[str],
     examination_findings: list[str],
     performance_status: str,
-    modifiers: dict,
+    modifiers: list[str],
     free_text: str,
 ) -> str:
     """
-    Serialise all inputs to structured JSON string per v2.1 spec.
-    This format must be consistent across all calls.
-    Changes to this format require the same change protocol as prompt changes.
+    Serialise all inputs to structured JSON string per v3.0 spec.
     """
     payload = {
         "age_band": age_band,
@@ -59,6 +81,33 @@ def build_user_message(
     return json.dumps(payload)
 
 
+def _fallback_result(reason: str, prompt_version: str) -> dict:
+    """
+    Return a safe fallback result when model output is invalid.
+    Displayed as an alert in the UI — never silently shows bad data.
+    """
+    return {
+        "tier": "FALLBACK_ALERT",
+        "tier_label": "Clinical Review Required",
+        "stt_eligible": None,
+        "stt_driver": None,
+        "rationale": (
+            "The AI layer returned an unexpected response and could not be validated. "
+            "Please review this case manually and do not act on an automated recommendation."
+        ),
+        "safety_netting": None,
+        "inputs_driving_decision": [],
+        "deflecting_factors": [],
+        "escalating_factors": [],
+        "confidence": "uncertain",
+        "api_response_id": None,
+        "prompt_version": prompt_version,
+        "model_version": MODEL,
+        "layer": "2",
+        "fallback_reason": reason,
+    }
+
+
 def call_claude(
     age_band: str,
     fit_result: str,
@@ -73,12 +122,8 @@ def call_claude(
     """
     Call Claude API with clinical inputs.
     Retries on 529 overloaded errors with exponential backoff.
-
-    Returns dict with keys:
-      tier, tier_label, stt_eligible, stt_driver,
-      rationale, safety_netting, inputs_driving_decision,
-      deflecting_factors, escalating_factors, confidence,
-      api_response_id, prompt_version, model_version, layer
+    Validates output against permitted tier list (v3.0).
+    Returns fallback result if tier is invalid.
     """
     client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
@@ -93,6 +138,7 @@ def call_claude(
         modifiers=modifiers,
         free_text=free_text,
     )
+    pv_tag = f"{cancer_site}_{prompt_version}"
 
     last_error = None
     for attempt in range(max_retries):
@@ -115,8 +161,21 @@ def call_claude(
                 raw_text = raw_text.strip()
 
             result = json.loads(raw_text)
+
+            # ── Tier validation (v3.0) ────────────────────────────────────────
+            tier = result.get("tier", "")
+            if tier not in PERMITTED_TIERS:
+                fallback = _fallback_result(
+                    reason=f"Model returned invalid tier: '{tier}'",
+                    prompt_version=pv_tag,
+                )
+                fallback["api_response_id"] = api_response_id
+                return fallback
+
+            # Ensure tier_label matches canonical label
+            result["tier_label"] = TIER_LABELS[tier]
             result["api_response_id"] = api_response_id
-            result["prompt_version"] = f"{cancer_site}_{prompt_version}"
+            result["prompt_version"] = pv_tag
             result["model_version"] = MODEL
             result["layer"] = "2"
 
@@ -126,7 +185,7 @@ def call_claude(
             last_error = e
             error_str = str(e)
             if "529" in error_str or "overloaded" in error_str.lower():
-                wait = 2 ** attempt  # 1s, 2s, 4s
+                wait = 2 ** attempt
                 time.sleep(wait)
                 continue
             raise
@@ -145,7 +204,8 @@ def build_hard_rule_response(
 ) -> dict:
     """
     Build a standardised response dict for Layer 1 hard rule triggers.
-    Mirrors Claude response structure so app.py handles both uniformly.
+    Mirrors Claude response structure so colorectal.py handles both uniformly.
+    Includes WEIGHT_LOSS_CUP tier for Rule 1.4.
     """
     if tier == "2WW_URGENT_STT":
         tier_label = "2WW Urgent — Straight to Test"
@@ -158,6 +218,19 @@ def build_hard_rule_response(
             "Direct access colonoscopy or CT colonography. "
             "Contact receiving team directly — do not wait for standard 2WW slot."
         )
+
+    elif tier == "WEIGHT_LOSS_CUP":
+        tier_label = "Clinical Judgement Required"
+        rationale = (
+            "Unexplained weight loss ≥3kg is the sole presenting feature with no colorectal symptoms "
+            "and FIT is negative or not yet performed. This presentation does not meet colorectal 2WW criteria. "
+            "Clinical assessment is required to determine the appropriate pathway."
+        )
+        safety_netting = (
+            "If cancer concern persists on clinical assessment, refer to the Cancer of Unknown Primary (CUP) pathway. "
+            "If no persistent cancer concern, investigate in primary care with FIT, blood tests, and clinical review."
+        )
+
     else:
         tier_label = "2WW Urgent Referral"
         rationale = (
