@@ -537,7 +537,27 @@ with right_col:
         escalation = st.session_state.ugi_escalation
         hbid       = st.session_state.ugi_hbid
 
-        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
+        components.html("""<script>
+    (function() {
+        function doScroll() {
+            var p = window.parent;
+            var anchor = p.document.getElementById('hb-results-anchor');
+            if (anchor) {
+                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
+            } else {
+                // fallback: scroll all containers to top
+                [
+                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
+                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
+                    p.document.querySelector('.main .block-container'),
+                    p.document.body
+                ].forEach(function(el) { if (el) el.scrollTop = 0; });
+            }
+        }
+        setTimeout(doScroll, 150);
+        setTimeout(doScroll, 400);
+    })();
+    </script>""", height=0)
         tier                  = result.get("tier", "SAFETY_NET_ACTIVE")
         tier_label            = result.get("tier_label", tier)
         rationale             = result.get("rationale", "")
@@ -550,6 +570,7 @@ with right_col:
         model_version         = result.get("model_version", "")
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET_ACTIVE"])
 
+        st.markdown('<div id="hb-results-anchor"></div>', unsafe_allow_html=True)
         st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
         if escalation and escalation.override_flags:

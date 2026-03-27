@@ -541,7 +541,27 @@ with right_col:
         hbid       = st.session_state.hbid
         inputs     = st.session_state.last_inputs
 
-        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
+        components.html("""<script>
+    (function() {
+        function doScroll() {
+            var p = window.parent;
+            var anchor = p.document.getElementById('hb-results-anchor');
+            if (anchor) {
+                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
+            } else {
+                // fallback: scroll all containers to top
+                [
+                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
+                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
+                    p.document.querySelector('.main .block-container'),
+                    p.document.body
+                ].forEach(function(el) { if (el) el.scrollTop = 0; });
+            }
+        }
+        setTimeout(doScroll, 150);
+        setTimeout(doScroll, 400);
+    })();
+    </script>""", height=0)
         tier                  = result.get("tier","SAFETY_NET")
         tier_label            = result.get("tier_label",tier)
         rationale             = result.get("rationale","")
@@ -554,6 +574,7 @@ with right_col:
         model_version         = result.get("model_version","")
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET"])
 
+        st.markdown('<div id="hb-results-anchor"></div>', unsafe_allow_html=True)
         st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
 
         if escalation and escalation.override_flags:
@@ -619,9 +640,9 @@ with right_col:
                 st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:0.5px solid #e2dfd8;"><div style="font-size:10px;font-weight:600;color:#bbb;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
 
             if confidence:
-                cc = {"high":"rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac",
-                      "moderate":"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24",
-                      "uncertain":"rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.25);color:#f87171"}.get(confidence,"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24")
+                cc = {"high":"background:#f0fdf4;border:0.5px solid #86efac;color:#15803d",
+                      "moderate":"background:#fffbeb;border:0.5px solid #fde68a;color:#92400e",
+                      "uncertain":"background:#fdf2f1;border:0.5px solid #e8c8c4;color:#c0392b"}.get(confidence,"background:#fffbeb;border:0.5px solid #fde68a;color:#92400e")
                 ci = {"high":"●","moderate":"◑","uncertain":"○"}.get(confidence,"◑")
                 st.markdown(f'<span style="font-family:JetBrains Mono,monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:{cc};">{ci} Confidence: {confidence}</span>', unsafe_allow_html=True)
 
