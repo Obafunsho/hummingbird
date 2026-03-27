@@ -216,17 +216,13 @@ with _sw_col2:
     if st.button("Colorectal", key="sw_col", use_container_width=True):
         st.switch_page("pages/colorectal.py")
 with _sw_col3:
-    st.markdown('<div class="sw-active">', unsafe_allow_html=True)
-    st.button("Upper GI", key="sw_ugi2", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.button("Upper GI", key="sw_ugi2", use_container_width=True, disabled=True)
 with _sw_col4:
     if st.button("Appendicitis Risk", key="sw_app2", use_container_width=True):
         st.switch_page("pages/appendicitis.py")
 with _sw_col5:
     if st.button("Surgical Risk", key="sw_surg2", use_container_width=True):
         st.switch_page("pages/surgical_risk.py")
-with _sw_col5:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
 
 if st.query_params.get("signout") == "1":
     st.query_params.clear()

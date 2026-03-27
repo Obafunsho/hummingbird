@@ -36,6 +36,16 @@ div[data-testid="stHorizontalBlock"] button[kind="secondary"] {
   background:#1a1a1a !important;
   color:#fff !important;
 }
+
+/* Switcher: active button styled black via disabled */
+div[data-testid="stHorizontalBlock"] button:disabled {
+  background: #1a1a1a !important;
+  border: 0.5px solid #1a1a1a !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  cursor: default !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -77,15 +87,10 @@ with _sw_col3:
     if st.button("Upper GI", key="sw_ugi_a", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
 with _sw_col4:
-    st.markdown('<div class="sw-active">', unsafe_allow_html=True)
-    st.button("Appendicitis Risk", key="sw_app_cur", use_container_width=True, disabled=False)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.button("Appendicitis Risk", key="sw_app_cur", use_container_width=True, disabled=True)
 with _sw_col5:
     if st.button("Surgical Risk", key="sw_surg_a", use_container_width=True):
         st.switch_page("pages/surgical_risk.py")
-with _sw_col5:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────
 HTML = r"""<!DOCTYPE html>

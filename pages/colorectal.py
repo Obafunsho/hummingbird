@@ -217,9 +217,7 @@ st.markdown(f"""
 # Module switcher using st.switch_page
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
-    st.markdown('<div class="sw-active">', unsafe_allow_html=True)
-    st.button("Colorectal", key="sw_col2", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+    st.button("Colorectal", key="sw_col2", use_container_width=True, disabled=True)
 with _sw_col3:
     if st.button("Upper GI", key="sw_ugi", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
@@ -229,8 +227,6 @@ with _sw_col4:
 with _sw_col5:
     if st.button("Surgical Risk", key="sw_surg", use_container_width=True):
         st.switch_page("pages/surgical_risk.py")
-with _sw_col5:
-    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
 
 # Handle signout via query param
 if st.query_params.get("signout") == "1":
