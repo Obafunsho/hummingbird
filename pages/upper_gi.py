@@ -222,7 +222,7 @@ st.markdown(f"""
 </div>""", unsafe_allow_html=True)
 
 # Module switcher using st.switch_page
-_sw_col1, _sw_col2, _sw_col3 = st.columns([8, 1, 1])
+_sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     if st.button("Colorectal", key="sw_col", use_container_width=True):
@@ -230,6 +230,14 @@ with _sw_col2:
 with _sw_col3:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
     st.markdown('''<div style="font-family:JetBrains Mono,monospace;font-size:10px;padding:4px 0;color:#12C4AF;text-align:center;font-weight:600;">Upper GI</div>''', unsafe_allow_html=True)
+with _sw_col4:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Appendicitis", key="sw_app2", use_container_width=True):
+        st.switch_page("pages/appendicitis.py")
+with _sw_col5:
+    st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
+    if st.button("Surgical Risk", key="sw_surg2", use_container_width=True):
+        st.switch_page("pages/surgical_risk.py")
 
 if st.query_params.get("signout") == "1":
     st.query_params.clear()

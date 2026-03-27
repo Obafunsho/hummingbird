@@ -31,7 +31,9 @@ if not auth_status:
 
 # ── NAVIGATION ────────────────────────────────────────────────────────────────
 pg = st.navigation([
-    st.Page("pages/colorectal.py", title="Colorectal — Lower GI",  icon="🎯"),
-    st.Page("pages/upper_gi.py",   title="Upper GI — Oesophagogastric", icon="🔬"),
+    st.Page("pages/colorectal.py",    title="Colorectal — Lower GI",       icon="🎯"),
+    st.Page("pages/upper_gi.py",      title="Upper GI — Oesophagogastric", icon="🔬"),
+    st.Page("pages/appendicitis.py",  title="Appendicitis Risk Score",     icon="🏥"),
+    st.Page("pages/surgical_risk.py", title="Surgical Risk Calculator",    icon="⚕️"),
 ], position="hidden")
 pg.run()
