@@ -513,7 +513,6 @@ if submit_clicked and submit_enabled:
                 "age_band": age, "hpylori": hp, "performance_status": ps,
                 "symptoms": syms, "exam_findings": exams, "modifiers": mods}
         st.markdown('</div>', unsafe_allow_html=True)
-        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         st.rerun()
 
 # ════════════════════════════ RIGHT PANEL ═════════════════════════════════════
@@ -538,6 +537,7 @@ with right_col:
         escalation = st.session_state.ugi_escalation
         hbid       = st.session_state.ugi_hbid
 
+        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         tier                  = result.get("tier", "SAFETY_NET_ACTIVE")
         tier_label            = result.get("tier_label", tier)
         rationale             = result.get("rationale", "")

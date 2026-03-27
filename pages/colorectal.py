@@ -516,7 +516,6 @@ if submit_clicked and submit_enabled:
             st.session_state.last_inputs={"age_band":age_band,"fit_result":fit_result,
                 "performance_status":perf,"symptoms":syms,"exam_findings":exams,"modifiers":mods}
         st.markdown('</div>', unsafe_allow_html=True)
-        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         st.rerun()
 
 # ════════════════════════════════════════════════ RIGHT PANEL ═════════════════
@@ -542,6 +541,7 @@ with right_col:
         hbid       = st.session_state.hbid
         inputs     = st.session_state.last_inputs
 
+        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         tier                  = result.get("tier","SAFETY_NET")
         tier_label            = result.get("tier_label",tier)
         rationale             = result.get("rationale","")
