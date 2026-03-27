@@ -5,6 +5,7 @@ import os, sys
 from datetime import datetime, timezone
 from pathlib import Path
 import streamlit as st
+import streamlit.components.v1 as components
 
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
@@ -515,7 +516,7 @@ if submit_clicked and submit_enabled:
             st.session_state.last_inputs={"age_band":age_band,"fit_result":fit_result,
                 "performance_status":perf,"symptoms":syms,"exam_findings":exams,"modifiers":mods}
         st.markdown('</div>', unsafe_allow_html=True)
-        st.markdown('<script>setTimeout(()=>{window.scrollTo({top:0,behavior:"smooth"});},100);</script>', unsafe_allow_html=True)
+        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         st.rerun()
 
 # ════════════════════════════════════════════════ RIGHT PANEL ═════════════════
@@ -554,7 +555,6 @@ with right_col:
         style = TIER_STYLES.get(tier, TIER_STYLES["SAFETY_NET"])
 
         st.markdown(f'<div style="font-size:10px;color:#bbb;letter-spacing:.08em;text-align:right;margin-bottom:12px;">{hbid}</div>', unsafe_allow_html=True)
-        st.markdown('<script>window.parent.document.querySelector("[data-testid=stAppViewContainer]").scrollTo({top:0,behavior:"smooth"});</script>', unsafe_allow_html=True)
 
         if escalation and escalation.override_flags:
             for flag in escalation.override_flags:

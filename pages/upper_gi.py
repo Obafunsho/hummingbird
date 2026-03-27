@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import streamlit as st
+import streamlit.components.v1 as components
 from dotenv import load_dotenv
 
 # Robust path resolution for Streamlit Cloud
@@ -512,6 +513,7 @@ if submit_clicked and submit_enabled:
                 "age_band": age, "hpylori": hp, "performance_status": ps,
                 "symptoms": syms, "exam_findings": exams, "modifiers": mods}
         st.markdown('</div>', unsafe_allow_html=True)
+        components.html("<script>window.parent.scrollTo({top:0,behavior:'smooth'});</script>", height=0)
         st.rerun()
 
 # ════════════════════════════ RIGHT PANEL ═════════════════════════════════════
