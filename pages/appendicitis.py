@@ -58,7 +58,7 @@ st.markdown(f"""
   position:sticky;top:0;z-index:999;">
   <div style="display:flex;align-items:baseline;gap:12px;">
     <a href="https://obafunsho.github.io/hummingbird_landing" target="_blank"
-      style="font-family:'DM Serif Display',serif;font-size:20px;color:#1a1a1a;
+      style="font-family:'DM Serif Display',serif;font-size:22px;color:#1a1a1a;
       letter-spacing:.01em;text-decoration:none;"
       onmouseover="this.style.opacity='0.6'" onmouseout="this.style.opacity='1'">Hummingbird</a>
     <span style="font-size:11px;color:#999;letter-spacing:.1em;text-transform:uppercase;">
@@ -100,6 +100,7 @@ HTML = r"""<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hummingbird Appendicitis Risk Score</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
@@ -115,7 +116,7 @@ HTML = r"""<!DOCTYPE html>
   .container { max-width: 680px; margin: 0 auto; }
 
   .header { margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid #e2dfd8; }
-  .header h1 { font-size: 22px; font-weight: normal; letter-spacing: -0.01em; color: #1c1c1a; margin-bottom: 3px; }
+  .header h1 { font-family: 'DM Serif Display', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.01em; color: #1c1c1a; margin-bottom: 3px; }
   .header p { font-size: 13px; color: #888; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
   .step-label {

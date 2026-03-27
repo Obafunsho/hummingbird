@@ -159,6 +159,17 @@ div[data-testid="stHorizontalBlock"] button:disabled span {
   color: #1a1a1a !important;
 }
 
+
+/* Prevent switcher active button from changing size */
+div[data-testid="stHorizontalBlock"] button:disabled,
+div[data-testid="stHorizontalBlock"] button:disabled:hover {
+  min-height: unset !important;
+  height: auto !important;
+  padding: 9px 14px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -297,7 +308,7 @@ with _sw_col5:
         st.switch_page("pages/surgical_risk.py")
 
 # ── Top reset button ──────────────────────────────────────────────────────────
-_rt_spacer, _rt_btn = st.columns([8, 1])
+_rt_btn, _rt_spacer = st.columns([1, 8])
 with _rt_btn:
     if st.button("↺ Reset", key="reset_top", use_container_width=True):
         st.session_state.update({
@@ -358,7 +369,7 @@ with left_col:
             sel = key in st.session_state.selected_symptoms
             css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
             st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"\n{sub}" if sub else ""
+            sub_txt = f"  ·  {sub}" if sub else ""
             btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
             if st.button(btn_label, key=f"sym_{key}", use_container_width=True):
                 st.session_state.selected_symptoms.symmetric_difference_update({key})
@@ -380,7 +391,7 @@ with left_col:
             sel = key in st.session_state.selected_exam
             css_cls = "hb-tile-btn-hard-sel" if sel else "hb-tile-btn-hard"
             st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"\n{sub}" if sub else ""
+            sub_txt = f"  ·  {sub}" if sub else ""
             btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
             if st.button(btn_label, key=f"exam_{key}", use_container_width=True):
                 st.session_state.selected_exam.symmetric_difference_update({key})
@@ -427,7 +438,7 @@ with left_col:
             sel = key in st.session_state.selected_modifiers
             css_cls = "hb-tile-btn-mod-sel" if sel else "hb-tile-btn-mod"
             st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"\n{sub}" if sub else ""
+            sub_txt = f"  ·  {sub}" if sub else ""
             btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
             if st.button(btn_label, key=f"mod_{key}", use_container_width=True):
                 st.session_state.selected_modifiers.symmetric_difference_update({key})
