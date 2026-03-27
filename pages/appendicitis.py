@@ -85,8 +85,6 @@ with _sw_col5:
         st.switch_page("pages/surgical_risk.py")
 with _sw_col5:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    if st.button("Surgical Risk", key="sw_surg_a", use_container_width=True):
-        st.switch_page("pages/surgical_risk.py")
 
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────

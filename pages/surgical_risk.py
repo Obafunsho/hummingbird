@@ -85,8 +85,6 @@ with _sw_col5:
     st.markdown('</div>', unsafe_allow_html=True)
 with _sw_col5:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    if st.button("Appendicitis Risk", key="sw_app_s", use_container_width=True):
-        st.switch_page("pages/appendicitis.py")
 
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────

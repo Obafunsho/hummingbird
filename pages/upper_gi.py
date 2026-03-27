@@ -227,8 +227,6 @@ with _sw_col5:
         st.switch_page("pages/surgical_risk.py")
 with _sw_col5:
     st.markdown('''<div style="height:4px;"></div>''', unsafe_allow_html=True)
-    if st.button("Surgical Risk", key="sw_surg2", use_container_width=True):
-        st.switch_page("pages/surgical_risk.py")
 
 if st.query_params.get("signout") == "1":
     st.query_params.clear()
