@@ -275,6 +275,24 @@ st.markdown(f"""
 </div>""", unsafe_allow_html=True)
 
 # Module switcher using st.switch_page
+
+# ── Top anchor for scroll-to-top ─────────────────────────────────────────────
+st.markdown('<div id="page-top"></div>', unsafe_allow_html=True)
+
+if st.session_state.get("_do_scroll"):
+    st.session_state["_do_scroll"] = False
+    st.markdown("""
+    <a id="auto-scroll-link" href="#page-top"></a>
+    <script>
+        // Use parent window location hash for native browser scroll
+        try {
+            window.parent.location.hash = '';
+            window.parent.location.hash = 'page-top';
+        } catch(e) {}
+        document.getElementById('auto-scroll-link').click();
+    </script>
+    """, unsafe_allow_html=True)
+
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     if st.button("Colorectal", key="sw_col", use_container_width=True):
@@ -299,31 +317,13 @@ with _rt_btn:
             "ugi_modifiers": set(),
         })
         st.session_state.ugi_free_text_key += 1
+        st.session_state["_do_scroll"] = True
         st.rerun()
 
 if st.query_params.get("signout") == "1":
     st.query_params.clear()
     do_logout()
 
-
-# ── Scroll to top if flagged ──────────────────────────────────────────────────
-if st.session_state.get("ugi_scroll_to_top"):
-    st.session_state["ugi_scroll_to_top"] = False
-    components.html("""<script>
-    (function() {
-        function doScroll() {
-            var p = window.parent;
-            [
-                p.document.querySelector('[data-testid="stAppViewContainer"]'),
-                p.document.querySelector('[data-testid="stMainBlockContainer"]'),
-                p.document.body
-            ].forEach(function(el) { if (el) el.scrollTop = 0; });
-            p.scrollTo(0, 0);
-        }
-        setTimeout(doScroll, 100);
-        setTimeout(doScroll, 350);
-    })();
-    </script>""", height=0)
 
 left_col, right_col = st.columns([3, 2], gap="small")
 
@@ -470,18 +470,7 @@ with left_col:
           margin-top:6px;">Select age to begin</p>""",
           unsafe_allow_html=True)
 
-    st.markdown('<div class="hb-reset">', unsafe_allow_html=True)
-    if st.button("Reset all", key="ugi_reset_btn", use_container_width=True):
-        st.session_state.update({
-            "ugi_age_band": None, "ugi_result": None, "ugi_escalation": None,
-            "ugi_hbid": None, "ugi_last_inputs": {}, "ugi_hpylori": "notdone",
-            "ugi_ps": "fit", "ugi_symptoms": set(), "ugi_exam": set(),
-            "ugi_modifiers": set(),
-        })
-        st.session_state.ugi_free_text_key += 1
-        st.session_state.ugi_scroll_to_top = True
-        st.rerun()
-    st.markdown('</div></div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # ════════════════════════════ PROCESSING ══════════════════════════════════════
 if submit_clicked and submit_enabled:
@@ -558,27 +547,6 @@ with right_col:
         escalation = st.session_state.ugi_escalation
         hbid       = st.session_state.ugi_hbid
 
-        components.html("""<script>
-    (function() {
-        function doScroll() {
-            var p = window.parent;
-            var anchor = p.document.getElementById('hb-results-anchor');
-            if (anchor) {
-                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
-            } else {
-                // fallback: scroll all containers to top
-                [
-                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
-                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
-                    p.document.querySelector('.main .block-container'),
-                    p.document.body
-                ].forEach(function(el) { if (el) el.scrollTop = 0; });
-            }
-        }
-        setTimeout(doScroll, 150);
-        setTimeout(doScroll, 400);
-    })();
-    </script>""", height=0)
         tier                  = result.get("tier", "SAFETY_NET_ACTIVE")
         tier_label            = result.get("tier_label", tier)
         rationale             = result.get("rationale", "")
