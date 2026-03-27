@@ -318,12 +318,33 @@ with _rt_btn:
             "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
         })
         st.session_state.free_text_key += 1
+        st.session_state.scroll_to_top = True
         st.rerun()
 
 # Handle signout via query param
 if st.query_params.get("signout") == "1":
     st.query_params.clear()
     do_logout()
+
+
+# ── Scroll to top if flagged ──────────────────────────────────────────────────
+if st.session_state.get("scroll_to_top"):
+    st.session_state["scroll_to_top"] = False
+    components.html("""<script>
+    (function() {
+        function doScroll() {
+            var p = window.parent;
+            [
+                p.document.querySelector('[data-testid="stAppViewContainer"]'),
+                p.document.querySelector('[data-testid="stMainBlockContainer"]'),
+                p.document.body
+            ].forEach(function(el) { if (el) el.scrollTop = 0; });
+            p.scrollTo(0, 0);
+        }
+        setTimeout(doScroll, 100);
+        setTimeout(doScroll, 350);
+    })();
+    </script>""", height=0)
 
 left_col, right_col = st.columns([3, 2], gap="small")
 
@@ -474,26 +495,7 @@ with left_col:
             "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
         })
         st.session_state.free_text_key += 1
-        components.html("""<script>
-    (function() {
-        function doScroll() {
-            var p = window.parent;
-            var anchor = p.document.getElementById('hb-results-anchor');
-            if (anchor) {
-                anchor.scrollIntoView({behavior: 'smooth', block: 'start'});
-            } else {
-                [
-                    p.document.querySelector('[data-testid="stAppViewContainer"]'),
-                    p.document.querySelector('[data-testid="stMainBlockContainer"]'),
-                    p.document.querySelector('.main .block-container'),
-                    p.document.body
-                ].forEach(function(el) { if (el) el.scrollTop = 0; });
-            }
-        }
-        setTimeout(doScroll, 150);
-        setTimeout(doScroll, 400);
-    })();
-    </script>""", height=0)
+        st.session_state.scroll_to_top = True
         st.rerun()
     st.markdown('</div></div>', unsafe_allow_html=True)
 
