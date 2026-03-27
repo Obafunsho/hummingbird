@@ -525,40 +525,39 @@ with right_col:
             </div>""", unsafe_allow_html=True)
 
         else:
-        # Tier card
-        # noinspection PyUnboundLocalVariable
+            # Standard tier card
             st.markdown(f"""
-        <div style="border-radius:14px;border:1.5px solid {style['border']};background:#112233;overflow:hidden;margin-bottom:14px;">
-          <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid {style['border']};">
-            <div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Referral decision</div>
-              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">{tier_label}</div>
-            </div>
-            <span style="padding:5px 14px;border-radius:100px;background:{style['badge_bg']};color:{style['badge_col']};font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">{style['badge']}</span>
-          </div>
-          <div style="padding:4px 18px 16px;">
-            <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-block;margin:10px 0 4px;background:{lc};">{lt}</span>
-        """, unsafe_allow_html=True)
+            <div style="border-radius:14px;border:1.5px solid {style['border']};background:#112233;overflow:hidden;margin-bottom:14px;">
+              <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid {style['border']};">
+                <div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(240,244,248,0.45);margin-bottom:5px;">Referral decision</div>
+                  <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#F0F4F8;">{tier_label}</div>
+                </div>
+                <span style="padding:5px 14px;border-radius:100px;background:{style['badge_bg']};color:{style['badge_col']};font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;">{style['badge']}</span>
+              </div>
+              <div style="padding:4px 18px 16px;">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-block;margin:10px 0 4px;background:{lc};">{lt}</span>
+            """, unsafe_allow_html=True)
 
-        if stt_ineligible_reason:
-            st.markdown(f'<div style="font-size:13px;color:#fbbf24;margin-top:6px;padding:8px 12px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.22);">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
+            if stt_ineligible_reason:
+                st.markdown(f'<div style="font-size:13px;color:#fbbf24;margin-top:6px;padding:8px 12px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.22);">⚠ {stt_ineligible_reason}</div>', unsafe_allow_html=True)
 
-        st.markdown(f'<p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
+            st.markdown(f'<p style="font-size:14px;color:rgba(240,244,248,0.75);line-height:1.7;margin-top:10px;">{rationale}</p>', unsafe_allow_html=True)
 
-        if safety_netting:
-            st.markdown(f'<p style="font-size:13px;color:#12C4AF;margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid rgba(14,155,138,.15);">⚑ {safety_netting}</p>', unsafe_allow_html=True)
+            if safety_netting:
+                st.markdown(f'<p style="font-size:13px;color:#12C4AF;margin-top:10px;line-height:1.6;padding-top:10px;border-top:1px solid rgba(14,155,138,.15);">⚑ {safety_netting}</p>', unsafe_allow_html=True)
 
-        if dts:
-            st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(240,244,248,0.06);"><div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
+            if dts:
+                st.markdown(f'<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(240,244,248,0.06);"><div style="font-family:JetBrains Mono,monospace;font-size:10px;color:rgba(240,244,248,0.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Inputs driving decision</div><div>{dts}</div></div>', unsafe_allow_html=True)
 
-        if confidence:
-            cc = {"high":"rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac",
-                  "moderate":"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24",
-                  "uncertain":"rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.25);color:#f87171"}.get(confidence,"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24")
-            ci = {"high":"●","moderate":"◑","uncertain":"○"}.get(confidence,"◑")
-            st.markdown(f'<span style="font-family:JetBrains Mono,monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:{cc};">{ci} Confidence: {confidence}</span>', unsafe_allow_html=True)
+            if confidence:
+                cc = {"high":"rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:#86efac",
+                      "moderate":"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24",
+                      "uncertain":"rgba(192,57,43,.08);border:1px solid rgba(192,57,43,.25);color:#f87171"}.get(confidence,"rgba(217,119,6,.08);border:1px solid rgba(217,119,6,.25);color:#fbbf24")
+                ci = {"high":"●","moderate":"◑","uncertain":"○"}.get(confidence,"◑")
+                st.markdown(f'<span style="font-family:JetBrains Mono,monospace;font-size:10px;padding:3px 9px;border-radius:4px;display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:{cc};">{ci} Confidence: {confidence}</span>', unsafe_allow_html=True)
 
-        st.markdown('</div></div>', unsafe_allow_html=True)
+            st.markdown('</div></div>', unsafe_allow_html=True)
 
         # Escalation score — only shown for 2WW referral tiers
         show_escalation = tier in ("2WW_URGENT_STT", "2WW_URGENT")

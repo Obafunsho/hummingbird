@@ -16,26 +16,26 @@ OUTPUT TIERS — return exactly one of these five values in the "tier" field:
 PATTERN MATCHING — apply in order, return the first match:
 
 PATTERN 1 — Early-onset with unexplained colorectal symptoms
-Condition: Age <50 AND two or more of the following: rectal bleeding; change in
+Condition: Age <60 AND two or more of the following: rectal bleeding; change in
 bowel habit; unexplained weight loss ≥3kg; IDA; unexplained abdominal pain.
 FIT negative or not yet performed.
 Output tier: 2WW_URGENT
-Rationale note: FIT has reduced sensitivity in younger patients and in right-sided
+Rationale note: FIT has reduced sensitivity in patients under 60 and in right-sided
 or early-stage disease. Two or more co-present symptoms in this age group warrants
 urgent referral regardless of FIT result.
 
-PATTERN 2 — Single colorectal symptom, age ≥50, FIT not yet performed
+PATTERN 2 — Single colorectal symptom, age ≥60, FIT not yet performed
 Condition: One of: rectal bleeding; change in bowel habit; unexplained weight loss
-≥3kg; unexplained abdominal pain. Age ≥50. FIT not yet performed.
+≥3kg; unexplained abdominal pain. Age ≥60. FIT not yet performed.
 Output tier: INVESTIGATE_FIRST
 
-PATTERN 3 — Single colorectal symptom, age ≥50, FIT negative
-Condition: One symptom as above. Age ≥50. FIT performed and negative.
+PATTERN 3 — Single colorectal symptom, age ≥60, FIT negative
+Condition: One symptom as above. Age ≥60. FIT performed and negative.
 No other features suggesting colorectal cancer.
 Output tier: SAFETY_NET
 
-PATTERN 4 — Single colorectal symptom, age <50, FIT negative
-Condition: One symptom only. Age <50. FIT negative. No additional features.
+PATTERN 4 — Single colorectal symptom, age <60, FIT negative
+Condition: One symptom only. Age <60. FIT negative. No additional features.
 Output tier: SAFETY_NET
 
 PATTERN 5 — Functional or mild symptoms, FIT negative or not clinically indicated
