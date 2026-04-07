@@ -293,6 +293,7 @@ if st.session_state.get("_do_scroll"):
     </script>
     """, unsafe_allow_html=True)
 
+from pages._nav import render_more_popover
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     if st.button("Colorectal", key="sw_col", use_container_width=True):
@@ -302,9 +303,7 @@ with _sw_col3:
 with _sw_col4:
     if st.button("Appendicitis Risk", key="sw_app2", use_container_width=True):
         st.switch_page("pages/appendicitis.py")
-with _sw_col5:
-    if st.button("Surgical Risk", key="sw_surg2", use_container_width=True):
-        st.switch_page("pages/surgical_risk.py")
+render_more_popover("upper_gi", _sw_col5)
 
 # ── Top reset button ──────────────────────────────────────────────────────────
 _rt_btn, _rt_spacer = st.columns([1, 8])

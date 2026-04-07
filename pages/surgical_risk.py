@@ -80,6 +80,7 @@ if st.query_params.get("signout") == "1":
     do_logout()
 
 # ── Module switcher ──────────────────────────────────────────────────────────
+from pages._nav import render_more_popover
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     if st.button("Colorectal", key="sw_col_s", use_container_width=True):
@@ -90,8 +91,7 @@ with _sw_col3:
 with _sw_col4:
     if st.button("Appendicitis Risk", key="sw_app_s", use_container_width=True):
         st.switch_page("pages/appendicitis.py")
-with _sw_col5:
-    st.button("Surgical Risk", key="sw_surg_cur", use_container_width=True, disabled=True)
+render_more_popover("surgical_risk", _sw_col5)
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────
 HTML = r"""<!DOCTYPE html>
