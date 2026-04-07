@@ -9,9 +9,20 @@ import streamlit as st
 import streamlit.components.v1 as components
 from auth import do_logout
 
+# ── Robust path resolution for Streamlit Cloud ────────────────────────────────
 _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
+
+html_path = _ROOT / "static" / "hummingbird_gynaecology.html"
+
+# Fallback: try relative to cwd if _ROOT resolution fails
+if not html_path.exists():
+    html_path = Path("static") / "hummingbird_gynaecology.html"
+
+if not html_path.exists():
+    st.error(f"Could not locate hummingbird_gynaecology.html. Tried: {_ROOT / 'static' / 'hummingbird_gynaecology.html'}")
+    st.stop()
 
 name = st.session_state.get("name", "")
 
@@ -23,7 +34,6 @@ st.markdown("""
 #MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
-/* Switcher: active button */
 div[data-testid="stHorizontalBlock"] button:disabled {
   background: #1a1a1a !important; border: 0.5px solid #1a1a1a !important;
   color: #fff !important; font-weight: 500 !important;
@@ -73,12 +83,9 @@ with _sw_cols[2]:
 with _sw_cols[3]:
     st.button("Gynaecology", key="sw_cur_gynaecology", use_container_width=True, disabled=True)
 with _sw_cols[4]:
-    if st.button("↑ More ↓", key="sw_more_gynaecology", use_container_width=True):
-        pass  # TODO: expand cancer module picker
+    if st.button("\u2191 More \u2193", key="sw_more_gynaecology", use_container_width=True):
+        pass
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────
-html_path = _ROOT / "static" / "hummingbird_gynaecology.html"
-with open(html_path) as f:
-    HTML = f.read()
-
+HTML = html_path.read_text(encoding="utf-8")
 components.html(HTML, height=1800, scrolling=True)
