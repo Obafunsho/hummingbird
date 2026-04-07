@@ -69,124 +69,22 @@ st.markdown("""
 }
 .hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
 .hb-tile-btn .stButton > button {
-  font-size:12px !important; padding:7px 12px !important;
-  border-radius:0 0 8px 8px !important; margin-top:0 !important;
-  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
-}
-.stTextArea textarea { background:#fafaf8 !important; border:0.5px solid var(--border2) !important; border-radius:6px !important; color:var(--text) !important; font-size:13px !important; }
-.stTextArea textarea::placeholder { color:var(--dim) !important; }
-.stDownloadButton > button { background:#fafaf8 !important; border:0.5px solid var(--border2) !important; border-radius:6px !important; color:var(--text) !important; font-size:13px !important; font-weight:500 !important; padding:9px 16px !important; width:100% !important; }
-.stSpinner > div { border-top-color:var(--accent) !important; }
-
-/* Module switcher active state */
-.sw-active > div > button {
-  background:#1a1a1a !important;
-  border:0.5px solid #1a1a1a !important;
-  color:#fff !important;
-  font-weight:500 !important;
-}
-.sw-active > div > button:hover {
-  background:#1a1a1a !important;
-  color:#fff !important;
-}
-
-/* Switcher: active button styled black via disabled */
-div[data-testid="stHorizontalBlock"] button:disabled,
-div[data-testid="stHorizontalBlock"] button:disabled p,
-div[data-testid="stHorizontalBlock"] button:disabled span {
-  background: #1a1a1a !important;
-  border: 0.5px solid #1a1a1a !important;
-  color: #fff !important;
-  font-weight: 500 !important;
-  opacity: 1 !important;
-  cursor: default !important;
-}
-/* Full-tile clickable buttons */
-.hb-tile-btn div[data-testid="stButton"] > button,
-.hb-tile-btn .stButton > button {
-  border-radius: 8px !important;
+  border-radius: 0 0 8px 8px !important;
   border: 0.5px solid #e2dfd8 !important;
-  padding: 12px 14px !important;
-  text-align: left !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
+  border-top: none !important;
+  padding: 4px 14px !important;
+  min-height: unset !important;
+  height: 28px !important;
+  font-size: 11px !important;
+  font-weight: 400 !important;
   width: 100% !important;
-  background: #fff !important;
-  color: #1a1a1a !important;
-  transition: all 0.12s !important;
+  background: #fafaf8 !important;
+  color: #bbb !important;
 }
-.hb-tile-btn div[data-testid="stButton"] > button:hover,
 .hb-tile-btn .stButton > button:hover {
   border-color: #1a1a1a !important;
-  background: #fafaf8 !important;
-}
-.hb-tile-btn-sel div[data-testid="stButton"] > button,
-.hb-tile-btn-sel .stButton > button {
-  border-radius: 8px !important;
-  border: 0.5px solid #1a1a1a !important;
-  padding: 12px 14px !important;
-  text-align: left !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #1a1a1a !important;
-  color: #fff !important;
-}
-.hb-tile-btn-hard div[data-testid="stButton"] > button,
-.hb-tile-btn-hard .stButton > button {
-  border-radius: 8px !important;
-  border: 0.5px solid #e8c8c4 !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #fff !important;
-  color: #1a1a1a !important;
-}
-.hb-tile-btn-hard-sel div[data-testid="stButton"] > button,
-.hb-tile-btn-hard-sel .stButton > button {
-  border-radius: 8px !important;
-  border: 0.5px solid #c0392b !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #c0392b !important;
-  color: #fff !important;
-}
-.hb-tile-btn-mod div[data-testid="stButton"] > button,
-.hb-tile-btn-mod .stButton > button {
-  border-radius: 8px !important;
-  border: 0.5px solid #e2dfd8 !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #fafaf8 !important;
-  color: #666 !important;
-}
-.hb-tile-btn-mod-sel div[data-testid="stButton"] > button,
-.hb-tile-btn-mod-sel .stButton > button {
-  border-radius: 8px !important;
-  border: 0.5px solid #a8a49e !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 13px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
   background: #f0ede8 !important;
-  color: #1a1a1a !important;
+  color: #666 !important;
 }
 
 
@@ -344,10 +242,10 @@ if st.session_state.get("_do_scroll"):
 from pages._nav import render_more_popover
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
-    if st.button("Colorectal", key="sw_col", use_container_width=True):
+    if st.button("Colorectal", key="sw_col2", use_container_width=True):
         st.switch_page("pages/colorectal.py")
 with _sw_col3:
-    st.button("Upper GI", key="sw_ugi2", use_container_width=True, disabled=True)
+    st.button("Upper GI", key="sw_ugi", use_container_width=True, disabled=True)
 with _sw_col4:
     if st.button("Appendicitis Risk", key="sw_app2", use_container_width=True):
         st.switch_page("pages/appendicitis.py")
@@ -384,10 +282,9 @@ with left_col:
     for i, (val, label) in enumerate(AGE_BANDS):
         with cols[i]:
             sel = st.session_state.ugi_age_band == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_age_{val}", use_container_width=True):
+            tile_indicator(label, "", sel)
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_age_{val}", use_container_width=True):
                 st.session_state.ugi_age_band = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -400,11 +297,9 @@ with left_col:
     for i, (key, label, sub) in enumerate(SYMPTOMS):
         with cols[i % 2]:
             sel = key in st.session_state.ugi_symptoms
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_sym_{key}", use_container_width=True):
+            tile_indicator(label, sub, sel)
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_sym_{key}", use_container_width=True):
                 st.session_state.ugi_symptoms.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -423,11 +318,9 @@ with left_col:
     for i, (key, label, sub) in enumerate(EXAM_FINDINGS):
         with cols[i]:
             sel = key in st.session_state.ugi_exam
-            css_cls = "hb-tile-btn-hard-sel" if sel else "hb-tile-btn-hard"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_exam_{key}", use_container_width=True):
+            tile_indicator(label, sub, sel, kind="hard")
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_exam_{key}", use_container_width=True):
                 st.session_state.ugi_exam.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -441,10 +334,9 @@ with left_col:
     for i, (val, label) in enumerate(HPYLORI_OPTIONS):
         with cols[i]:
             sel = st.session_state.ugi_hpylori == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_hp_{val}", use_container_width=True):
+            tile_indicator(label, "", sel)
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_hp_{val}", use_container_width=True):
                 st.session_state.ugi_hpylori = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -457,10 +349,9 @@ with left_col:
     for i, (val, label) in enumerate(PS_OPTIONS):
         with cols[i]:
             sel = st.session_state.ugi_ps == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_ps_{val}", use_container_width=True):
+            tile_indicator(label, "", sel)
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_ps_{val}", use_container_width=True):
                 st.session_state.ugi_ps = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -482,11 +373,9 @@ with left_col:
     for i, (key, label, sub) in enumerate(MODIFIERS):
         with cols[i % 2]:
             sel = key in st.session_state.ugi_modifiers
-            css_cls = "hb-tile-btn-mod-sel" if sel else "hb-tile-btn-mod"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_mod_{key}", use_container_width=True):
+            tile_indicator(label, sub, sel, kind="mod")
+            st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
+            if st.button("Select", key=f"ugi_mod_{key}", use_container_width=True):
                 st.session_state.ugi_modifiers.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
