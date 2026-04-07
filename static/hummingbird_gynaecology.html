@@ -32,7 +32,7 @@
   }
 
   /* ── TOPBAR ── */
-  .topbar {
+  .topbar { display:none !important; /* removed — handled by Streamlit wrapper */ 
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -589,13 +589,6 @@
 </style>
 </head>
 <body>
-<div class="topbar">
-  <div class="brand">
-    <span class="wordmark">HUMMINGBIRD</span>
-    <span class="subtitle">Gynaecology · Ovarian &amp; Endometrial</span>
-  </div>
-  <span class="version-tag">HRI v1.0 · NICE NG12 · Layer 1 + 2</span>
-</div>
 <div class="layout">
 <div class="inputs-panel">
 
