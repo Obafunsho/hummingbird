@@ -374,7 +374,7 @@ with left_col:
             sel = st.session_state.age_band == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"age_{val}", use_container_width=True):
+            if st.button("​", key=f"age_{val}", use_container_width=True):
                 st.session_state.age_band=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -388,7 +388,7 @@ with left_col:
             kind = "hard" if colour in ("red","darkred") else "sym"
             tile_indicator(label, "", sel, kind=kind)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"fit_{val}", use_container_width=True):
+            if st.button("​", key=f"fit_{val}", use_container_width=True):
                 st.session_state.fit_result=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -401,7 +401,7 @@ with left_col:
             sel = key in st.session_state.selected_symptoms
             tile_indicator(label, sub, sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"sym_{key}", use_container_width=True):
+            if st.button("​", key=f"sym_{key}", use_container_width=True):
                 st.session_state.selected_symptoms.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -421,7 +421,7 @@ with left_col:
             sel = key in st.session_state.selected_exam
             tile_indicator(label, sub, sel, kind="hard")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"exam_{key}", use_container_width=True):
+            if st.button("​", key=f"exam_{key}", use_container_width=True):
                 st.session_state.selected_exam.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -436,7 +436,7 @@ with left_col:
             sel = st.session_state.performance_status == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ps_{val}", use_container_width=True):
+            if st.button("​", key=f"ps_{val}", use_container_width=True):
                 st.session_state.performance_status=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("""<p style="font-size:12px;color:#999;margin-top:8px;
@@ -460,7 +460,7 @@ with left_col:
             sel = key in st.session_state.selected_modifiers
             tile_indicator(label, sub, sel, kind="mod")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"mod_{key}", use_container_width=True):
+            if st.button("​", key=f"mod_{key}", use_container_width=True):
                 st.session_state.selected_modifiers.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)

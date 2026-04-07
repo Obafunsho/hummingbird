@@ -354,7 +354,7 @@ with left_col:
             sel = st.session_state.ugi_age_band == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_age_{val}", use_container_width=True):
+            if st.button("​", key=f"ugi_age_{val}", use_container_width=True):
                 st.session_state.ugi_age_band = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -369,7 +369,7 @@ with left_col:
             sel = key in st.session_state.ugi_symptoms
             tile_indicator(label, sub, sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_sym_{key}", use_container_width=True):
+            if st.button("​", key=f"ugi_sym_{key}", use_container_width=True):
                 st.session_state.ugi_symptoms.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -390,7 +390,7 @@ with left_col:
             sel = key in st.session_state.ugi_exam
             tile_indicator(label, sub, sel, kind="hard")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_exam_{key}", use_container_width=True):
+            if st.button("​", key=f"ugi_exam_{key}", use_container_width=True):
                 st.session_state.ugi_exam.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -406,7 +406,7 @@ with left_col:
             sel = st.session_state.ugi_hpylori == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_hp_{val}", use_container_width=True):
+            if st.button("​", key=f"ugi_hp_{val}", use_container_width=True):
                 st.session_state.ugi_hpylori = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -421,7 +421,7 @@ with left_col:
             sel = st.session_state.ugi_ps == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_ps_{val}", use_container_width=True):
+            if st.button("​", key=f"ugi_ps_{val}", use_container_width=True):
                 st.session_state.ugi_ps = val
                 st.session_state.ugi_result = None
                 st.rerun()
@@ -445,7 +445,7 @@ with left_col:
             sel = key in st.session_state.ugi_modifiers
             tile_indicator(label, sub, sel, kind="mod")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("· select ·", key=f"ugi_mod_{key}", use_container_width=True):
+            if st.button("​", key=f"ugi_mod_{key}", use_container_width=True):
                 st.session_state.ugi_modifiers.symmetric_difference_update({key})
                 st.session_state.ugi_result = None
                 st.rerun()
