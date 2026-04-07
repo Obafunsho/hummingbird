@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hummingbird — Sarcoma</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B1826;--navy-mid:#0D2137;--navy-card:#112233;--navy-tile:#1B3A52;--teal:#0E9B8A;--teal-bright:#12C4AF;--teal-dim:rgba(14,155,138,0.15);--red:#C0392B;--red-dark:#7f1d1d;--amber:#d97706;--white:#F0F4F8;--white-dim:rgba(240,244,248,0.55);--white-faint:rgba(240,244,248,0.07);--border:rgba(14,155,138,0.18);--border-faint:rgba(240,244,248,0.07);--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--navy);position:sticky;top:0;z-index:100;}
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .wordmark{font-family:'DM Serif Display',serif;font-size:21px;color:var(--teal-bright);letter-spacing:.06em;}
+  .subtitle{font-size:11px;font-weight:500;color:var(--white-dim);letter-spacing:.12em;text-transform:uppercase;}
+  .version-tag{font-family:var(--mono);font-size:10px;color:var(--white-dim);background:var(--white-faint);padding:4px 10px;border-radius:4px;border:1px solid var(--border);}
+  .layout{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 57px);}
+  .inputs-panel{padding:32px 40px 80px;border-right:1px solid var(--border);}
+  .section-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .anno{font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;margin-bottom:6px;display:block;}
+  .input-group{margin-bottom:28px;}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{padding:9px 18px;border-radius:100px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+  .pill:hover{border-color:var(--teal);color:var(--white);}
+  .pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .tile{padding:13px 14px;border-radius:10px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;line-height:1.3;}
+  .tile:hover{border-color:var(--teal);color:var(--white);}
+  .tile.selected{background:rgba(14,155,138,.18);border-color:var(--teal);color:var(--white);}
+  .tile.hard-rule{border-color:rgba(192,57,43,.35);}
+  .tile.hard-rule:hover{border-color:var(--red);}
+  .tile.hard-rule.selected{background:rgba(192,57,43,.18);border-color:var(--red);color:var(--white);}
+  .tile-sub{font-size:10px;font-weight:400;color:var(--white-dim);display:block;margin-top:2px;}
+  .tile.opt{opacity:.7;}
+  .tile.opt:hover{opacity:1;}
+  .tile.opt.selected{opacity:1;}
+  .submit-btn{width:100%;padding:15px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:all .15s;margin-top:4px;opacity:.35;pointer-events:none;}
+  .submit-btn.ready{opacity:1;pointer-events:auto;}
+  .submit-btn.ready:hover{background:var(--teal-bright);transform:translateY(-1px);}
+  .submit-btn.loading{opacity:.7;pointer-events:none;}
+  .click-counter{text-align:center;font-family:var(--mono);font-size:11px;color:var(--white-dim);margin-top:9px;}
+  .click-counter span{color:var(--teal-bright);}
+  .reset-link{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--white-dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;display:block;text-align:center;margin-top:12px;transition:color .15s;}
+  .reset-link:hover{color:var(--teal);}
+  .output-panel{padding:32px 26px 60px;background:var(--navy-mid);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+  .waiting{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:.3;}
+  .waiting-icon{font-size:28px;}
+  .waiting p{font-size:12px;color:var(--white-dim);text-align:center;line-height:1.6;max-width:190px;}
+  .loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:1;opacity:.6;}
+  .loading-state.visible{display:flex;}
+  .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-state p{font-size:12px;color:var(--white-dim);font-family:var(--mono);}
+  .output-card{display:none;flex-direction:column;gap:16px;}
+  .output-card.visible{display:flex;}
+  .override{padding:11px 14px;border-radius:8px;background:rgba(127,29,29,.3);border:1.5px solid var(--red-dark);font-size:12px;font-weight:600;color:#fca5a5;line-height:1.5;display:none;}
+  .override.visible{display:block;}
+  .hbid-bar{display:flex;justify-content:flex-end;font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;}
+  .tier-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);overflow:hidden;}
+  .tier-header{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid transparent;}
+  .tier-label-group{display:flex;flex-direction:column;gap:2px;}
+  .tier-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .tier-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--white);}
+  .tier-badge{padding:4px 11px;border-radius:100px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
+  .tier-body{padding:0 15px 13px;}
+  .tier-rationale{font-size:12px;color:var(--white-dim);line-height:1.6;margin-top:10px;}
+  .tier-safety{font-size:11px;color:var(--teal);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers-label{font-family:var(--mono);font-size:9px;color:var(--white-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .driver-tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .driver-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--teal-dim);border:1px solid var(--border);color:var(--teal-bright);}
+  .confidence-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;margin-top:8px;}
+  .conf-high{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
+  .conf-moderate{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);color:#fbbf24;}
+  .conf-uncertain{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .stt-ineligible{font-size:11px;color:#fbbf24;margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.25);}
+  .layer-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+  .layer-1{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .layer-2{background:rgba(14,155,138,.1);border:1px solid rgba(14,155,138,.25);color:var(--teal-bright);}
+  .score-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);padding:14px 15px;}
+  .score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .score-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .score-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal);}
+  .score-bar-bg{height:4px;border-radius:2px;background:var(--navy-tile);margin-bottom:8px;}
+  .score-bar-fill{height:4px;border-radius:2px;background:var(--teal);transition:width .4s;}
+  .score-max{font-family:var(--mono);font-size:9px;color:var(--white-dim);margin-bottom:6px;}
+  .score-tier{font-size:11px;font-weight:600;color:var(--teal);margin-bottom:2px;}
+  .score-action{font-size:11px;color:var(--white-dim);line-height:1.5;}
+  .sc-std .score-num,.sc-std .score-tier{color:var(--white-dim);} .sc-std .score-bar-fill{background:var(--white-dim);}
+  .sc-elev .score-num,.sc-elev .score-tier{color:var(--amber);} .sc-elev .score-bar-fill{background:var(--amber);}
+  .sc-high .score-num,.sc-high .score-tier{color:var(--red);} .sc-high .score-bar-fill{background:var(--red);}
+  .sc-stt .score-num,.sc-stt .score-tier{color:#fca5a5;} .sc-stt .score-bar-fill{background:var(--red-dark);}
+  .t-stt .tier-header{border-color:var(--red-dark);} .t-stt .tier-badge{background:rgba(127,29,29,.3);color:#fca5a5;} .t-stt .tier-name{color:#fca5a5;}
+  .t-2ww .tier-header{border-color:var(--red);} .t-2ww .tier-badge{background:rgba(192,57,43,.2);color:#f87171;}
+  .t-elev .tier-header{border-color:var(--amber);} .t-elev .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-std .tier-header{border-color:rgba(240,244,248,.15);} .t-std .tier-badge{background:rgba(240,244,248,.08);color:var(--white-dim);}
+  .t-invest .tier-header{border-color:var(--amber);} .t-invest .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-active .tier-header{border-color:var(--teal);} .t-active .tier-badge{background:var(--teal-dim);color:var(--teal-bright);}
+  .t-reassure .tier-header{border-color:rgba(240,244,248,.1);} .t-reassure .tier-badge{background:rgba(240,244,248,.06);color:var(--white-dim);}
+  .post-output{display:none;flex-direction:column;gap:8px;}
+  .post-output.visible{display:flex;}
+  .nhs-input{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:var(--mono);font-size:12px;outline:none;transition:border-color .15s;}
+  .nhs-input::placeholder{color:var(--white-dim);}
+  .nhs-input:focus{border-color:var(--teal);}
+  .btn-row{display:flex;gap:8px;}
+  .btn-sec{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .btn-sec:hover{border-color:var(--teal);color:var(--teal);}
+  .btn-pri{flex:1;padding:10px;border-radius:8px;border:none;background:var(--teal);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+  .btn-pri:hover{background:var(--teal-bright);}
+  .footer-note{font-size:10px;color:var(--white-dim);opacity:.45;line-height:1.6;border-top:1px solid var(--border);padding-top:10px;}
+  .free-text{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:64px;transition:border-color .15s;margin-top:8px;}
+  .free-text::placeholder{color:var(--white-dim);}
+  .free-text:focus{border-color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <span class="wordmark">HUMMINGBIRD</span>
+    <span class="subtitle">Sarcoma · Soft Tissue &amp; Bone</span>
+  </div>
+  <span class="version-tag">HRI v1.0 · NICE NG12 · Layer 1 + 2</span>
+</div>
+<div class="layout">
+<div class="inputs-panel">
+
+  <div class="input-group">
+    <div class="section-label">Age band</div>
+    <span class="anno">1 CLICK · REQUIRED · SARCOMA HAS BIMODAL DISTRIBUTION — ALL AGES AT RISK</span>
+    <div class="pill-row">
+      <div class="pill" data-group="age" data-val="u30" onclick="selectPill(this)">Under 30</div>
+      <div class="pill" data-group="age" data-val="30s" onclick="selectPill(this)">30–49</div>
+      <div class="pill" data-group="age" data-val="50s" onclick="selectPill(this)">50–69</div>
+      <div class="pill" data-group="age" data-val="70p" onclick="selectPill(this)">70 or over</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Performance status</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="ps" data-val="fit" onclick="selectPill(this)">PS 0–1 (fit)</div>
+      <div class="pill" data-group="ps" data-val="unfit" onclick="selectPill(this)">PS 2+ (limited)</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Presentation type</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="type" data-val="soft-tissue" onclick="selectPill(this)">Soft tissue lump</div>
+      <div class="pill" data-group="type" data-val="bone" onclick="selectPill(this)">Bone pain / swelling</div>
+      <div class="pill" data-group="type" data-val="both" onclick="selectPill(this)">Both</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Soft tissue lump features</div>
+    <span class="anno">SELECT ALL PRESENT · RED BORDER = HIGH-YIELD SARCOMA FEATURES</span>
+    <div class="tile-grid">
+      <div class="tile hard-rule" data-key="deep-fascia" onclick="selectTile(this)">
+        Deep to fascia
+        <span class="tile-sub">Below the deep fascia layer</span>
+      </div>
+      <div class="tile hard-rule" data-key="size-5cm" onclick="selectTile(this)">
+        Size ≥5cm
+        <span class="tile-sub">On examination or imaging</span>
+      </div>
+      <div class="tile hard-rule" data-key="increasing" onclick="selectTile(this)">
+        Increasing in size
+        <span class="tile-sub">Over weeks · progressive</span>
+      </div>
+      <div class="tile" data-key="painful-lump" onclick="selectTile(this)">
+        Painful mass
+        <span class="tile-sub">Spontaneous · not explained by trauma</span>
+      </div>
+      <div class="tile" data-key="firm-hard" onclick="selectTile(this)">
+        Firm or hard consistency
+        <span class="tile-sub">Not soft / compressible</span>
+      </div>
+      <div class="tile" data-key="fixed" onclick="selectTile(this)">
+        Fixed to surrounding structures
+        <span class="tile-sub">Not mobile on examination</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Bone features</div>
+    <span class="anno">SELECT ALL PRESENT</span>
+    <div class="tile-grid">
+      <div class="tile hard-rule" data-key="path-fracture" onclick="selectTile(this)">
+        Pathological fracture
+        <span class="tile-sub">Fracture without adequate trauma</span>
+      </div>
+      <div class="tile hard-rule" data-key="bone-swelling" onclick="selectTile(this)">
+        Bone swelling / mass
+        <span class="tile-sub">Palpable · unexplained</span>
+      </div>
+      <div class="tile" data-key="bone-pain-night" onclick="selectTile(this)">
+        Bone pain — night pain
+        <span class="tile-sub">Waking at night · unexplained</span>
+      </div>
+      <div class="tile" data-key="bone-pain-rest" onclick="selectTile(this)">
+        Bone pain at rest
+        <span class="tile-sub">Not explained by injury or activity</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Prior investigation — last 12 months</div>
+    <span class="anno">SELECT IF RELEVANT NORMAL INVESTIGATION EXISTS</span>
+    <div class="tile-grid">
+      <div class="tile opt" data-key="mri-clear" onclick="selectTile(this)">
+        Normal MRI of this anatomical site
+        <span class="tile-sub">Within 12 months · no mass / abnormality</span>
+      </div>
+      <div class="tile opt" data-key="xray-clear" onclick="selectTile(this)">
+        Normal plain X-ray of this bone
+        <span class="tile-sub">Within 12 months · no abnormality</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(240,244,248,0.3);margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--white-faint);border:1px solid var(--border-faint);">
+      MRI is the definitive deflector. Plain X-ray deflects bone pain only — it does not exclude soft tissue sarcoma.
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Additional clinical context</div>
+    <span class="anno">OPTIONAL</span>
+    <textarea class="free-text" id="free-text" placeholder="e.g. known NF1 (neurofibromatosis — significant sarcoma risk), previous radiotherapy to this area, known Paget's disease of bone, Li-Fraumeni syndrome…"></textarea>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="getRecommendation()">Get recommendation →</button>
+  <div class="click-counter" id="click-counter">Select age to begin</div>
+  <button class="reset-link" onclick="resetAll()">Reset</button>
+
+</div>
+<div class="output-panel">
+  <div class="waiting" id="waiting"><div class="waiting-icon">◎</div><p>Complete all sections and submit to generate a Hummingbird recommendation.</p></div>
+  <div class="loading-state" id="loading-state"><div class="spinner"></div><p>Reasoning…</p></div>
+  <div class="output-card" id="output-card">
+    <div class="hbid-bar" id="hbid-bar"></div>
+    <div class="override" id="override-flag"></div>
+    <div class="tier-card" id="tier-card">
+      <div class="tier-header">
+        <div class="tier-label-group">
+          <span class="tier-eyebrow">Hummingbird recommendation</span>
+          <span class="tier-name" id="tier-name"></span>
+        </div>
+        <span class="tier-badge" id="tier-badge"></span>
+      </div>
+      <div class="tier-body">
+        <div id="layer-tag-container"></div>
+        <div class="tier-rationale" id="tier-rationale"></div>
+        <div id="stt-ineligible-note"></div>
+        <div class="tier-safety" id="tier-safety"></div>
+        <div class="tier-drivers" id="tier-drivers">
+          <div class="tier-drivers-label">Contributing factors</div>
+          <div class="driver-tags" id="driver-tags"></div>
+        </div>
+        <div id="confidence-container"></div>
+      </div>
+    </div>
+    <div class="score-card" id="score-card">
+      <div class="score-header">
+        <span class="score-label">Hummingbird Risk Index</span>
+        <span class="score-num" id="score-num">0</span>
+      </div>
+      <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar" style="width:0%"></div></div>
+      <div class="score-max">Score <span id="score-val">0</span> / 16 &nbsp;·&nbsp; MRI clear −4 · X-ray clear (bone only) −2</div>
+      <div class="score-tier" id="score-tier"></div>
+      <div class="score-action" id="score-action"></div>
+    </div>
+    <div class="post-output" id="post-output">
+      <input class="nhs-input" type="text" id="nhs-input" placeholder="NHS Number (optional · appears on PDF only)" maxlength="12">
+      <div class="btn-row">
+        <button class="btn-sec">⬇ Download PDF</button>
+        <button class="btn-pri">✉ Email PDF</button>
+      </div>
+    </div>
+    <div class="footer-note">Hummingbird HRI v1.0 · Sarcoma module · NICE NG12 compliant · Not prospectively validated · Does not replace clinical judgement · MHRA registration in progress · Configured by Prof Aneel Bhangu</div>
+  </div>
+</div>
+</div>
+<script>
+let clicks=0;
+const getVal  = g=>{const el=document.querySelector(`.pill[data-group="${g}"].selected`);return el?el.dataset.val:null;};
+const hasTile = k=>!!document.querySelector(`.tile[data-key="${k}"].selected`);
+
+function getScore(){
+  let s=0;
+  // Soft tissue
+  if(hasTile('deep-fascia'))    s+=5;
+  if(hasTile('size-5cm'))       s+=4;
+  if(hasTile('increasing'))     s+=4;
+  if(hasTile('painful-lump'))   s+=2;
+  if(hasTile('firm-hard'))      s+=1;
+  if(hasTile('fixed'))          s+=2;
+  // Bone
+  if(hasTile('path-fracture'))  s+=5;
+  if(hasTile('bone-swelling'))  s+=4;
+  if(hasTile('bone-pain-night'))s+=3;
+  if(hasTile('bone-pain-rest')) s+=2;
+  // Deflectors
+  if(hasTile('mri-clear'))      s-=4;
+  if(hasTile('xray-clear')&&(getVal('type')==='bone'||getVal('type')==='both')) s-=2;
+  return Math.max(0,s);
+}
+
+function sttEligible(){return getVal('ps')==='fit';}
+
+// Key safety net function — superficial benign-pattern lump
+function likelyBenign(){
+  return !hasTile('deep-fascia')&&!hasTile('size-5cm')&&!hasTile('increasing')&&!hasTile('fixed')&&!hasTile('path-fracture')&&!hasTile('bone-swelling');
+}
+
+function generateHBID(){
+  const d=new Date();
+  const dt=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r='';for(let i=0;i<6;i++)r+=chars[Math.floor(Math.random()*chars.length)];
+  return `HB-SA-${dt}-${r}`;
+}
+
+function layer1(){
+  const type=getVal('type');
+  const deep=hasTile('deep-fascia'),large=hasTile('size-5cm'),growing=hasTile('increasing');
+  const pathFx=hasTile('path-fracture'),boneSwelling=hasTile('bone-swelling');
+  const mriClear=hasTile('mri-clear'),xrayClear=hasTile('xray-clear');
+  const stt=sttEligible();
+
+  // Pathological fracture — urgent
+  if(pathFx){
+    return{tier:'t-stt',name:'URGENT REFERRAL',badge:'Urgent',
+      rationale:'Pathological fracture requires urgent orthopaedic assessment and imaging to exclude primary bone malignancy or metastatic disease. Do not use standard 2WW — contact orthopaedics directly.',
+      safety:'Arrange plain X-ray of affected bone urgently. Patient may require same-day assessment if at risk of re-fracture.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['Pathological fracture','Urgent orthopaedic assessment required'],confidence:'high'};
+  }
+
+  // Deep-to-fascia soft tissue mass — direct USC trigger (NICE NG12 1.9.1)
+  if(deep||(large&&growing)){
+    if(mriClear) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+      rationale:'Concerning soft tissue features with normal MRI of this anatomical site within 12 months. Safety net — review in 4 weeks. If lump grows, refer immediately.',
+      safety:'If lump increases in size, becomes fixed, or new features develop — refer via 2WW immediately.',
+      layer:'Layer 1 — deflected by prior investigation',sttIneligibleNote:null,
+      drivers:['Concerning soft tissue features','MRI clear within 12m'],confidence:'high'};
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:'Soft tissue mass deep to fascia and/or ≥5cm and growing is a direct NICE NG12 USC trigger for sarcoma. PS 0–1 — eligible for Straight to Test with direct access to specialist sarcoma unit.',
+      safety:'Do not biopsy in primary care — biopsy should be performed at the specialist sarcoma centre to avoid tract seeding.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['Deep to fascia','NICE NG12 sarcoma trigger'],confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:'Soft tissue mass deep to fascia and/or ≥5cm and growing is a direct NICE NG12 USC trigger for sarcoma. Refer via 2WW to specialist sarcoma unit.',
+      safety:'Do not biopsy in primary care. Arrange MRI of the affected site if not done — include in referral.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers:['Soft tissue sarcoma features','NICE NG12 trigger'],confidence:'high'};
+  }
+
+  // Bone swelling or unexplained bone pain with imaging abnormality
+  if(boneSwelling){
+    if(mriClear&&xrayClear) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+      rationale:'Bone swelling with normal MRI and X-ray within 12 months. Safety net — review in 4 weeks.',
+      safety:'If swelling grows or pain worsens — arrange repeat imaging and refer.',
+      layer:'Layer 1 — deflected by prior investigation',sttIneligibleNote:null,
+      drivers:['Bone swelling','MRI and X-ray clear'],confidence:'high'};
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:'Unexplained bone swelling is a direct USC trigger for bone sarcoma. PS 0–1 — eligible for Straight to Test.',
+      safety:'Arrange plain X-ray of affected bone urgently if not done. Do not biopsy in primary care.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['Bone swelling','Bone sarcoma USC trigger'],confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:'Unexplained bone swelling is a direct USC trigger for bone sarcoma. Refer via 2WW.',
+      safety:'Arrange plain X-ray urgently. Include imaging in referral. Do not biopsy in primary care.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers:['Bone swelling'],confidence:'high'};
+  }
+
+  return null;
+}
+
+function layer2(){
+  const type=getVal('type');
+  const s=getScore();
+  const stt=sttEligible();
+  const mriClear=hasTile('mri-clear');
+  const drivers=[];
+
+  if(hasTile('painful-lump'))    drivers.push('Painful mass');
+  if(hasTile('firm-hard'))       drivers.push('Firm / hard consistency');
+  if(hasTile('bone-pain-night')) drivers.push('Night bone pain');
+  if(hasTile('bone-pain-rest'))  drivers.push('Bone pain at rest');
+  if(mriClear)                   drivers.push('MRI clear — deflects');
+
+  if(s>=9){
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:`HRI score ${s} — high risk. PS 0–1 — eligible for Straight to Test specialist sarcoma unit.`,
+      safety:'Do not biopsy in primary care. Arrange MRI if not done.',
+      layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:`HRI score ${s} — high risk. Refer urgently via USC pathway to specialist sarcoma unit.`,
+      safety:'Do not biopsy in primary care. Include MRI findings if available.',
+      layer:'Layer 2 — HRI scoring',sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers,confidence:'high'};
+  }
+
+  if(s>=4) return{tier:'t-elev',name:'2WW REFERRAL',badge:'2WW',
+    rationale:`HRI score ${s} — elevated risk. Refer via USC pathway. Arrange MRI of affected site if not done.`,
+    safety:'Do not biopsy in primary care.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+
+  if((type==='bone'||type==='both')&&(hasTile('bone-pain-night')||hasTile('bone-pain-rest'))&&!mriClear&&!hasTile('xray-clear')) return{
+    tier:'t-invest',name:'INVESTIGATE FIRST',badge:'X-ray',
+    rationale:'Unexplained bone pain without imaging. Arrange plain X-ray as first investigation — abnormal result warrants urgent USC referral.',
+    safety:'Review X-ray result within 5 working days. If any bone lesion, periosteal reaction, or cortical destruction is visible — refer via 2WW immediately.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:[...drivers,'Bone pain without imaging'],confidence:'moderate'};
+
+  // Key safety net — superficial small stable lump
+  if(likelyBenign()) return{tier:'t-reassure',name:'REASSURE',badge:'Discharge',
+    rationale:'Superficial, small, non-growing soft tissue lump without sarcoma features. This pattern is consistent with a benign lipoma or cyst. No USC referral indicated.',
+    safety:'Advise patient to return if lump grows rapidly, becomes painful, hardens, or appears to fix to deep structures.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:['Superficial','Small','Non-growing','No deep features'],confidence:'high'};
+
+  if(mriClear) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Normal MRI within 12 months significantly reduces sarcoma probability. Safety net — review if lump changes.',
+    safety:'If lump grows, becomes fixed, or new features develop — refer via 2WW.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:[...drivers,'MRI clear'],confidence:'high'};
+
+  return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Insufficient sarcoma features to meet USC threshold. Safety net — review in 4 weeks. Arrange MRI if any growth or change.',
+    safety:'If lump grows or becomes deep / firm / fixed — refer immediately via 2WW.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+}
+
+function renderOverride(){
+  const flag=document.getElementById('override-flag');
+  if(hasTile('deep-fascia')&&hasTile('size-5cm')&&hasTile('increasing')){
+    flag.textContent='⚠ HIGHEST RISK — deep, large, growing mass. Classic sarcoma presentation. STT pathway if PS 0–1. Do not biopsy in primary care.';
+    flag.classList.add('visible');
+  } else flag.classList.remove('visible');
+}
+
+function renderTierCard(r){
+  document.getElementById('tier-card').className='tier-card '+r.tier;
+  document.getElementById('tier-name').textContent=r.name;
+  document.getElementById('tier-badge').textContent=r.badge;
+  document.getElementById('tier-rationale').textContent=r.rationale;
+  const safety=document.getElementById('tier-safety');
+  safety.textContent=r.safety||'';safety.style.display=r.safety?'':'none';
+  document.getElementById('layer-tag-container').innerHTML=`<span class="layer-tag ${r.layer.startsWith('Layer 1')?'layer-1':'layer-2'}">${r.layer}</span>`;
+  document.getElementById('stt-ineligible-note').innerHTML=r.sttIneligibleNote?`<div class="stt-ineligible">⚠ ${r.sttIneligibleNote}</div>`:'';
+  const drvTags=document.getElementById('driver-tags');
+  const drvCont=document.getElementById('tier-drivers');
+  if(r.drivers&&r.drivers.length){drvTags.innerHTML=r.drivers.map(d=>`<span class="driver-tag">${d}</span>`).join('');drvCont.style.display='';}
+  else drvCont.style.display='none';
+  const confCont=document.getElementById('confidence-container');
+  if(r.confidence){
+    const cls=r.confidence==='high'?'conf-high':r.confidence==='moderate'?'conf-moderate':'conf-uncertain';
+    const icon=r.confidence==='high'?'●':r.confidence==='moderate'?'◑':'○';
+    confCont.innerHTML=`<span class="confidence-badge ${cls}">${icon} Confidence: ${r.confidence}</span>`;
+  } else confCont.innerHTML='';
+}
+
+function renderScore(s){
+  const card=document.getElementById('score-card');
+  card.className='score-card';
+  document.getElementById('score-num').textContent=s;
+  document.getElementById('score-val').textContent=s;
+  document.getElementById('score-bar').style.width=Math.min((s/16)*100,100)+'%';
+  let cls,tier,action;
+  if(s<=3)      {cls='sc-std'; tier='LOW RISK'; action='Safety net. Review if lump changes.';}
+  else if(s<=8) {cls='sc-elev';tier='ELEVATED';  action='Prioritised 2WW — refer to specialist sarcoma unit.';}
+  else          {cls='sc-high';tier='HIGH';       action='Urgent 2WW or STT — specialist sarcoma unit. Do not biopsy.';}
+  card.classList.add(cls);
+  document.getElementById('score-tier').textContent=tier;
+  document.getElementById('score-action').textContent=action;
+}
+
+function getRecommendation(){
+  const btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');btn.textContent='Reasoning…';
+  document.getElementById('waiting').style.display='none';
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('loading-state').classList.add('visible');
+  const l1=layer1();
+  setTimeout(()=>{
+    document.getElementById('loading-state').classList.remove('visible');
+    const result=l1||layer2();
+    const score=getScore();
+    document.getElementById('hbid-bar').textContent=generateHBID();
+    renderOverride();renderTierCard(result);renderScore(score);
+    document.getElementById('output-card').classList.add('visible');
+    document.getElementById('post-output').classList.add('visible');
+    btn.classList.remove('loading');btn.textContent='Get recommendation →';
+  },l1?200:1200);
+}
+
+function allRequired(){return !!(getVal('age')&&getVal('ps')&&getVal('type'));}
+
+function selectPill(el){
+  const g=el.dataset.group;
+  document.querySelectorAll(`.pill[data-group="${g}"]`).forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');clicks++;updateUI();
+}
+function selectTile(el){el.classList.toggle('selected');clicks++;updateUI();}
+
+function updateUI(){
+  document.getElementById('submit-btn').classList.toggle('ready',allRequired());
+  const el=document.getElementById('click-counter');
+  if(!getVal('age'))  {el.innerHTML='Select age band';return;}
+  if(!getVal('ps'))   {el.innerHTML='Select performance status';return;}
+  if(!getVal('type')) {el.innerHTML='Select presentation type';return;}
+  el.innerHTML=`<span>${clicks}</span> input${clicks!==1?'s':''} selected — ready`;
+}
+
+function resetAll(){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+  clicks=0;
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('post-output').classList.remove('visible');
+  document.getElementById('waiting').style.display='';
+  document.getElementById('loading-state').classList.remove('visible');
+  document.getElementById('submit-btn').classList.remove('ready','loading');
+  document.getElementById('submit-btn').textContent='Get recommendation →';
+  document.getElementById('click-counter').textContent='Select age to begin';
+  document.getElementById('nhs-input').value='';
+  document.getElementById('free-text').value='';
+  document.getElementById('override-flag').classList.remove('visible');
+}
+</script>
+</body>
+</html>

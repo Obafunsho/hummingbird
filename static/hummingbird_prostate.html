@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hummingbird — Prostate</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0B1826;--navy-mid:#0D2137;--navy-card:#112233;--navy-tile:#1B3A52;
+    --teal:#0E9B8A;--teal-bright:#12C4AF;--teal-dim:rgba(14,155,138,0.15);
+    --red:#C0392B;--red-dark:#7f1d1d;--amber:#d97706;
+    --white:#F0F4F8;--white-dim:rgba(240,244,248,0.55);--white-faint:rgba(240,244,248,0.07);
+    --border:rgba(14,155,138,0.18);--border-faint:rgba(240,244,248,0.07);--mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--navy);position:sticky;top:0;z-index:100;}
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .wordmark{font-family:'DM Serif Display',serif;font-size:21px;color:var(--teal-bright);letter-spacing:.06em;}
+  .subtitle{font-size:11px;font-weight:500;color:var(--white-dim);letter-spacing:.12em;text-transform:uppercase;}
+  .version-tag{font-family:var(--mono);font-size:10px;color:var(--white-dim);background:var(--white-faint);padding:4px 10px;border-radius:4px;border:1px solid var(--border);}
+  .layout{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 57px);}
+  .inputs-panel{padding:32px 40px 80px;border-right:1px solid var(--border);}
+  .section-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .anno{font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;margin-bottom:6px;display:block;}
+  .input-group{margin-bottom:28px;}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{padding:9px 18px;border-radius:100px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+  .pill:hover{border-color:var(--teal);color:var(--white);}
+  .pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .pill.psa-high.selected{background:var(--red);border-color:var(--red);}
+  .pill.psa-raised.selected{background:var(--amber);border-color:var(--amber);color:var(--navy);}
+  .tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .tile{padding:13px 14px;border-radius:10px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;line-height:1.3;}
+  .tile:hover{border-color:var(--teal);color:var(--white);}
+  .tile.selected{background:rgba(14,155,138,.18);border-color:var(--teal);color:var(--white);}
+  .tile.hard-rule{border-color:rgba(192,57,43,.35);}
+  .tile.hard-rule:hover{border-color:var(--red);}
+  .tile.hard-rule.selected{background:rgba(192,57,43,.18);border-color:var(--red);color:var(--white);}
+  .tile-sub{font-size:10px;font-weight:400;color:var(--white-dim);display:block;margin-top:2px;}
+  .tile.opt{opacity:.7;}
+  .tile.opt:hover{opacity:1;}
+  .tile.opt.selected{opacity:1;}
+  .submit-btn{width:100%;padding:15px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:all .15s;margin-top:4px;opacity:.35;pointer-events:none;}
+  .submit-btn.ready{opacity:1;pointer-events:auto;}
+  .submit-btn.ready:hover{background:var(--teal-bright);transform:translateY(-1px);}
+  .submit-btn.loading{opacity:.7;pointer-events:none;}
+  .click-counter{text-align:center;font-family:var(--mono);font-size:11px;color:var(--white-dim);margin-top:9px;}
+  .click-counter span{color:var(--teal-bright);}
+  .reset-link{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--white-dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;display:block;text-align:center;margin-top:12px;transition:color .15s;}
+  .reset-link:hover{color:var(--teal);}
+  .output-panel{padding:32px 26px 60px;background:var(--navy-mid);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+  .waiting{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:.3;}
+  .waiting-icon{font-size:28px;}
+  .waiting p{font-size:12px;color:var(--white-dim);text-align:center;line-height:1.6;max-width:190px;}
+  .loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:1;opacity:.6;}
+  .loading-state.visible{display:flex;}
+  .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-state p{font-size:12px;color:var(--white-dim);font-family:var(--mono);}
+  .output-card{display:none;flex-direction:column;gap:16px;}
+  .output-card.visible{display:flex;}
+  .override{padding:11px 14px;border-radius:8px;background:rgba(127,29,29,.3);border:1.5px solid var(--red-dark);font-size:12px;font-weight:600;color:#fca5a5;line-height:1.5;display:none;}
+  .override.visible{display:block;}
+  .hbid-bar{display:flex;justify-content:flex-end;font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;}
+  .tier-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);overflow:hidden;}
+  .tier-header{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid transparent;}
+  .tier-label-group{display:flex;flex-direction:column;gap:2px;}
+  .tier-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .tier-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--white);}
+  .tier-badge{padding:4px 11px;border-radius:100px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
+  .tier-body{padding:0 15px 13px;}
+  .tier-rationale{font-size:12px;color:var(--white-dim);line-height:1.6;margin-top:10px;}
+  .tier-safety{font-size:11px;color:var(--teal);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers-label{font-family:var(--mono);font-size:9px;color:var(--white-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .driver-tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .driver-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--teal-dim);border:1px solid var(--border);color:var(--teal-bright);}
+  .confidence-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;margin-top:8px;}
+  .conf-high{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
+  .conf-moderate{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);color:#fbbf24;}
+  .conf-uncertain{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .stt-ineligible{font-size:11px;color:#fbbf24;margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.25);}
+  .layer-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+  .layer-1{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .layer-2{background:rgba(14,155,138,.1);border:1px solid rgba(14,155,138,.25);color:var(--teal-bright);}
+  .score-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);padding:14px 15px;}
+  .score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .score-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .score-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal);}
+  .score-bar-bg{height:4px;border-radius:2px;background:var(--navy-tile);margin-bottom:8px;}
+  .score-bar-fill{height:4px;border-radius:2px;background:var(--teal);transition:width .4s;}
+  .score-max{font-family:var(--mono);font-size:9px;color:var(--white-dim);margin-bottom:6px;}
+  .score-tier{font-size:11px;font-weight:600;color:var(--teal);margin-bottom:2px;}
+  .score-action{font-size:11px;color:var(--white-dim);line-height:1.5;}
+  .sc-std .score-num,.sc-std .score-tier{color:var(--white-dim);}
+  .sc-std .score-bar-fill{background:var(--white-dim);}
+  .sc-elev .score-num,.sc-elev .score-tier{color:var(--amber);}
+  .sc-elev .score-bar-fill{background:var(--amber);}
+  .sc-high .score-num,.sc-high .score-tier{color:var(--red);}
+  .sc-high .score-bar-fill{background:var(--red);}
+  .sc-stt .score-num,.sc-stt .score-tier{color:#fca5a5;}
+  .sc-stt .score-bar-fill{background:var(--red-dark);}
+  .t-stt .tier-header{border-color:var(--red-dark);} .t-stt .tier-badge{background:rgba(127,29,29,.3);color:#fca5a5;} .t-stt .tier-name{color:#fca5a5;}
+  .t-2ww .tier-header{border-color:var(--red);} .t-2ww .tier-badge{background:rgba(192,57,43,.2);color:#f87171;}
+  .t-elev .tier-header{border-color:var(--amber);} .t-elev .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-std .tier-header{border-color:rgba(240,244,248,.15);} .t-std .tier-badge{background:rgba(240,244,248,.08);color:var(--white-dim);}
+  .t-invest .tier-header{border-color:var(--amber);} .t-invest .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-active .tier-header{border-color:var(--teal);} .t-active .tier-badge{background:var(--teal-dim);color:var(--teal-bright);}
+  .t-reassure .tier-header{border-color:rgba(240,244,248,.1);} .t-reassure .tier-badge{background:rgba(240,244,248,.06);color:var(--white-dim);}
+  .post-output{display:none;flex-direction:column;gap:8px;}
+  .post-output.visible{display:flex;}
+  .nhs-input{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:var(--mono);font-size:12px;outline:none;transition:border-color .15s;}
+  .nhs-input::placeholder{color:var(--white-dim);}
+  .nhs-input:focus{border-color:var(--teal);}
+  .btn-row{display:flex;gap:8px;}
+  .btn-sec{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .btn-sec:hover{border-color:var(--teal);color:var(--teal);}
+  .btn-pri{flex:1;padding:10px;border-radius:8px;border:none;background:var(--teal);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+  .btn-pri:hover{background:var(--teal-bright);}
+  .footer-note{font-size:10px;color:var(--white-dim);opacity:.45;line-height:1.6;border-top:1px solid var(--border);padding-top:10px;}
+  .free-text{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:64px;transition:border-color .15s;margin-top:8px;}
+  .free-text::placeholder{color:var(--white-dim);}
+  .free-text:focus{border-color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <span class="wordmark">HUMMINGBIRD</span>
+    <span class="subtitle">Prostate · Suspected Cancer</span>
+  </div>
+  <span class="version-tag">HRI v1.0 · NICE NG12 · Layer 1 + 2</span>
+</div>
+<div class="layout">
+<div class="inputs-panel">
+
+  <div class="input-group">
+    <div class="section-label">Age band</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="age" data-val="u50" onclick="selectPill(this)">Under 50</div>
+      <div class="pill" data-group="age" data-val="50s" onclick="selectPill(this)">50–59</div>
+      <div class="pill" data-group="age" data-val="60s" onclick="selectPill(this)">60–69</div>
+      <div class="pill" data-group="age" data-val="70p" onclick="selectPill(this)">70 or over</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Performance status</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="ps" data-val="fit" onclick="selectPill(this)">PS 0–1 (fit)</div>
+      <div class="pill" data-group="ps" data-val="unfit" onclick="selectPill(this)">PS 2+ (limited)</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">PSA result</div>
+    <span class="anno">1 CLICK · REQUIRED — USE AGE-ADJUSTED THRESHOLDS</span>
+    <div class="pill-row">
+      <div class="pill" data-group="psa" data-val="notdone" onclick="selectPill(this)">Not done</div>
+      <div class="pill" data-group="psa" data-val="normal" onclick="selectPill(this)">Normal for age</div>
+      <div class="pill psa-raised" data-group="psa" data-val="raised" onclick="selectPill(this)">Raised for age</div>
+      <div class="pill psa-high" data-group="psa" data-val="high" onclick="selectPill(this)">Significantly raised</div>
+    </div>
+    <div style="font-size:11px;color:rgba(240,244,248,0.3);margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--white-faint);border:1px solid var(--border-faint);">
+      Age-adjusted thresholds: 50–59 &gt;3.0 ng/mL · 60–69 &gt;4.0 ng/mL · 70+ &gt;5.0 ng/mL. Significantly raised = 2× threshold or above.
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Digital rectal examination</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="dre" data-val="notdone" onclick="selectPill(this)">Not done</div>
+      <div class="pill" data-group="dre" data-val="normal" onclick="selectPill(this)">Normal</div>
+      <div class="pill" data-group="dre" data-val="abnormal" onclick="selectPill(this)">Abnormal</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Symptoms and signs</div>
+    <span class="anno">SELECT ALL PRESENT · RED BORDER = HIGH-YIELD TRIGGER</span>
+    <div class="tile-grid">
+      <div class="tile hard-rule" data-key="prostate-mass" onclick="selectTile(this)">
+        Palpable prostate mass
+        <span class="tile-sub">Hard / irregular on DRE</span>
+      </div>
+      <div class="tile hard-rule" data-key="bone-pain" onclick="selectTile(this)">
+        Unexplained bone pain
+        <span class="tile-sub">Axial skeleton · progressive</span>
+      </div>
+      <div class="tile" data-key="luts" onclick="selectTile(this)">
+        LUTS — progressive
+        <span class="tile-sub">Frequency, urgency, poor flow</span>
+      </div>
+      <div class="tile" data-key="haematuria" onclick="selectTile(this)">
+        Haematuria
+        <span class="tile-sub">Visible or non-visible</span>
+      </div>
+      <div class="tile" data-key="weightloss" onclick="selectTile(this)">
+        Unexplained weight loss
+        <span class="tile-sub">Progressive</span>
+      </div>
+      <div class="tile" data-key="psa-velocity" onclick="selectTile(this)">
+        Rising PSA on serial testing
+        <span class="tile-sub">Two readings showing upward trend</span>
+      </div>
+      <div class="tile" data-key="erectile" onclick="selectTile(this)">
+        New erectile dysfunction
+        <span class="tile-sub">With other urological symptoms</span>
+      </div>
+      <div class="tile" data-key="family-hx" onclick="selectTile(this)">
+        Strong family history
+        <span class="tile-sub">First-degree relative prostate cancer</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Prior investigation — last 12 months</div>
+    <span class="anno">SELECT IF RELEVANT NORMAL INVESTIGATION EXISTS</span>
+    <div class="tile-grid">
+      <div class="tile opt" data-key="biopsy-clear" onclick="selectTile(this)">
+        Normal prostate biopsy
+        <span class="tile-sub">Within 12 months · benign</span>
+      </div>
+      <div class="tile opt" data-key="mri-clear" onclick="selectTile(this)">
+        Normal mpMRI prostate
+        <span class="tile-sub">PIRADS 1–2 · within 12 months</span>
+      </div>
+      <div class="tile opt" data-key="psa-normal-6m" onclick="selectTile(this)">
+        PSA normal within 6 months
+        <span class="tile-sub">Age-adjusted normal · recent</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Additional clinical context</div>
+    <span class="anno">OPTIONAL</span>
+    <textarea class="free-text" id="free-text" placeholder="e.g. African-Caribbean ethnicity (higher risk), previous TURP, on 5-alpha reductase inhibitor (halves PSA — double reported value), known BPH…"></textarea>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="getRecommendation()">Get recommendation →</button>
+  <div class="click-counter" id="click-counter">Select age to begin</div>
+  <button class="reset-link" onclick="resetAll()">Reset</button>
+
+</div>
+<div class="output-panel">
+  <div class="waiting" id="waiting"><div class="waiting-icon">◎</div><p>Complete all sections and submit to generate a Hummingbird recommendation.</p></div>
+  <div class="loading-state" id="loading-state"><div class="spinner"></div><p>Reasoning…</p></div>
+  <div class="output-card" id="output-card">
+    <div class="hbid-bar" id="hbid-bar"></div>
+    <div class="override" id="override-flag"></div>
+    <div class="tier-card" id="tier-card">
+      <div class="tier-header">
+        <div class="tier-label-group">
+          <span class="tier-eyebrow">Hummingbird recommendation</span>
+          <span class="tier-name" id="tier-name"></span>
+        </div>
+        <span class="tier-badge" id="tier-badge"></span>
+      </div>
+      <div class="tier-body">
+        <div id="layer-tag-container"></div>
+        <div class="tier-rationale" id="tier-rationale"></div>
+        <div id="stt-ineligible-note"></div>
+        <div class="tier-safety" id="tier-safety"></div>
+        <div class="tier-drivers" id="tier-drivers">
+          <div class="tier-drivers-label">Contributing factors</div>
+          <div class="driver-tags" id="driver-tags"></div>
+        </div>
+        <div id="confidence-container"></div>
+      </div>
+    </div>
+    <div class="score-card" id="score-card">
+      <div class="score-header">
+        <span class="score-label">Hummingbird Risk Index</span>
+        <span class="score-num" id="score-num">0</span>
+      </div>
+      <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar" style="width:0%"></div></div>
+      <div class="score-max">Score <span id="score-val">0</span> / 18 &nbsp;·&nbsp; biopsy clear −4 · mpMRI clear −3 · PSA normal 6m −2</div>
+      <div class="score-tier" id="score-tier"></div>
+      <div class="score-action" id="score-action"></div>
+    </div>
+    <div class="post-output" id="post-output">
+      <input class="nhs-input" type="text" id="nhs-input" placeholder="NHS Number (optional · appears on PDF only)" maxlength="12">
+      <div class="btn-row">
+        <button class="btn-sec">⬇ Download PDF</button>
+        <button class="btn-pri">✉ Email PDF</button>
+      </div>
+    </div>
+    <div class="footer-note">Hummingbird HRI v1.0 · Prostate module · NICE NG12 compliant · Not prospectively validated · Does not replace clinical judgement · MHRA registration in progress · Configured by Prof Aneel Bhangu</div>
+  </div>
+</div>
+</div>
+<script>
+let clicks=0;
+const getVal  = g=>{const el=document.querySelector(`.pill[data-group="${g}"].selected`);return el?el.dataset.val:null;};
+const hasTile = k=>!!document.querySelector(`.tile[data-key="${k}"].selected`);
+
+function getScore(){
+  const age=getVal('age'),psa=getVal('psa'),dre=getVal('dre');
+  let s=0;
+  if(age==='50s') s+=2;
+  if(age==='60s') s+=3;
+  if(age==='70p') s+=3;
+  if(psa==='raised')  s+=4;
+  if(psa==='high')    s+=7;
+  if(dre==='abnormal') s+=4;
+  if(hasTile('prostate-mass')) s+=4;
+  if(hasTile('bone-pain'))     s+=3;
+  if(hasTile('luts'))          s+=1;
+  if(hasTile('haematuria'))    s+=1;
+  if(hasTile('weightloss'))    s+=1;
+  if(hasTile('psa-velocity'))  s+=2;
+  if(hasTile('erectile'))      s+=1;
+  if(hasTile('family-hx'))     s+=1;
+  if(hasTile('biopsy-clear'))  s-=4;
+  if(hasTile('mri-clear'))     s-=3;
+  if(hasTile('psa-normal-6m')) s-=2;
+  return Math.max(0,s);
+}
+
+function sttEligible(){return getVal('ps')==='fit'&&getVal('age')!=='u50';}
+
+function generateHBID(){
+  const d=new Date();
+  const dt=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r='';for(let i=0;i<6;i++)r+=chars[Math.floor(Math.random()*chars.length)];
+  return `HB-PR-${dt}-${r}`;
+}
+
+function layer1(){
+  const psa=getVal('psa'),dre=getVal('dre'),age=getVal('age');
+  const mass=hasTile('prostate-mass'),bone=hasTile('bone-pain');
+  const stt=sttEligible();
+  const biopsyClear=hasTile('biopsy-clear'),mriClear=hasTile('mri-clear');
+
+  // Bone pain — potential metastatic disease, highest urgency
+  if(bone&&(psa==='high'||psa==='raised')){
+    return{tier:'t-stt',name:'URGENT 2WW — POSSIBLE METASTATIC',badge:'Urgent',
+      rationale:'Unexplained bone pain with raised PSA raises the possibility of metastatic prostate cancer. This combination warrants urgent same-week urology review — do not use a routine 2WW slot.',
+      safety:'Contact urology directly. Arrange bone profile, ALP, and PSA if not already done. Consider bone scan if urology confirms concern.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['Bone pain','Raised PSA','Possible metastatic disease'],confidence:'high'};
+  }
+
+  // Abnormal DRE — direct 2WW trigger regardless of PSA (NICE NG12)
+  if(dre==='abnormal'||mass){
+    if(biopsyClear&&!bone) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+      rationale:'Abnormal DRE finding present but normal prostate biopsy within 12 months significantly reduces the probability of malignancy for an unchanged examination. Active review in 3 months with repeat PSA.',
+      safety:'If DRE finding has changed or worsened since the biopsy, refer via 2WW. Repeat PSA at review — rising PSA despite normal biopsy warrants re-referral.',
+      layer:'Layer 1 — deflected by prior investigation',sttIneligibleNote:null,
+      drivers:['Abnormal DRE','Normal biopsy within 12m'],confidence:'high'};
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:'Abnormal DRE is a direct NICE NG12 USC trigger regardless of PSA value. PS 0–1 — eligible for Straight to Test with direct access mpMRI, bypassing the outpatient queue.',
+      safety:'Contact urology direct access pathway. If STT not available within 5 days, refer via standard 2WW.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['Abnormal DRE / prostate mass','NICE NG12 direct trigger'],confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:'Abnormal DRE is a direct NICE NG12 USC trigger regardless of PSA value. Refer via 2WW to urology.',
+      safety:'Include DRE findings and PSA value in referral. Note any LUTS or haematuria.',
+      layer:'Layer 1 — hard rule',
+      sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+. Standard 2WW applies.':null,
+      drivers:['Abnormal DRE','NICE NG12 direct trigger'],confidence:'high'};
+  }
+
+  // Significantly raised PSA — direct 2WW
+  if(psa==='high'){
+    if(mriClear) return{tier:'t-elev',name:'2WW REFERRAL',badge:'2WW',
+      rationale:'Significantly raised PSA with normal mpMRI within 12 months. MRI reduces but does not eliminate cancer probability for a significantly raised PSA. Refer via 2WW with MRI report.',
+      safety:'Include mpMRI report in referral. Urology may arrange repeat MRI or biopsy based on clinical context.',
+      layer:'Layer 1 — partially deflected',sttIneligibleNote:null,
+      drivers:['Significantly raised PSA','mpMRI clear — partial deflection'],confidence:'moderate'};
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:'PSA significantly above age-adjusted threshold is a direct NICE NG12 USC trigger. PS 0–1 — eligible for Straight to Test with direct access mpMRI.',
+      safety:'If STT not available within 5 days, refer via standard 2WW. Include PSA value and date in referral.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:['PSA significantly raised','NICE NG12 direct trigger'],confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:'PSA significantly above age-adjusted threshold is a direct NICE NG12 USC trigger. Refer via 2WW to urology.',
+      safety:'Include PSA value, date, and any prior PSA readings in referral. Note DRE findings.',
+      layer:'Layer 1 — hard rule',
+      sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers:['PSA significantly raised','NICE NG12 direct trigger'],confidence:'high'};
+  }
+
+  return null;
+}
+
+function layer2(){
+  const psa=getVal('psa'),dre=getVal('dre'),age=getVal('age');
+  const s=getScore();
+  const stt=sttEligible();
+  const biopsyClear=hasTile('biopsy-clear'),mriClear=hasTile('mri-clear'),psaNormal=hasTile('psa-normal-6m');
+  const drivers=[];
+
+  if(age==='60s'||age==='70p') drivers.push('Age 60+');
+  if(psa==='raised')          drivers.push('PSA raised for age');
+  if(hasTile('luts'))         drivers.push('Progressive LUTS');
+  if(hasTile('psa-velocity')) drivers.push('Rising PSA on serial testing');
+  if(hasTile('family-hx'))    drivers.push('Family history');
+  if(biopsyClear)             drivers.push('Biopsy clear — deflects');
+  if(mriClear)                drivers.push('mpMRI clear — deflects');
+  if(psaNormal)               drivers.push('PSA normal 6m — deflects');
+
+  if(s>=9){
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:`HRI score ${s} — high risk. PSA raised with additional risk factors. PS 0–1 — eligible for Straight to Test direct access mpMRI.`,
+      safety:'If STT not available within 5 days, refer via standard 2WW.',
+      layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:`HRI score ${s} — high risk. Refer urgently via USC pathway.`,
+      safety:'Mark referral high priority. Include all PSA values and DRE findings.',
+      layer:'Layer 2 — HRI scoring',
+      sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers,confidence:'high'};
+  }
+
+  if(s>=4) return{tier:'t-elev',name:'2WW REFERRAL',badge:'2WW',
+    rationale:`HRI score ${s} — elevated risk. Refer via USC pathway. Refer via USC pathway.`,
+    safety:'Include PSA history and DRE findings in referral.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+
+  if(psa==='notdone') return{tier:'t-invest',name:'INVESTIGATE FIRST',badge:'PSA',
+    rationale:'Urological symptoms present but PSA not yet performed. Arrange PSA as first investigation — result guides referral decision.',
+    safety:'Review PSA result within 5 working days. If raised for age, reassess and refer accordingly.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:[...drivers,'PSA not done'],confidence:'moderate'};
+
+  if(biopsyClear||mriClear||psaNormal) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Recent normal investigation significantly reduces prostate cancer probability. Active review in 3–6 months with repeat PSA.',
+    safety:'Document investigation dates. If PSA rises further or new symptoms develop, re-refer via 2WW.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:[...drivers,'Recent normal investigation — deflects'],confidence:'high'};
+
+  if(s>=1) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Insufficient findings to meet USC threshold. Active review in 3–6 months with repeat PSA. Document baseline.',
+    safety:'If PSA rises, DRE becomes abnormal, or symptoms progress — reassess and refer.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+
+  return{tier:'t-reassure',name:'REASSURE',badge:'Discharge',
+    rationale:'PSA normal for age, DRE normal, no significant risk factors. No USC referral indicated.',
+    safety:'Document reasoning. Advise patient to return if urological symptoms develop or worsen. Repeat PSA in 1–2 years if ongoing concern.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:['PSA normal','DRE normal','No significant risk factors'],confidence:'high'};
+}
+
+function renderOverride(){
+  const flag=document.getElementById('override-flag');
+  if(getVal('psa')==='high'&&hasTile('bone-pain')){
+    flag.textContent='⚠ HIGHEST RISK — significantly raised PSA with bone pain. Possible metastatic disease. Urgent same-week urology contact.';
+    flag.classList.add('visible');
+  } else flag.classList.remove('visible');
+}
+
+function renderTierCard(r){
+  document.getElementById('tier-card').className='tier-card '+r.tier;
+  document.getElementById('tier-name').textContent=r.name;
+  document.getElementById('tier-badge').textContent=r.badge;
+  document.getElementById('tier-rationale').textContent=r.rationale;
+  const safety=document.getElementById('tier-safety');
+  safety.textContent=r.safety||'';safety.style.display=r.safety?'':'none';
+  document.getElementById('layer-tag-container').innerHTML=`<span class="layer-tag ${r.layer.startsWith('Layer 1')?'layer-1':'layer-2'}">${r.layer}</span>`;
+  document.getElementById('stt-ineligible-note').innerHTML=r.sttIneligibleNote?`<div class="stt-ineligible">⚠ ${r.sttIneligibleNote}</div>`:'';
+  const drvTags=document.getElementById('driver-tags');
+  const drvCont=document.getElementById('tier-drivers');
+  if(r.drivers&&r.drivers.length){drvTags.innerHTML=r.drivers.map(d=>`<span class="driver-tag">${d}</span>`).join('');drvCont.style.display='';}
+  else drvCont.style.display='none';
+  const confCont=document.getElementById('confidence-container');
+  if(r.confidence){
+    const cls=r.confidence==='high'?'conf-high':r.confidence==='moderate'?'conf-moderate':'conf-uncertain';
+    const icon=r.confidence==='high'?'●':r.confidence==='moderate'?'◑':'○';
+    confCont.innerHTML=`<span class="confidence-badge ${cls}">${icon} Confidence: ${r.confidence}</span>`;
+  } else confCont.innerHTML='';
+}
+
+function renderScore(s){
+  const card=document.getElementById('score-card');
+  card.className='score-card';
+  document.getElementById('score-num').textContent=s;
+  document.getElementById('score-val').textContent=s;
+  document.getElementById('score-bar').style.width=Math.min((s/18)*100,100)+'%';
+  let cls,tier,action;
+  if(s<=3)      {cls='sc-std'; tier='LOW RISK';         action='Safety net — active review. Repeat PSA in 3–6 months.';}
+  else if(s<=8) {cls='sc-elev';tier='ELEVATED';          action='Prioritised 2WW.';}
+  else          {cls='sc-high';tier='HIGH'; action='Accelerated 2WW.';}
+  card.classList.add(cls);
+  document.getElementById('score-tier').textContent=tier;
+  document.getElementById('score-action').textContent=action;
+}
+
+function getRecommendation(){
+  const btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');btn.textContent='Reasoning…';
+  document.getElementById('waiting').style.display='none';
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('loading-state').classList.add('visible');
+  const l1=layer1();
+  setTimeout(()=>{
+    document.getElementById('loading-state').classList.remove('visible');
+    const result=l1||layer2();
+    const score=getScore();
+    document.getElementById('hbid-bar').textContent=generateHBID();
+    renderOverride();renderTierCard(result);renderScore(score);
+    document.getElementById('output-card').classList.add('visible');
+    document.getElementById('post-output').classList.add('visible');
+    btn.classList.remove('loading');btn.textContent='Get recommendation →';
+  },l1?200:1200);
+}
+
+function allRequired(){return !!(getVal('age')&&getVal('ps')&&getVal('psa')&&getVal('dre'));}
+
+function selectPill(el){
+  const g=el.dataset.group;
+  document.querySelectorAll(`.pill[data-group="${g}"]`).forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');clicks++;updateUI();
+}
+function selectTile(el){el.classList.toggle('selected');clicks++;updateUI();}
+
+function updateUI(){
+  document.getElementById('submit-btn').classList.toggle('ready',allRequired());
+  const el=document.getElementById('click-counter');
+  if(!getVal('age')){el.innerHTML='Select age band';return;}
+  if(!getVal('ps')){el.innerHTML='Select performance status';return;}
+  if(!getVal('psa')){el.innerHTML='Select PSA result';return;}
+  if(!getVal('dre')){el.innerHTML='Select DRE result';return;}
+  el.innerHTML=`<span>${clicks}</span> input${clicks!==1?'s':''} selected — ready`;
+}
+
+function resetAll(){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+  clicks=0;
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('post-output').classList.remove('visible');
+  document.getElementById('waiting').style.display='';
+  document.getElementById('loading-state').classList.remove('visible');
+  document.getElementById('submit-btn').classList.remove('ready','loading');
+  document.getElementById('submit-btn').textContent='Get recommendation →';
+  document.getElementById('click-counter').textContent='Select age to begin';
+  document.getElementById('nhs-input').value='';
+  document.getElementById('free-text').value='';
+  document.getElementById('override-flag').classList.remove('visible');
+}
+</script>
+</body>
+</html>

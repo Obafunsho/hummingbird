@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hummingbird — Skin</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0B1826;--navy-mid:#0D2137;--navy-card:#112233;--navy-tile:#1B3A52;--teal:#0E9B8A;--teal-bright:#12C4AF;--teal-dim:rgba(14,155,138,0.15);--red:#C0392B;--red-dark:#7f1d1d;--amber:#d97706;--white:#F0F4F8;--white-dim:rgba(240,244,248,0.55);--white-faint:rgba(240,244,248,0.07);--border:rgba(14,155,138,0.18);--border-faint:rgba(240,244,248,0.07);--mono:'JetBrains Mono',monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--navy);position:sticky;top:0;z-index:100;}
+  .brand{display:flex;align-items:baseline;gap:12px;}
+  .wordmark{font-family:'DM Serif Display',serif;font-size:21px;color:var(--teal-bright);letter-spacing:.06em;}
+  .subtitle{font-size:11px;font-weight:500;color:var(--white-dim);letter-spacing:.12em;text-transform:uppercase;}
+  .version-tag{font-family:var(--mono);font-size:10px;color:var(--white-dim);background:var(--white-faint);padding:4px 10px;border-radius:4px;border:1px solid var(--border);}
+  .layout{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 57px);}
+  .inputs-panel{padding:32px 40px 80px;border-right:1px solid var(--border);}
+  .section-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+  .anno{font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;margin-bottom:6px;display:block;}
+  .input-group{margin-bottom:28px;}
+  .pill-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{padding:9px 18px;border-radius:100px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+  .pill:hover{border-color:var(--teal);color:var(--white);}
+  .pill.selected{background:var(--teal);border-color:var(--teal);color:#fff;}
+  .tile-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .tile{padding:13px 14px;border-radius:10px;border:1.5px solid var(--navy-tile);background:var(--navy-tile);color:var(--white-dim);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;user-select:none;line-height:1.3;}
+  .tile:hover{border-color:var(--teal);color:var(--white);}
+  .tile.selected{background:rgba(14,155,138,.18);border-color:var(--teal);color:var(--white);}
+  .tile.hard-rule{border-color:rgba(192,57,43,.35);}
+  .tile.hard-rule:hover{border-color:var(--red);}
+  .tile.hard-rule.selected{background:rgba(192,57,43,.18);border-color:var(--red);color:var(--white);}
+  .tile-sub{font-size:10px;font-weight:400;color:var(--white-dim);display:block;margin-top:2px;}
+  .tile.opt{opacity:.7;}
+  .tile.opt:hover{opacity:1;}
+  .tile.opt.selected{opacity:1;}
+  .submit-btn{width:100%;padding:15px;background:var(--teal);color:#fff;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:all .15s;margin-top:4px;opacity:.35;pointer-events:none;}
+  .submit-btn.ready{opacity:1;pointer-events:auto;}
+  .submit-btn.ready:hover{background:var(--teal-bright);transform:translateY(-1px);}
+  .submit-btn.loading{opacity:.7;pointer-events:none;}
+  .click-counter{text-align:center;font-family:var(--mono);font-size:11px;color:var(--white-dim);margin-top:9px;}
+  .click-counter span{color:var(--teal-bright);}
+  .reset-link{background:none;border:none;font-family:'DM Sans',sans-serif;font-size:11px;color:var(--white-dim);cursor:pointer;text-decoration:underline;text-underline-offset:3px;display:block;text-align:center;margin-top:12px;transition:color .15s;}
+  .reset-link:hover{color:var(--teal);}
+  .output-panel{padding:32px 26px 60px;background:var(--navy-mid);position:sticky;top:57px;height:calc(100vh - 57px);overflow-y:auto;display:flex;flex-direction:column;gap:18px;}
+  .waiting{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;opacity:.3;}
+  .waiting-icon{font-size:28px;}
+  .waiting p{font-size:12px;color:var(--white-dim);text-align:center;line-height:1.6;max-width:190px;}
+  .loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;flex:1;opacity:.6;}
+  .loading-state.visible{display:flex;}
+  .spinner{width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-state p{font-size:12px;color:var(--white-dim);font-family:var(--mono);}
+  .output-card{display:none;flex-direction:column;gap:16px;}
+  .output-card.visible{display:flex;}
+  .override{padding:11px 14px;border-radius:8px;background:rgba(127,29,29,.3);border:1.5px solid var(--red-dark);font-size:12px;font-weight:600;color:#fca5a5;line-height:1.5;display:none;}
+  .override.visible{display:block;}
+  .hbid-bar{display:flex;justify-content:flex-end;font-family:var(--mono);font-size:9px;color:rgba(14,155,138,.5);letter-spacing:.08em;}
+  .tier-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);overflow:hidden;}
+  .tier-header{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid transparent;}
+  .tier-label-group{display:flex;flex-direction:column;gap:2px;}
+  .tier-eyebrow{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .tier-name{font-family:'DM Serif Display',serif;font-size:17px;color:var(--white);}
+  .tier-badge{padding:4px 11px;border-radius:100px;font-family:var(--mono);font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;}
+  .tier-body{padding:0 15px 13px;}
+  .tier-rationale{font-size:12px;color:var(--white-dim);line-height:1.6;margin-top:10px;}
+  .tier-safety{font-size:11px;color:var(--teal);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers{margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+  .tier-drivers-label{font-family:var(--mono);font-size:9px;color:var(--white-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px;}
+  .driver-tags{display:flex;flex-wrap:wrap;gap:5px;}
+  .driver-tag{font-size:10px;padding:2px 8px;border-radius:4px;background:var(--teal-dim);border:1px solid var(--border);color:var(--teal-bright);}
+  .confidence-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;margin-top:8px;}
+  .conf-high{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
+  .conf-moderate{background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.3);color:#fbbf24;}
+  .conf-uncertain{background:rgba(192,57,43,.1);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .stt-ineligible{font-size:11px;color:#fbbf24;margin-top:6px;padding:6px 10px;border-radius:6px;background:rgba(217,119,6,.1);border:1px solid rgba(217,119,6,.25);}
+  .layer-tag{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+  .layer-1{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.3);color:#f87171;}
+  .layer-2{background:rgba(14,155,138,.1);border:1px solid rgba(14,155,138,.25);color:var(--teal-bright);}
+  .score-card{border-radius:12px;border:1.5px solid var(--border);background:var(--navy-card);padding:14px 15px;}
+  .score-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .score-label{font-family:var(--mono);font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white-dim);}
+  .score-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--teal);}
+  .score-bar-bg{height:4px;border-radius:2px;background:var(--navy-tile);margin-bottom:8px;}
+  .score-bar-fill{height:4px;border-radius:2px;background:var(--teal);transition:width .4s;}
+  .score-max{font-family:var(--mono);font-size:9px;color:var(--white-dim);margin-bottom:6px;}
+  .score-tier{font-size:11px;font-weight:600;color:var(--teal);margin-bottom:2px;}
+  .score-action{font-size:11px;color:var(--white-dim);line-height:1.5;}
+  .sc-std .score-num,.sc-std .score-tier{color:var(--white-dim);} .sc-std .score-bar-fill{background:var(--white-dim);}
+  .sc-elev .score-num,.sc-elev .score-tier{color:var(--amber);} .sc-elev .score-bar-fill{background:var(--amber);}
+  .sc-high .score-num,.sc-high .score-tier{color:var(--red);} .sc-high .score-bar-fill{background:var(--red);}
+  .sc-stt .score-num,.sc-stt .score-tier{color:#fca5a5;} .sc-stt .score-bar-fill{background:var(--red-dark);}
+  .t-stt .tier-header{border-color:var(--red-dark);} .t-stt .tier-badge{background:rgba(127,29,29,.3);color:#fca5a5;} .t-stt .tier-name{color:#fca5a5;}
+  .t-2ww .tier-header{border-color:var(--red);} .t-2ww .tier-badge{background:rgba(192,57,43,.2);color:#f87171;}
+  .t-elev .tier-header{border-color:var(--amber);} .t-elev .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-std .tier-header{border-color:rgba(240,244,248,.15);} .t-std .tier-badge{background:rgba(240,244,248,.08);color:var(--white-dim);}
+  .t-invest .tier-header{border-color:var(--amber);} .t-invest .tier-badge{background:rgba(217,119,6,.2);color:#fbbf24;}
+  .t-active .tier-header{border-color:var(--teal);} .t-active .tier-badge{background:var(--teal-dim);color:var(--teal-bright);}
+  .t-reassure .tier-header{border-color:rgba(240,244,248,.1);} .t-reassure .tier-badge{background:rgba(240,244,248,.06);color:var(--white-dim);}
+  .post-output{display:none;flex-direction:column;gap:8px;}
+  .post-output.visible{display:flex;}
+  .nhs-input{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:var(--mono);font-size:12px;outline:none;transition:border-color .15s;}
+  .nhs-input::placeholder{color:var(--white-dim);}
+  .nhs-input:focus{border-color:var(--teal);}
+  .btn-row{display:flex;gap:8px;}
+  .btn-sec{flex:1;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--white-dim);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;}
+  .btn-sec:hover{border-color:var(--teal);color:var(--teal);}
+  .btn-pri{flex:1;padding:10px;border-radius:8px;border:none;background:var(--teal);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+  .btn-pri:hover{background:var(--teal-bright);}
+  .footer-note{font-size:10px;color:var(--white-dim);opacity:.45;line-height:1.6;border-top:1px solid var(--border);padding-top:10px;}
+  .free-text{width:100%;background:var(--navy-tile);border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;outline:none;resize:vertical;min-height:64px;transition:border-color .15s;margin-top:8px;}
+  .free-text::placeholder{color:var(--white-dim);}
+  .free-text:focus{border-color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="brand">
+    <span class="wordmark">HUMMINGBIRD</span>
+    <span class="subtitle">Skin · Melanoma</span>
+  </div>
+  <span class="version-tag">HRI v1.0 · NICE NG12 · Layer 1 + 2</span>
+</div>
+<div class="layout">
+<div class="inputs-panel">
+
+  <div class="input-group">
+    <div class="section-label">Age band</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="age" data-val="u30" onclick="selectPill(this)">Under 30</div>
+      <div class="pill" data-group="age" data-val="30s" onclick="selectPill(this)">30–49</div>
+      <div class="pill" data-group="age" data-val="50s" onclick="selectPill(this)">50–59</div>
+      <div class="pill" data-group="age" data-val="60p" onclick="selectPill(this)">60 or over</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Performance status</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="ps" data-val="fit" onclick="selectPill(this)">PS 0–1 (fit)</div>
+      <div class="pill" data-group="ps" data-val="unfit" onclick="selectPill(this)">PS 2+ (limited)</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Lesion type</div>
+    <span class="anno">1 CLICK · REQUIRED</span>
+    <div class="pill-row">
+      <div class="pill" data-group="lesion" data-val="new" onclick="selectPill(this)">New lesion</div>
+      <div class="pill" data-group="lesion" data-val="changing" onclick="selectPill(this)">Changing existing lesion</div>
+      <div class="pill" data-group="lesion" data-val="stable" onclick="selectPill(this)">Stable existing lesion</div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">7-point checklist features</div>
+    <span class="anno">SELECT ALL PRESENT · RED BORDER = MAJOR CRITERIA</span>
+    <div class="tile-grid">
+      <div class="tile hard-rule" data-key="change-size" onclick="selectTile(this)">
+        Change in size
+        <span class="tile-sub">Increasing · progressive</span>
+      </div>
+      <div class="tile hard-rule" data-key="change-shape" onclick="selectTile(this)">
+        Irregular shape / border
+        <span class="tile-sub">Asymmetric · notched edge</span>
+      </div>
+      <div class="tile hard-rule" data-key="change-colour" onclick="selectTile(this)">
+        Change in colour
+        <span class="tile-sub">Multiple colours · uneven pigmentation</span>
+      </div>
+      <div class="tile" data-key="diameter" onclick="selectTile(this)">
+        Diameter ≥7mm
+        <span class="tile-sub">Minor criterion</span>
+      </div>
+      <div class="tile" data-key="inflammation" onclick="selectTile(this)">
+        Inflammation
+        <span class="tile-sub">Around or within lesion</span>
+      </div>
+      <div class="tile" data-key="oozing" onclick="selectTile(this)">
+        Oozing / crusting
+        <span class="tile-sub">Bleeding or exudate</span>
+      </div>
+      <div class="tile" data-key="sensory-change" onclick="selectTile(this)">
+        Sensory change
+        <span class="tile-sub">Itch · tingling · pain</span>
+      </div>
+      <div class="tile hard-rule" data-key="bleeding" onclick="selectTile(this)">
+        Spontaneous bleeding
+        <span class="tile-sub">Without trauma</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Additional risk factors</div>
+    <span class="anno">SELECT ALL PRESENT</span>
+    <div class="tile-grid">
+      <div class="tile" data-key="nodular" onclick="selectTile(this)">
+        Nodular / raised lesion
+        <span class="tile-sub">Elevated above skin surface</span>
+      </div>
+      <div class="tile" data-key="satellite" onclick="selectTile(this)">
+        Satellite lesions
+        <span class="tile-sub">Smaller lesions nearby</span>
+      </div>
+      <div class="tile" data-key="fair-skin" onclick="selectTile(this)">
+        Fair skin · multiple naevi
+        <span class="tile-sub">Risk factor — 50+ moles</span>
+      </div>
+      <div class="tile" data-key="prev-melanoma" onclick="selectTile(this)">
+        Previous melanoma
+        <span class="tile-sub">Personal or first-degree family history</span>
+      </div>
+      <div class="tile" data-key="immunosuppressed" onclick="selectTile(this)">
+        Immunosuppressed
+        <span class="tile-sub">Transplant / long-term steroids / HIV</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Prior assessment — this specific lesion</div>
+    <span class="anno">ONLY APPLIES TO THIS LESION — A NEW OR CHANGED LESION RESETS THE DEFLECTOR</span>
+    <div class="tile-grid">
+      <div class="tile opt" data-key="derm-clear" onclick="selectTile(this)">
+        Normal dermatology assessment
+        <span class="tile-sub">This lesion · with dermoscopy · within 12 months</span>
+      </div>
+    </div>
+    <div style="font-size:11px;color:rgba(240,244,248,0.3);margin-top:8px;padding:6px 10px;border-radius:6px;background:var(--white-faint);border:1px solid var(--border-faint);">
+      Prior assessment only deflects if the lesion is unchanged. A new or changing lesion must be reassessed regardless of prior dermoscopy.
+    </div>
+  </div>
+
+  <div class="input-group">
+    <div class="section-label">Additional clinical context</div>
+    <span class="anno">OPTIONAL</span>
+    <textarea class="free-text" id="free-text" placeholder="e.g. location (difficult site — scalp, sole, subungual), acral lesion, subungual pigmentation, patient concern about change…"></textarea>
+  </div>
+
+  <button class="submit-btn" id="submit-btn" onclick="getRecommendation()">Get recommendation →</button>
+  <div class="click-counter" id="click-counter">Select age to begin</div>
+  <button class="reset-link" onclick="resetAll()">Reset</button>
+
+</div>
+<div class="output-panel">
+  <div class="waiting" id="waiting"><div class="waiting-icon">◎</div><p>Complete all sections and submit to generate a Hummingbird recommendation.</p></div>
+  <div class="loading-state" id="loading-state"><div class="spinner"></div><p>Reasoning…</p></div>
+  <div class="output-card" id="output-card">
+    <div class="hbid-bar" id="hbid-bar"></div>
+    <div class="override" id="override-flag"></div>
+    <div class="tier-card" id="tier-card">
+      <div class="tier-header">
+        <div class="tier-label-group">
+          <span class="tier-eyebrow">Hummingbird recommendation</span>
+          <span class="tier-name" id="tier-name"></span>
+        </div>
+        <span class="tier-badge" id="tier-badge"></span>
+      </div>
+      <div class="tier-body">
+        <div id="layer-tag-container"></div>
+        <div class="tier-rationale" id="tier-rationale"></div>
+        <div id="stt-ineligible-note"></div>
+        <div class="tier-safety" id="tier-safety"></div>
+        <div class="tier-drivers" id="tier-drivers">
+          <div class="tier-drivers-label">Contributing factors</div>
+          <div class="driver-tags" id="driver-tags"></div>
+        </div>
+        <div id="confidence-container"></div>
+      </div>
+    </div>
+    <div class="score-card" id="score-card">
+      <div class="score-header">
+        <span class="score-label">Hummingbird Risk Index</span>
+        <span class="score-num" id="score-num">0</span>
+      </div>
+      <div class="score-bar-bg"><div class="score-bar-fill" id="score-bar" style="width:0%"></div></div>
+      <div class="score-max">Score <span id="score-val">0</span> / 16 &nbsp;·&nbsp; dermoscopy clear −3 (unchanged lesion only)</div>
+      <div class="score-tier" id="score-tier"></div>
+      <div class="score-action" id="score-action"></div>
+    </div>
+    <div class="post-output" id="post-output">
+      <input class="nhs-input" type="text" id="nhs-input" placeholder="NHS Number (optional · appears on PDF only)" maxlength="12">
+      <div class="btn-row">
+        <button class="btn-sec">⬇ Download PDF</button>
+        <button class="btn-pri">✉ Email PDF</button>
+      </div>
+    </div>
+    <div class="footer-note">Hummingbird HRI v1.0 · Skin module · NICE NG12 compliant · 7-point checklist · Not prospectively validated · Does not replace clinical judgement · MHRA registration in progress · Configured by Prof Aneel Bhangu</div>
+  </div>
+</div>
+</div>
+<script>
+let clicks=0;
+const getVal  = g=>{const el=document.querySelector(`.pill[data-group="${g}"].selected`);return el?el.dataset.val:null;};
+const hasTile = k=>!!document.querySelector(`.tile[data-key="${k}"].selected`);
+
+function getScore(){
+  const age=getVal('age'),lesion=getVal('lesion');
+  let s=0;
+  if(age==='50s') s+=1; if(age==='60p') s+=2;
+  if(lesion==='changing') s+=3; if(lesion==='new') s+=2;
+  if(hasTile('change-size'))   s+=3;
+  if(hasTile('change-shape'))  s+=3;
+  if(hasTile('change-colour')) s+=3;
+  if(hasTile('bleeding'))      s+=3;
+  if(hasTile('diameter'))      s+=1;
+  if(hasTile('inflammation'))  s+=1;
+  if(hasTile('oozing'))        s+=2;
+  if(hasTile('sensory-change'))s+=1;
+  if(hasTile('nodular'))       s+=2;
+  if(hasTile('satellite'))     s+=3;
+  if(hasTile('prev-melanoma')) s+=2;
+  if(hasTile('immunosuppressed'))s+=1;
+  // Deflector only applies if lesion is stable
+  if(hasTile('derm-clear')&&lesion==='stable') s-=3;
+  return Math.max(0,s);
+}
+
+function sttEligible(){return getVal('ps')==='fit';}
+function majorCriteria(){return [hasTile('change-size'),hasTile('change-shape'),hasTile('change-colour'),hasTile('bleeding')].filter(Boolean).length;}
+
+function generateHBID(){
+  const d=new Date();
+  const dt=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r='';for(let i=0;i<6;i++)r+=chars[Math.floor(Math.random()*chars.length)];
+  return `HB-SK-${dt}-${r}`;
+}
+
+function layer1(){
+  const lesion=getVal('lesion');
+  const maj=majorCriteria();
+  const dermClear=hasTile('derm-clear');
+  const stt=sttEligible();
+  const satellite=hasTile('satellite');
+
+  // Satellite lesions — possible in-transit metastasis
+  if(satellite) return{tier:'t-stt',name:'2WW — URGENT REFERRAL',badge:'Urgent',
+    rationale:'Satellite lesions around a pigmented lesion may indicate in-transit melanoma metastasis. Urgent dermatology referral required — do not delay.',
+    safety:'Include primary lesion description and satellite lesion characteristics in referral.',
+    layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+    drivers:['Satellite lesions','Possible in-transit metastasis'],confidence:'high'};
+
+  // 3 or more major criteria (NICE 7-point: change in size, shape, colour, bleeding)
+  if(maj>=3){
+    if(dermClear&&lesion==='stable') return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+      rationale:'Three major criteria present but normal dermoscopy assessment of this specific lesion within 12 months with no change. Safety net — review in 4 weeks.',
+      safety:'If lesion changes in any way before review, refer immediately via 2WW.',
+      layer:'Layer 1 — deflected by prior assessment',sttIneligibleNote:null,
+      drivers:['3+ major criteria','Dermoscopy clear — stable lesion'],confidence:'moderate'};
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:`${maj} major 7-point criteria present. This meets the NICE NG12 threshold for urgent USC referral to dermatology. PS 0–1 — eligible for Straight to Test direct access dermoscopy clinic.`,
+      safety:'Include lesion site, duration of change, and photograph if possible.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:[`${maj} major criteria met`,'NICE NG12 threshold'],confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:`${maj} major 7-point criteria present. NICE NG12 USC referral threshold met. Refer via 2WW to dermatology.`,
+      safety:'Include lesion site, duration, and photograph if available.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers:[`${maj} major criteria`,'NICE NG12 threshold'],confidence:'high'};
+  }
+
+  // 1-2 major criteria — refer via 2WW if changing or new
+  if(maj>=1&&(lesion==='changing'||lesion==='new')){
+    if(dermClear&&lesion==='stable') return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+      rationale:'Major criteria present but dermoscopy clear for this lesion within 12 months with no change. Safety net.',
+      safety:'If any change noted — refer via 2WW immediately.',
+      layer:'Layer 1 — partially deflected',sttIneligibleNote:null,
+      drivers:['Major criteria','Dermoscopy clear — stable'],confidence:'moderate'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:`${maj} major 7-point criterion present in a ${lesion} lesion. Refer via 2WW to dermatology for assessment including dermoscopy.`,
+      safety:'Include site and photograph. Note duration of change.',
+      layer:'Layer 1 — hard rule',sttIneligibleNote:null,
+      drivers:[`${maj} major criteria`,`${lesion} lesion`],confidence:'high'};
+  }
+
+  return null;
+}
+
+function layer2(){
+  const lesion=getVal('lesion'),age=getVal('age');
+  const s=getScore();
+  const stt=sttEligible();
+  const dermClear=hasTile('derm-clear');
+  const drivers=[];
+
+  if(age==='60p')              drivers.push('Age 60+');
+  if(lesion==='changing')      drivers.push('Changing lesion');
+  if(lesion==='new')           drivers.push('New lesion');
+  if(hasTile('diameter'))      drivers.push('Diameter ≥7mm');
+  if(hasTile('nodular'))       drivers.push('Nodular / raised');
+  if(hasTile('prev-melanoma')) drivers.push('Previous melanoma');
+  if(hasTile('fair-skin'))     drivers.push('Fair skin / multiple naevi');
+  if(hasTile('immunosuppressed')) drivers.push('Immunosuppressed');
+  if(dermClear&&lesion==='stable') drivers.push('Dermoscopy clear — deflects');
+
+  if(s>=9){
+    if(stt) return{tier:'t-stt',name:'2WW — STT CANDIDATE',badge:'STT',
+      rationale:`HRI score ${s} — high risk. PS 0–1 — eligible for Straight to Test direct access dermatology.`,
+      safety:'Include lesion photograph and site in referral.',
+      layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'high'};
+    return{tier:'t-2ww',name:'2WW REFERRAL',badge:'2WW',
+      rationale:`HRI score ${s} — high risk. Refer via USC pathway to dermatology.`,
+      safety:'Include lesion photograph, site, and duration of change.',
+      layer:'Layer 2 — HRI scoring',sttIneligibleNote:getVal('ps')==='unfit'?'STT not recommended — PS 2+.':null,
+      drivers,confidence:'high'};
+  }
+
+  if(s>=4) return{tier:'t-elev',name:'2WW REFERRAL',badge:'2WW',
+    rationale:`HRI score ${s} — elevated risk. Refer via USC pathway to dermatology.`,
+    safety:'Include lesion photograph if possible. Note site, size, and duration.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+
+  if(dermClear&&lesion==='stable') return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Normal dermoscopy assessment of this specific lesion within 12 months with no change. Safety net — review if any change occurs.',
+    safety:'If lesion changes in size, shape, colour, or bleeds — refer via 2WW immediately.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:[...drivers,'Dermoscopy clear — stable lesion'],confidence:'high'};
+
+  if(s>=1) return{tier:'t-active',name:'SAFETY NET',badge:'Safety net',
+    rationale:'Minor features present but insufficient for USC threshold. Safety net — review in 4 weeks or sooner if patient concerned.',
+    safety:'If any major criteria develop or lesion changes significantly — refer via 2WW.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,drivers,confidence:'moderate'};
+
+  return{tier:'t-reassure',name:'REASSURE',badge:'Discharge',
+    rationale:'Stable lesion with no significant features. No USC referral indicated.',
+    safety:'Advise patient to return if the lesion changes in size, shape, colour, or bleeds.',
+    layer:'Layer 2 — HRI scoring',sttIneligibleNote:null,
+    drivers:['Stable lesion','No significant features'],confidence:'high'};
+}
+
+function renderOverride(){
+  const flag=document.getElementById('override-flag');
+  if(majorCriteria()>=3&&hasTile('bleeding')){
+    flag.textContent='⚠ HIGHEST RISK — 3+ major criteria with spontaneous bleeding. Urgent dermatology referral.';
+    flag.classList.add('visible');
+  } else flag.classList.remove('visible');
+}
+
+function renderTierCard(r){
+  document.getElementById('tier-card').className='tier-card '+r.tier;
+  document.getElementById('tier-name').textContent=r.name;
+  document.getElementById('tier-badge').textContent=r.badge;
+  document.getElementById('tier-rationale').textContent=r.rationale;
+  const safety=document.getElementById('tier-safety');
+  safety.textContent=r.safety||'';safety.style.display=r.safety?'':'none';
+  document.getElementById('layer-tag-container').innerHTML=`<span class="layer-tag ${r.layer.startsWith('Layer 1')?'layer-1':'layer-2'}">${r.layer}</span>`;
+  document.getElementById('stt-ineligible-note').innerHTML=r.sttIneligibleNote?`<div class="stt-ineligible">⚠ ${r.sttIneligibleNote}</div>`:'';
+  const drvTags=document.getElementById('driver-tags');
+  const drvCont=document.getElementById('tier-drivers');
+  if(r.drivers&&r.drivers.length){drvTags.innerHTML=r.drivers.map(d=>`<span class="driver-tag">${d}</span>`).join('');drvCont.style.display='';}
+  else drvCont.style.display='none';
+  const confCont=document.getElementById('confidence-container');
+  if(r.confidence){
+    const cls=r.confidence==='high'?'conf-high':r.confidence==='moderate'?'conf-moderate':'conf-uncertain';
+    const icon=r.confidence==='high'?'●':r.confidence==='moderate'?'◑':'○';
+    confCont.innerHTML=`<span class="confidence-badge ${cls}">${icon} Confidence: ${r.confidence}</span>`;
+  } else confCont.innerHTML='';
+}
+
+function renderScore(s){
+  const card=document.getElementById('score-card');
+  card.className='score-card';
+  document.getElementById('score-num').textContent=s;
+  document.getElementById('score-val').textContent=s;
+  document.getElementById('score-bar').style.width=Math.min((s/16)*100,100)+'%';
+  let cls,tier,action;
+  if(s<=3)      {cls='sc-std'; tier='LOW RISK'; action='Safety net. Review if any change occurs.';}
+  else if(s<=8) {cls='sc-elev';tier='ELEVATED';  action='Prioritised 2WW — refer to dermatology.';}
+  else          {cls='sc-high';tier='HIGH';       action='Urgent 2WW or STT — refer to dermatology.';}
+  card.classList.add(cls);
+  document.getElementById('score-tier').textContent=tier;
+  document.getElementById('score-action').textContent=action;
+}
+
+function getRecommendation(){
+  const btn=document.getElementById('submit-btn');
+  btn.classList.add('loading');btn.textContent='Reasoning…';
+  document.getElementById('waiting').style.display='none';
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('loading-state').classList.add('visible');
+  const l1=layer1();
+  setTimeout(()=>{
+    document.getElementById('loading-state').classList.remove('visible');
+    const result=l1||layer2();
+    const score=getScore();
+    document.getElementById('hbid-bar').textContent=generateHBID();
+    renderOverride();renderTierCard(result);renderScore(score);
+    document.getElementById('output-card').classList.add('visible');
+    document.getElementById('post-output').classList.add('visible');
+    btn.classList.remove('loading');btn.textContent='Get recommendation →';
+  },l1?200:1200);
+}
+
+function allRequired(){return !!(getVal('age')&&getVal('ps')&&getVal('lesion'));}
+
+function selectPill(el){
+  const g=el.dataset.group;
+  document.querySelectorAll(`.pill[data-group="${g}"]`).forEach(p=>p.classList.remove('selected'));
+  el.classList.add('selected');clicks++;updateUI();
+}
+function selectTile(el){el.classList.toggle('selected');clicks++;updateUI();}
+
+function updateUI(){
+  document.getElementById('submit-btn').classList.toggle('ready',allRequired());
+  const el=document.getElementById('click-counter');
+  if(!getVal('age'))    {el.innerHTML='Select age band';return;}
+  if(!getVal('ps'))     {el.innerHTML='Select performance status';return;}
+  if(!getVal('lesion')) {el.innerHTML='Select lesion type';return;}
+  el.innerHTML=`<span>${clicks}</span> input${clicks!==1?'s':''} selected — ready`;
+}
+
+function resetAll(){
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('selected'));
+  document.querySelectorAll('.tile').forEach(t=>t.classList.remove('selected'));
+  clicks=0;
+  document.getElementById('output-card').classList.remove('visible');
+  document.getElementById('post-output').classList.remove('visible');
+  document.getElementById('waiting').style.display='';
+  document.getElementById('loading-state').classList.remove('visible');
+  document.getElementById('submit-btn').classList.remove('ready','loading');
+  document.getElementById('submit-btn').textContent='Get recommendation →';
+  document.getElementById('click-counter').textContent='Select age to begin';
+  document.getElementById('nhs-input').value='';
+  document.getElementById('free-text').value='';
+  document.getElementById('override-flag').classList.remove('visible');
+}
+</script>
+</body>
+</html>
