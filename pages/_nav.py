@@ -27,9 +27,9 @@ SURGICAL_PAGES = [
 ]
 
 def render_more_popover(current_slug: str, col):
-    """Render the ↑ More ↓ popover in the given column."""
+    """Render the More popover in the given column."""
     with col:
-        with st.popover("↑ More ↓", use_container_width=True):
+        with st.popover("More", use_container_width=True):
             st.markdown(
                 '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;'
                 'color:#999;margin-bottom:8px;font-weight:500;">Cancer referral</div>',
