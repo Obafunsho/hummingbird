@@ -21,7 +21,7 @@ except Exception:
 from auth import init_auth, render_login_page
 
 st.set_page_config(page_title="Hummingbird", page_icon="🐦",
-                   layout="wide", initial_sidebar_state="collapsed")
+                   layout="wide", initial_sidebar_state="expanded")
 
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
 _, auth_status, username, name = init_auth()
@@ -49,5 +49,5 @@ pg = st.navigation([
     # ── Hummingbird Surgery ───────────────────────────────────────────────────
     st.Page("pages/appendicitis.py",    title="Appendicitis Risk Score",       icon="🏥"),
     st.Page("pages/surgical_risk.py",   title="Surgical Risk Calculator",      icon="⚕️"),
-], position="hidden")
+], position="sidebar")
 pg.run()
