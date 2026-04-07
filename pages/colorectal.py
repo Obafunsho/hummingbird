@@ -32,7 +32,7 @@ st.markdown("""
   --text:#1a1a1a; --muted:#666; --dim:#999; --accent:#1a1a1a; --danger:#c0392b;
 }
 .stApp { background:var(--bg) !important; font-family:'DM Sans',sans-serif !important; color:var(--text) !important; }
-#MainMenu,footer { visibility:hidden; }
+#MainMenu,footer,header { visibility:hidden; }
 .block-container { padding-top:0 !important; padding-bottom:0 !important; max-width:100% !important; }
 .stDeployButton { display:none; }
 .stButton > button {

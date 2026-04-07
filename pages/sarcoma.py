@@ -71,6 +71,7 @@ if st.query_params.get("signout") == "1":
     do_logout()
 
 # ── Module switcher ────────────────────────────────────────────────────────────
+from pages._nav import render_more_popover
 _sw_cols = st.columns([3, 1, 1, 1, 1, 1, 1])
 with _sw_cols[0]:
     st.markdown('<div style="height:4px;"></div>', unsafe_allow_html=True)
@@ -82,9 +83,7 @@ with _sw_cols[2]:
         st.switch_page("pages/upper_gi.py")
 with _sw_cols[3]:
     st.button("Sarcoma", key="sw_cur_sarcoma", use_container_width=True, disabled=True)
-with _sw_cols[4]:
-    if st.button("\u2191 More \u2193", key="sw_more_sarcoma", use_container_width=True):
-        pass
+render_more_popover("sarcoma", _sw_cols[4])
 
 # ── Render HTML tool ───────────────────────────────────────────────────────────
 HTML = html_path.read_text(encoding="utf-8")
