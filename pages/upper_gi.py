@@ -102,43 +102,91 @@ div[data-testid="stHorizontalBlock"] button:disabled span {
   cursor: default !important;
 }
 /* Full-tile clickable buttons */
+.hb-tile-btn div[data-testid="stButton"] > button,
 .hb-tile-btn .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid var(--border) !important;
-  padding: 12px 14px !important; text-align: left !important;
-  min-height: 72px !important; font-size: 14px !important;
-  font-weight: 500 !important; line-height: 1.35 !important;
-  width: 100% !important; background: #fff !important; color: #1a1a1a !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #e2dfd8 !important;
+  padding: 12px 14px !important;
+  text-align: left !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
+  transition: all 0.12s !important;
 }
+.hb-tile-btn div[data-testid="stButton"] > button:hover,
+.hb-tile-btn .stButton > button:hover {
+  border-color: #1a1a1a !important;
+  background: #fafaf8 !important;
+}
+.hb-tile-btn-sel div[data-testid="stButton"] > button,
 .hb-tile-btn-sel .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid #1a1a1a !important;
-  padding: 12px 14px !important; text-align: left !important;
-  min-height: 72px !important; font-size: 14px !important;
-  font-weight: 500 !important; line-height: 1.35 !important;
-  width: 100% !important; background: #1a1a1a !important; color: #fff !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #1a1a1a !important;
+  padding: 12px 14px !important;
+  text-align: left !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #1a1a1a !important;
+  color: #fff !important;
 }
+.hb-tile-btn-hard div[data-testid="stButton"] > button,
 .hb-tile-btn-hard .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid #e8c8c4 !important;
-  padding: 12px 14px !important; min-height: 72px !important;
-  font-size: 14px !important; font-weight: 500 !important;
-  width: 100% !important; background: #fff !important; color: #1a1a1a !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #e8c8c4 !important;
+  padding: 12px 14px !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
 }
+.hb-tile-btn-hard-sel div[data-testid="stButton"] > button,
 .hb-tile-btn-hard-sel .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid #c0392b !important;
-  padding: 12px 14px !important; min-height: 72px !important;
-  font-size: 14px !important; font-weight: 500 !important;
-  width: 100% !important; background: #c0392b !important; color: #fff !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #c0392b !important;
+  padding: 12px 14px !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #c0392b !important;
+  color: #fff !important;
 }
+.hb-tile-btn-mod div[data-testid="stButton"] > button,
 .hb-tile-btn-mod .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid var(--border) !important;
-  padding: 12px 14px !important; min-height: 72px !important;
-  font-size: 14px !important; font-weight: 500 !important;
-  width: 100% !important; background: #fafaf8 !important; color: #666 !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #e2dfd8 !important;
+  padding: 12px 14px !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #fafaf8 !important;
+  color: #666 !important;
 }
+.hb-tile-btn-mod-sel div[data-testid="stButton"] > button,
 .hb-tile-btn-mod-sel .stButton > button {
-  border-radius: 8px !important; border: 0.5px solid #a8a49e !important;
-  padding: 12px 14px !important; min-height: 72px !important;
-  font-size: 14px !important; font-weight: 500 !important;
-  width: 100% !important; background: #f0ede8 !important; color: #1a1a1a !important;
+  border-radius: 8px !important;
+  border: 0.5px solid #a8a49e !important;
+  padding: 12px 14px !important;
+  min-height: 62px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #f0ede8 !important;
+  color: #1a1a1a !important;
 }
 
 
