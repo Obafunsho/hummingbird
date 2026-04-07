@@ -31,9 +31,23 @@ if not auth_status:
 
 # ── NAVIGATION ────────────────────────────────────────────────────────────────
 pg = st.navigation([
-    st.Page("pages/colorectal.py",    title="Colorectal — Lower GI",       icon="🎯"),
-    st.Page("pages/upper_gi.py",      title="Upper GI — Oesophagogastric", icon="🔬"),
-    st.Page("pages/appendicitis.py",  title="Appendicitis Risk Score",     icon="🏥"),
-    st.Page("pages/surgical_risk.py", title="Surgical Risk Calculator",    icon="⚕️"),
+    # ── Hummingbird Cancer ────────────────────────────────────────────────────
+    st.Page("pages/colorectal.py",      title="Colorectal — Lower GI",        icon="🎯"),
+    st.Page("pages/upper_gi.py",        title="Upper GI — Oesophagogastric",  icon="🔬"),
+    st.Page("pages/breast.py",          title="Breast",                        icon="🩺"),
+    st.Page("pages/lung.py",            title="Lung",                          icon="🫁"),
+    st.Page("pages/bladder.py",         title="Bladder",                       icon="🔵"),
+    st.Page("pages/brain_cns.py",       title="Brain & CNS",                   icon="🧠"),
+    st.Page("pages/gynaecology.py",     title="Gynaecology",                   icon="🩻"),
+    st.Page("pages/haematological.py",  title="Haematological",                icon="🔴"),
+    st.Page("pages/head_neck.py",       title="Head & Neck",                   icon="🔷"),
+    st.Page("pages/kidney.py",          title="Kidney",                        icon="🫘"),
+    st.Page("pages/prostate.py",        title="Prostate",                      icon="🔹"),
+    st.Page("pages/sarcoma.py",         title="Sarcoma",                       icon="🦴"),
+    st.Page("pages/skin.py",            title="Skin — Melanoma",               icon="🌞"),
+    st.Page("pages/thyroid.py",         title="Thyroid",                       icon="🦋"),
+    # ── Hummingbird Surgery ───────────────────────────────────────────────────
+    st.Page("pages/appendicitis.py",    title="Appendicitis Risk Score",       icon="🏥"),
+    st.Page("pages/surgical_risk.py",   title="Surgical Risk Calculator",      icon="⚕️"),
 ], position="hidden")
 pg.run()
