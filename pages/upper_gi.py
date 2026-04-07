@@ -68,91 +68,10 @@ st.markdown("""
   font-size:12px !important; text-decoration:underline !important; padding:4px !important;
 }
 .hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
-.hb-tile-btn .stButton > button,
-.hb-tile-btn div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #e2dfd8 !important;
-  padding: 12px 14px !important;
-  text-align: left !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #fff !important;
-  color: #1a1a1a !important;
-  transition: all 0.12s !important;
-}
-.hb-tile-btn .stButton > button:hover,
-.hb-tile-btn div[data-testid="stBaseButton-secondary"]:hover {
-  border-color: #1a1a1a !important;
-  background: #fafaf8 !important;
-}
-.hb-tile-btn-sel .stButton > button,
-.hb-tile-btn-sel div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #1a1a1a !important;
-  padding: 12px 14px !important;
-  text-align: left !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #1a1a1a !important;
-  color: #fff !important;
-}
-.hb-tile-btn-hard .stButton > button,
-.hb-tile-btn-hard div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #e8c8c4 !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #fff !important;
-  color: #1a1a1a !important;
-}
-.hb-tile-btn-hard-sel .stButton > button,
-.hb-tile-btn-hard-sel div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #c0392b !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #c0392b !important;
-  color: #fff !important;
-}
-.hb-tile-btn-mod .stButton > button,
-.hb-tile-btn-mod div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #e2dfd8 !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #fafaf8 !important;
-  color: #666 !important;
-}
-.hb-tile-btn-mod-sel .stButton > button,
-.hb-tile-btn-mod-sel div[data-testid="stBaseButton-secondary"] {
-  border-radius: 8px !important;
-  border: 0.5px solid #a8a49e !important;
-  padding: 12px 14px !important;
-  min-height: 62px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  line-height: 1.35 !important;
-  width: 100% !important;
-  background: #f0ede8 !important;
-  color: #1a1a1a !important;
+.hb-tile-btn .stButton > button {
+  font-size:12px !important; padding:7px 12px !important;
+  border-radius:0 0 8px 8px !important; margin-top:0 !important;
+  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
 }
 .stTextArea textarea { background:#fafaf8 !important; border:0.5px solid var(--border2) !important; border-radius:6px !important; color:var(--text) !important; font-size:13px !important; }
 .stTextArea textarea::placeholder { color:var(--dim) !important; }
@@ -413,35 +332,37 @@ with left_col:
 
     # AGE
     section_label("Age", "1 CLICK · REQUIRED")
-    cols = st.columns(2)
-    for i, (val, label) in enumerate(AGE_BANDS):
-        with cols[i]:
-            sel = st.session_state.ugi_age_band == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_age_{val}", use_container_width=True):
-                st.session_state.ugi_age_band = val
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    age_opts = [v for v,_ in AGE_BANDS]
+    age_fmt  = {v: l for v,l in AGE_BANDS}
+    age_sel = st.segmented_control(
+        "Age", age_opts,
+        format_func=lambda v: age_fmt[v],
+        selection_mode="single",
+        default=st.session_state.ugi_age_band,
+        key="sc_ugi_age", label_visibility="collapsed"
+    )
+    if age_sel != st.session_state.ugi_age_band:
+        st.session_state.ugi_age_band = age_sel
+        st.session_state.ugi_result = None
+        st.rerun()
     st.markdown("<br>", unsafe_allow_html=True)
 
     # SYMPTOMS
     section_label("Symptoms", "0–6 CLICKS · SELECT ALL PRESENT")
-    cols = st.columns(2)
-    for i, (key, label, sub) in enumerate(SYMPTOMS):
-        with cols[i % 2]:
-            sel = key in st.session_state.ugi_symptoms
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_sym_{key}", use_container_width=True):
-                st.session_state.ugi_symptoms.symmetric_difference_update({key})
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    sym_opts = [k for k,_,_ in SYMPTOMS]
+    sym_fmt  = {k: (f"{l} · {s}" if s else l) for k,l,s in SYMPTOMS}
+    sym_sel = st.pills(
+        "Symptoms", sym_opts,
+        format_func=lambda v: sym_fmt[v],
+        selection_mode="multi",
+        default=list(st.session_state.ugi_symptoms),
+        key="pills_ugi_sym", label_visibility="collapsed"
+    )
+    new_syms = set(sym_sel) if sym_sel else set()
+    if new_syms != st.session_state.ugi_symptoms:
+        st.session_state.ugi_symptoms = new_syms
+        st.session_state.ugi_result = None
+        st.rerun()
     st.markdown("<br>", unsafe_allow_html=True)
 
     # EXAMINATION FINDINGS
@@ -452,52 +373,55 @@ with left_col:
       font-size:11px;color:#999;letter-spacing:.05em;margin-bottom:10px;">
       Leave blank if none</div>""",
       unsafe_allow_html=True)
-    cols = st.columns(2)
-    for i, (key, label, sub) in enumerate(EXAM_FINDINGS):
-        with cols[i]:
-            sel = key in st.session_state.ugi_exam
-            css_cls = "hb-tile-btn-hard-sel" if sel else "hb-tile-btn-hard"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_exam_{key}", use_container_width=True):
-                st.session_state.ugi_exam.symmetric_difference_update({key})
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    exam_opts = [k for k,_,_ in EXAM_FINDINGS]
+    exam_fmt  = {k: (f"{l} · {s}" if s else l) for k,l,s in EXAM_FINDINGS}
+    exam_sel = st.pills(
+        "Exam", exam_opts,
+        format_func=lambda v: exam_fmt[v],
+        selection_mode="multi",
+        default=list(st.session_state.ugi_exam),
+        key="pills_ugi_exam", label_visibility="collapsed"
+    )
+    new_exam = set(exam_sel) if exam_sel else set()
+    if new_exam != st.session_state.ugi_exam:
+        st.session_state.ugi_exam = new_exam
+        st.session_state.ugi_result = None
+        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
     # H. PYLORI
     section_label("H. pylori Status", "1 CLICK · DEFAULTS TO NOT TESTED")
-    cols = st.columns(4)
-    for i, (val, label) in enumerate(HPYLORI_OPTIONS):
-        with cols[i]:
-            sel = st.session_state.ugi_hpylori == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_hp_{val}", use_container_width=True):
-                st.session_state.ugi_hpylori = val
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    hp_opts = [v for v,_ in HPYLORI_OPTIONS]
+    hp_fmt  = {v: l for v,l in HPYLORI_OPTIONS}
+    hp_sel = st.segmented_control(
+        "H pylori", hp_opts,
+        format_func=lambda v: hp_fmt[v],
+        selection_mode="single",
+        default=st.session_state.ugi_hpylori,
+        key="sc_ugi_hp", label_visibility="collapsed"
+    )
+    if hp_sel is not None and hp_sel != st.session_state.ugi_hpylori:
+        st.session_state.ugi_hpylori = hp_sel
+        st.session_state.ugi_result = None
+        st.rerun()
     st.markdown("<br>", unsafe_allow_html=True)
 
     # PERFORMANCE STATUS
     section_label("Performance Status", "1 CLICK · DEFAULTS TO FIT · USED FOR STT GATE")
-    cols = st.columns(2)
-    for i, (val, label) in enumerate(PS_OPTIONS):
-        with cols[i]:
-            sel = st.session_state.ugi_ps == val
-            css_cls = "hb-tile-btn-sel" if sel else "hb-tile-btn"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            btn_label = f"✓  {label}" if sel else label
-            if st.button(btn_label, key=f"ugi_ps_{val}", use_container_width=True):
-                st.session_state.ugi_ps = val
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    ps_opts = [v for v,_ in PS_OPTIONS]
+    ps_fmt  = {v: l for v,l in PS_OPTIONS}
+    ps_sel = st.segmented_control(
+        "PS", ps_opts,
+        format_func=lambda v: ps_fmt[v],
+        selection_mode="single",
+        default=st.session_state.ugi_ps,
+        key="sc_ugi_ps", label_visibility="collapsed"
+    )
+    if ps_sel is not None and ps_sel != st.session_state.ugi_ps:
+        st.session_state.ugi_ps = ps_sel
+        st.session_state.ugi_result = None
+        st.rerun()
     st.markdown("""<p style="font-size:12px;color:#999;margin-top:8px;line-height:1.6;padding-left:2px;">
       <strong style="color:#555;">PS 0–1:</strong> Fully active — eligible for Straight to Test.&nbsp;&nbsp;
       <strong style="color:#555;">PS 2–4:</strong> Significant limitations — standard 2WW only.</p>""",
@@ -511,19 +435,20 @@ with left_col:
       <span style="flex:1;height:0.5px;background:#e2dfd8;"></span>
     </div>""", unsafe_allow_html=True)
     section_label("Recent Investigations & Other", "SELECT IF PRESENT")
-    cols = st.columns(2)
-    for i, (key, label, sub) in enumerate(MODIFIERS):
-        with cols[i % 2]:
-            sel = key in st.session_state.ugi_modifiers
-            css_cls = "hb-tile-btn-mod-sel" if sel else "hb-tile-btn-mod"
-            st.markdown(f'<div class="{css_cls}">', unsafe_allow_html=True)
-            sub_txt = f"  ·  {sub}" if sub else ""
-            btn_label = f"✓  {label}{sub_txt}" if sel else f"{label}{sub_txt}"
-            if st.button(btn_label, key=f"ugi_mod_{key}", use_container_width=True):
-                st.session_state.ugi_modifiers.symmetric_difference_update({key})
-                st.session_state.ugi_result = None
-                st.rerun()
-            st.markdown('</div>', unsafe_allow_html=True)
+    mod_opts = [k for k,_,_ in MODIFIERS]
+    mod_fmt  = {k: (f"{l} · {s}" if s else l) for k,l,s in MODIFIERS}
+    mod_sel = st.pills(
+        "Modifiers", mod_opts,
+        format_func=lambda v: mod_fmt[v],
+        selection_mode="multi",
+        default=list(st.session_state.ugi_modifiers),
+        key="pills_ugi_mod", label_visibility="collapsed"
+    )
+    new_mods = set(mod_sel) if mod_sel else set()
+    if new_mods != st.session_state.ugi_modifiers:
+        st.session_state.ugi_modifiers = new_mods
+        st.session_state.ugi_result = None
+        st.rerun()
 
     free_text = st.text_area("", placeholder="Anything else relevant? (optional · max 300 chars)",
         max_chars=300, height=72, label_visibility="collapsed",
