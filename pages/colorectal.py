@@ -60,21 +60,120 @@ st.markdown("""
   border-radius: 0 0 8px 8px !important;
   border: 0.5px solid #e2dfd8 !important;
   border-top: none !important;
-  padding: 4px 14px !important;
-  text-align: center !important;
-  min-height: unset !important;
-  height: 28px !important;
-  font-size: 11px !important;
+  padding: 10px 14px !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  font-size: 10px !important;
   font-weight: 400 !important;
   width: 100% !important;
-  background: #fafaf8 !important;
-  color: #bbb !important;
+  background: #f5f4f1 !important;
+  color: #ccc !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
   transition: all 0.12s !important;
 }
 .hb-tile-btn .stButton > button:hover {
-  border-color: #1a1a1a !important;
-  background: #f0ede8 !important;
+  background: #edeae4 !important;
+  color: #999 !important;
+  border-color: #d4d2cc !important;
+}
+.stTextInput input {
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
+}
+.stTextArea textarea {
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
+}
+.stTextArea textarea::placeholder { color:var(--dim) !important; }
+.stDownloadButton > button {
+  background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
+  border-radius:6px !important; color:var(--text) !important;
+  font-size:13px !important; font-weight:500 !important;
+  padding:9px 16px !important; width:100% !important;
+}
+.stDownloadButton > button:hover { background:#fff !important; border-color:var(--accent) !important; }
+.stSpinner > div { border-top-color:var(--accent) !important; }
+div[data-testid="stVerticalBlockBorderWrapper"] > div:first-child { padding-top:0 !important; margin-top:0 !important; }
+div[data-testid="column"] > div[data-testid="stVerticalBlock"] { gap:0 !important; padding-top:0 !important; }
+
+/* Module switcher active state */
+.sw-active > div > button {
+  background:#1a1a1a !important;
+  border:0.5px solid #1a1a1a !important;
+  color:#fff !important;
+  font-weight:500 !important;
+}
+.sw-active > div > button:hover {
+  background:#1a1a1a !important;
+  color:#fff !important;
+}
+/* Switcher: active button styled black via disabled */
+div[data-testid="stHorizontalBlock"] div[data-testid="stBaseButton-secondary"] button:disabled,
+div[data-testid="stHorizontalBlock"] button:disabled,
+div[data-testid="stHorizontalBlock"] [data-testid="baseButton-secondary"]:disabled {
+  background: #1a1a1a !important;
+  border: 0.5px solid #1a1a1a !important;
+  color: #fff !important;
+  font-weight: 500 !important;
+  opacity: 1 !important;
+  cursor: default !important;
+}
+div[data-testid="stHorizontalBlock"] button:disabled p,
+div[data-testid="stHorizontalBlock"] button:disabled span {
+  color: #fff !important;
+}
+
+/* Full-tile clickable buttons */
+.hb-tile-btn .stButton > button {
+  border-radius: 8px !important;
+  border: 0.5px solid var(--border) !important;
+  padding: 12px 14px !important;
+  text-align: left !important;
+  min-height: 72px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
+}
+.hb-tile-btn-sel .stButton > button {
+  border-radius: 8px !important;
+  border: 0.5px solid #1a1a1a !important;
+  padding: 12px 14px !important;
+  text-align: left !important;
+  min-height: 72px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  width: 100% !important;
+  background: #1a1a1a !important;
+  color: #fff !important;
+}
+.hb-tile-btn-hard .stButton > button {
+  border: 0.5px solid #e8c8c4 !important;
+  background: #fff !important;
+  color: #1a1a1a !important;
+}
+.hb-tile-btn-hard-sel .stButton > button {
+  border: 0.5px solid #c0392b !important;
+  background: #c0392b !important;
+  color: #fff !important;
+}
+.hb-tile-btn-mod .stButton > button {
+  border: 0.5px solid var(--border) !important;
+  background: #fafaf8 !important;
   color: #666 !important;
+  opacity: 0.9 !important;
+}
+.hb-tile-btn-mod-sel .stButton > button {
+  border: 0.5px solid #a8a49e !important;
+  background: #f0ede8 !important;
+  color: #1a1a1a !important;
 }
 
 
@@ -275,7 +374,7 @@ with left_col:
             sel = st.session_state.age_band == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"age_{val}", use_container_width=True):
+            if st.button("· select ·", key=f"age_{val}", use_container_width=True):
                 st.session_state.age_band=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -289,7 +388,7 @@ with left_col:
             kind = "hard" if colour in ("red","darkred") else "sym"
             tile_indicator(label, "", sel, kind=kind)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"fit_{val}", use_container_width=True):
+            if st.button("· select ·", key=f"fit_{val}", use_container_width=True):
                 st.session_state.fit_result=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
@@ -302,7 +401,7 @@ with left_col:
             sel = key in st.session_state.selected_symptoms
             tile_indicator(label, sub, sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"sym_{key}", use_container_width=True):
+            if st.button("· select ·", key=f"sym_{key}", use_container_width=True):
                 st.session_state.selected_symptoms.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -322,7 +421,7 @@ with left_col:
             sel = key in st.session_state.selected_exam
             tile_indicator(label, sub, sel, kind="hard")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"exam_{key}", use_container_width=True):
+            if st.button("· select ·", key=f"exam_{key}", use_container_width=True):
                 st.session_state.selected_exam.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
@@ -337,7 +436,7 @@ with left_col:
             sel = st.session_state.performance_status == val
             tile_indicator(label, "", sel)
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"ps_{val}", use_container_width=True):
+            if st.button("· select ·", key=f"ps_{val}", use_container_width=True):
                 st.session_state.performance_status=val; st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
     st.markdown("""<p style="font-size:12px;color:#999;margin-top:8px;
@@ -361,7 +460,7 @@ with left_col:
             sel = key in st.session_state.selected_modifiers
             tile_indicator(label, sub, sel, kind="mod")
             st.markdown('<div class="hb-tile-btn">', unsafe_allow_html=True)
-            if st.button("Select", key=f"mod_{key}", use_container_width=True):
+            if st.button("· select ·", key=f"mod_{key}", use_container_width=True):
                 st.session_state.selected_modifiers.symmetric_difference_update({key})
                 st.session_state.result=None; st.rerun()
             st.markdown('</div>', unsafe_allow_html=True)
