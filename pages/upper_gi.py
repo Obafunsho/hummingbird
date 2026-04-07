@@ -248,6 +248,7 @@ def _init():
         "ugi_hbid": None,
         "ugi_last_inputs": {},
         "ugi_free_text_key": 0,
+        "ugi_widget_key": 0,
     }.items():
         if k not in st.session_state:
             st.session_state[k] = v
@@ -316,6 +317,7 @@ with _rt_btn:
             "ugi_modifiers": set(),
         })
         st.session_state.ugi_free_text_key += 1
+        st.session_state.ugi_widget_key += 1
         st.session_state["_do_scroll"] = True
         st.rerun()
 
@@ -339,7 +341,7 @@ with left_col:
         format_func=lambda v: age_fmt[v],
         selection_mode="single",
         default=st.session_state.ugi_age_band,
-        key="sc_ugi_age", label_visibility="collapsed"
+        key=f"sc_ugi_age_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     if age_sel != st.session_state.ugi_age_band:
         st.session_state.ugi_age_band = age_sel
@@ -356,7 +358,7 @@ with left_col:
         format_func=lambda v: sym_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.ugi_symptoms),
-        key="pills_ugi_sym", label_visibility="collapsed"
+        key=f"pills_ugi_sym_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     new_syms = set(sym_sel) if sym_sel else set()
     if new_syms != st.session_state.ugi_symptoms:
@@ -380,7 +382,7 @@ with left_col:
         format_func=lambda v: exam_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.ugi_exam),
-        key="pills_ugi_exam", label_visibility="collapsed"
+        key=f"pills_ugi_exam_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     new_exam = set(exam_sel) if exam_sel else set()
     if new_exam != st.session_state.ugi_exam:
@@ -399,7 +401,7 @@ with left_col:
         format_func=lambda v: hp_fmt[v],
         selection_mode="single",
         default=st.session_state.ugi_hpylori,
-        key="sc_ugi_hp", label_visibility="collapsed"
+        key=f"sc_ugi_hp_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     if hp_sel is not None and hp_sel != st.session_state.ugi_hpylori:
         st.session_state.ugi_hpylori = hp_sel
@@ -416,7 +418,7 @@ with left_col:
         format_func=lambda v: ps_fmt[v],
         selection_mode="single",
         default=st.session_state.ugi_ps,
-        key="sc_ugi_ps", label_visibility="collapsed"
+        key=f"sc_ugi_ps_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     if ps_sel is not None and ps_sel != st.session_state.ugi_ps:
         st.session_state.ugi_ps = ps_sel
@@ -442,7 +444,7 @@ with left_col:
         format_func=lambda v: mod_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.ugi_modifiers),
-        key="pills_ugi_mod", label_visibility="collapsed"
+        key=f"pills_ugi_mod_{st.session_state.ugi_widget_key}", label_visibility="collapsed"
     )
     new_mods = set(mod_sel) if mod_sel else set()
     if new_mods != st.session_state.ugi_modifiers:

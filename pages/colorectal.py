@@ -267,7 +267,7 @@ def _init():
         "session_id":generate_session_id(),"age_band":None,"fit_result":"notdone",
         "performance_status":"fit","selected_symptoms":set(),"selected_exam":set(),
         "selected_modifiers":set(),"result":None,"escalation":None,"hbid":None,
-        "last_inputs":{},"free_text_key":0,
+        "last_inputs":{},"free_text_key":0,"widget_key":0,
     }.items():
         if k not in st.session_state: st.session_state[k]=v
 _init()
@@ -335,6 +335,7 @@ with _rt_btn:
             "selected_symptoms":set(),"selected_exam":set(),"selected_modifiers":set(),
         })
         st.session_state.free_text_key += 1
+        st.session_state.widget_key += 1
         st.session_state["_do_scroll"] = True
         st.rerun()
 
@@ -359,7 +360,7 @@ with left_col:
         format_func=lambda v: age_fmt[v],
         selection_mode="single",
         default=st.session_state.age_band,
-        key="sc_age", label_visibility="collapsed"
+        key=f"sc_age_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     if age_sel != st.session_state.age_band:
         st.session_state.age_band = age_sel
@@ -376,7 +377,7 @@ with left_col:
         format_func=lambda v: fit_fmt[v],
         selection_mode="single",
         default=st.session_state.fit_result,
-        key="sc_fit", label_visibility="collapsed"
+        key=f"sc_fit_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     if fit_sel is not None and fit_sel != st.session_state.fit_result:
         st.session_state.fit_result = fit_sel
@@ -393,7 +394,7 @@ with left_col:
         format_func=lambda v: sym_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.selected_symptoms),
-        key="pills_sym", label_visibility="collapsed"
+        key=f"pills_sym_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     new_syms = set(sym_sel) if sym_sel else set()
     if new_syms != st.session_state.selected_symptoms:
@@ -417,7 +418,7 @@ with left_col:
         format_func=lambda v: exam_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.selected_exam),
-        key="pills_exam", label_visibility="collapsed"
+        key=f"pills_exam_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     new_exam = set(exam_sel) if exam_sel else set()
     if new_exam != st.session_state.selected_exam:
@@ -436,7 +437,7 @@ with left_col:
         format_func=lambda v: ps_fmt[v],
         selection_mode="single",
         default=st.session_state.performance_status,
-        key="sc_ps", label_visibility="collapsed"
+        key=f"sc_ps_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     if ps_sel is not None and ps_sel != st.session_state.performance_status:
         st.session_state.performance_status = ps_sel
@@ -464,7 +465,7 @@ with left_col:
         format_func=lambda v: mod_fmt[v],
         selection_mode="multi",
         default=list(st.session_state.selected_modifiers),
-        key="pills_mod", label_visibility="collapsed"
+        key=f"pills_mod_{st.session_state.widget_key}", label_visibility="collapsed"
     )
     new_mods = set(mod_sel) if mod_sel else set()
     if new_mods != st.session_state.selected_modifiers:
