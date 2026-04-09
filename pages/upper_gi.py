@@ -302,7 +302,8 @@ with _sw_col2:
 with _sw_col3:
     st.button("Upper GI", key="sw_ugi2", use_container_width=True, disabled=True)
 with _sw_col4:
-    surgical_nav_button("Appendicitis Risk Score", "https://obafunsho.github.io/hummingbird_landing/appendicitis.html", key="sw_app_ugi")
+    if st.button("Breast", key="sw_breast_ugi", use_container_width=True):
+        st.switch_page("pages/breast.py")
 render_more_popover("upper_gi", _sw_col5)
 
 # ── Top reset button ──────────────────────────────────────────────────────────

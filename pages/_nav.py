@@ -67,9 +67,9 @@ def surgical_nav_button(title: str, url: str, key: str) -> None:
 
 
 def render_more_popover(current_slug: str, col) -> None:
-    """Render the ↑ More ↓ popover in the given column."""
+    """Render the More popover in the given column."""
     with col:
-        with st.popover("↑ More ↓", use_container_width=True):
+        with st.popover("More", use_container_width=True):
             st.markdown(
                 '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;'
                 'color:#999;margin-bottom:8px;font-weight:500;">Cancer referral</div>',
