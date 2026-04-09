@@ -56,11 +56,7 @@ st.markdown("""
   font-size:12px !important; text-decoration:underline !important; padding:4px !important;
 }
 .hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
-.hb-tile-btn .stButton > button {
-  font-size:12px !important; padding:7px 12px !important;
-  border-radius:0 0 8px 8px !important; margin-top:0 !important;
-  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
-}
+/* tile btn CSS removed — using st.segmented_control and st.pills */
 .stTextInput input {
   background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
   border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
@@ -321,8 +317,7 @@ with _sw_col3:
     if st.button("Upper GI", key="sw_ugi", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
 with _sw_col4:
-    if st.button("Appendicitis Risk", key="sw_app", use_container_width=True):
-        st.switch_page("pages/appendicitis.py")
+    st.link_button("Appendicitis Risk", url="https://obafunsho.github.io/hummingbird_landing/appendicitis.html", use_container_width=True)
 render_more_popover("colorectal", _sw_col5)
 
 # ── Top reset button ──────────────────────────────────────────────────────────

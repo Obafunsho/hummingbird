@@ -1,6 +1,8 @@
 """
 hummingbird/pages/_nav.py
 Shared navigation popover for all Hummingbird pages.
+Cancer referral pages route internally via st.switch_page.
+Surgical decision pages open as standalone public GitHub Pages tools.
 """
 import streamlit as st
 
@@ -22,14 +24,15 @@ CANCER_PAGES = [
 ]
 
 SURGICAL_PAGES = [
-    ("Appendicitis Risk Score",   "pages/appendicitis.py"),
-    ("Surgical Risk Calculator",  "pages/surgical_risk.py"),
+    ("Appendicitis Risk Score",   "https://obafunsho.github.io/hummingbird_landing/appendicitis.html"),
+    ("Surgical Risk Calculator",  "https://obafunsho.github.io/hummingbird_landing/surgical_risk.html"),
 ]
 
+
 def render_more_popover(current_slug: str, col):
-    """Render the More popover in the given column."""
+    """Render the ↑ More ↓ popover in the given column."""
     with col:
-        with st.popover("More", use_container_width=True):
+        with st.popover("↑ More ↓", use_container_width=True):
             st.markdown(
                 '<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;'
                 'color:#999;margin-bottom:8px;font-weight:500;">Cancer referral</div>',
@@ -51,13 +54,5 @@ def render_more_popover(current_slug: str, col):
                 'color:#999;margin-top:12px;margin-bottom:8px;font-weight:500;">Surgical decisions</div>',
                 unsafe_allow_html=True
             )
-            for title, path in SURGICAL_PAGES:
-                if path == f"pages/{current_slug}.py":
-                    st.markdown(
-                        f'<div style="font-size:13px;color:#1a1a1a;font-weight:600;'
-                        f'padding:4px 0;">✓ {title}</div>',
-                        unsafe_allow_html=True
-                    )
-                else:
-                    if st.button(title, key=f"nav_{current_slug}_{path}", use_container_width=True):
-                        st.switch_page(path)
+            for title, url in SURGICAL_PAGES:
+                st.link_button(title, url=url, use_container_width=True)
