@@ -40,8 +40,8 @@ def _surgical_warning_dialog(title: str, url: str) -> None:
     )
     st.markdown(
         '<p style="font-size:13px;color:#666;line-height:1.6;">'
-        'It will open in a new tab. When you\'re done, close that tab and you\'ll still '
-        'be signed in here.</p>',
+        'It will open in a new tab. When you\'re done, close that tab and you\'ll '
+        'still be signed in here.</p>',
         unsafe_allow_html=True
     )
     st.markdown("<br>", unsafe_allow_html=True)
@@ -58,8 +58,10 @@ def _surgical_warning_dialog(title: str, url: str) -> None:
             st.rerun()
 
 
-def _surgical_button(title: str, url: str, key: str) -> None:
-    """Render a button that opens the surgical warning dialog."""
+def surgical_nav_button(title: str, url: str, key: str) -> None:
+    """Render a button that triggers the surgical warning dialog.
+    Call this from any page instead of importing _surgical_warning_dialog directly.
+    """
     if st.button(title, key=key, use_container_width=True):
         _surgical_warning_dialog(title, url)
 
@@ -90,4 +92,4 @@ def render_more_popover(current_slug: str, col) -> None:
                 unsafe_allow_html=True
             )
             for title, url in SURGICAL_PAGES:
-                _surgical_button(title, url, key=f"surg_{current_slug}_{title}")
+                surgical_nav_button(title, url, key=f"surg_{current_slug}_{title}")

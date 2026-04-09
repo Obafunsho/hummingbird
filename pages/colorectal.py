@@ -313,7 +313,7 @@ if st.session_state.get("_do_scroll"):
     </script>
     """, unsafe_allow_html=True)
 
-from pages._nav import render_more_popover, _surgical_warning_dialog
+from pages._nav import render_more_popover, surgical_nav_button
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.button("Colorectal", key="sw_col2", use_container_width=True, disabled=True)
@@ -321,8 +321,7 @@ with _sw_col3:
     if st.button("Upper GI", key="sw_ugi", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
 with _sw_col4:
-    if st.button("Appendicitis Risk", key="sw_app_col", use_container_width=True):
-        _surgical_warning_dialog("Appendicitis Risk Score", "https://obafunsho.github.io/hummingbird_landing/appendicitis.html")
+    surgical_nav_button("Appendicitis Risk Score", "https://obafunsho.github.io/hummingbird_landing/appendicitis.html", key="sw_app_col")
 render_more_popover("colorectal", _sw_col5)
 
 # ── Top reset button ──────────────────────────────────────────────────────────
