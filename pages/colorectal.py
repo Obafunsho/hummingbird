@@ -56,7 +56,11 @@ st.markdown("""
   font-size:12px !important; text-decoration:underline !important; padding:4px !important;
 }
 .hb-reset .stButton > button:hover { color:var(--text) !important; background:none !important; border:none !important; }
-/* tile btn CSS removed — using st.segmented_control and st.pills */
+.hb-tile-btn .stButton > button {
+  font-size:12px !important; padding:7px 12px !important;
+  border-radius:0 0 8px 8px !important; margin-top:0 !important;
+  border-top:none !important; border-color:var(--border) !important; background:#fafaf8 !important;
+}
 .stTextInput input {
   background:#fafaf8 !important; border:0.5px solid var(--border2) !important;
   border-radius:6px !important; color:var(--text) !important; font-size:13px !important;
@@ -309,7 +313,7 @@ if st.session_state.get("_do_scroll"):
     </script>
     """, unsafe_allow_html=True)
 
-from pages._nav import render_more_popover
+from pages._nav import render_more_popover, _surgical_warning_dialog
 _sw_col1, _sw_col2, _sw_col3, _sw_col4, _sw_col5 = st.columns([5, 1, 1, 1, 1])
 with _sw_col2:
     st.button("Colorectal", key="sw_col2", use_container_width=True, disabled=True)
@@ -317,7 +321,8 @@ with _sw_col3:
     if st.button("Upper GI", key="sw_ugi", use_container_width=True):
         st.switch_page("pages/upper_gi.py")
 with _sw_col4:
-    st.link_button("Appendicitis Risk", url="https://obafunsho.github.io/hummingbird_landing/appendicitis.html", use_container_width=True)
+    if st.button("Appendicitis Risk", key="sw_app_col", use_container_width=True):
+        _surgical_warning_dialog("Appendicitis Risk Score", "https://obafunsho.github.io/hummingbird_landing/appendicitis.html")
 render_more_popover("colorectal", _sw_col5)
 
 # ── Top reset button ──────────────────────────────────────────────────────────
