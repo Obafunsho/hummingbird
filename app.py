@@ -24,10 +24,16 @@ st.set_page_config(page_title="Hummingbird", page_icon="🐦",
                    layout="wide", initial_sidebar_state="collapsed")
 
 # ── AUTH GATE ─────────────────────────────────────────────────────────────────
-_, auth_status, username, name = init_auth()
-if not auth_status:
-    render_login_page()
-    st.stop()
+REQUIRE_AUTH = False  # Set to True to re-enable login
+
+if REQUIRE_AUTH:
+    _, auth_status, username, name = init_auth()
+    if not auth_status:
+        render_login_page()
+        st.stop()
+else:
+    name = "Guest"
+    st.session_state["name"] = name
 
 # ── NAVIGATION ────────────────────────────────────────────────────────────────
 pg = st.navigation([
